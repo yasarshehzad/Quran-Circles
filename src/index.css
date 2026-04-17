@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-arabic: "Amiri", serif;
+  --font-indopak: "Scheherazade New", serif;
+  
+  --color-brand-deep: #062C22;
+  --color-brand-forest: #0A3D31;
+  --color-brand-lime: #D9F99D;
+  --color-brand-accent: #10B981;
+  
+  --color-paper-bg: #F5F5F0;
+  --color-paper-ink: #2C2C24;
+  --color-paper-accent: #5A5A40;
+
+  --radius-3xl: 2rem;
+  --radius-4xl: 3rem;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-deep text-white selection:bg-brand-lime selection:text-brand-deep transition-colors duration-500;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    opacity: 0.98;
+  }
+
+  body.paper-mode {
+    @apply bg-paper-bg text-paper-ink;
+    background-image: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+.bento-card {
+  @apply bg-brand-forest/40 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden;
+}
+
+.paper-mode .bento-card {
+  @apply bg-white border-paper-accent/10 shadow-sm;
+}
+
+.bento-card:hover {
+  @apply bg-brand-forest/60 border-white/10;
+}
+
+.paper-mode .bento-card:hover {
+  @apply bg-white border-paper-accent/20 shadow-md;
+}
+
+.lime-glow {
+  box-shadow: 0 0 40px -10px rgba(217, 249, 157, 0.3);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-brand-lime/50 transition-colors;
+}

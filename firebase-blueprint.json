@@ -1,0 +1,88 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Circle": {
+      "title": "Circle",
+      "description": "A private reflection circle",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "inviteCode": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "planId": { "type": "string", "description": "ID of the Quran plan being followed" },
+        "startDate": { "type": "string", "format": "date" },
+        "members": { "type": "array", "items": { "type": "string" }, "description": "List of authenticated UIDs" },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["auth", "lightweight"] },
+              "parentUid": { "type": "string", "description": "UID of the auth user managing this profile" }
+            }
+          }
+        },
+        "participationMode": { "type": "string", "enum": ["shared", "individual", "hybrid"] },
+        "deadlineConfig": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["local", "shared"] },
+            "timezone": { "type": "string" },
+            "time": { "type": "string", "description": "HH:mm format" }
+          }
+        },
+        "streak": {
+          "type": "object",
+          "properties": {
+            "current": { "type": "integer" },
+            "lastDate": { "type": "string", "format": "date" }
+          }
+        }
+      },
+      "required": ["name", "inviteCode", "adminUid", "members", "participants"]
+    },
+    "Reflection": {
+      "title": "Reflection",
+      "description": "A daily reflection on an ayah",
+      "type": "object",
+      "properties": {
+        "circleId": { "type": "string" },
+        "ayahKey": { "type": "string", "description": "e.g. 2:255" },
+        "participantId": { "type": "string" },
+        "participantName": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "date": { "type": "string", "format": "date", "description": "The logical day this reflection belongs to" }
+      },
+      "required": ["circleId", "ayahKey", "participantId", "text", "createdAt", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/circles/{circleId}": {
+      "schema": "Circle",
+      "description": "Reflection circles"
+    },
+    "/circles/{circleId}/reflections/{reflectionId}": {
+      "schema": "Reflection",
+      "description": "Reflections within a circle"
+    }
+  }
+}

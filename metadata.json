@@ -1,0 +1,5 @@
+{
+  "name": "Quran Circles",
+  "description": "A mobile-first full-stack web app for private Quran circles to maintain a connection with the Quran through daily reflections, audio, and shared streaks.",
+  "requestFramePermissions": []
+}
