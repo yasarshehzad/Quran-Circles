@@ -434,17 +434,6 @@ export const AyahCard = ({
                           }"
                         </p>
                       </div>
-                      
-                      <button
-                        onClick={() => {
-                          const text = (v.translations?.find((t: any) => (t.resource_id === translationId || t.id === translationId))?.text || v.translations?.[0]?.text || '').replace(/<[^>]*>?/gm, '');
-                          ttsService.speak(text, languageName);
-                        }}
-                        className="p-3 rounded-xl bg-brand-lime/10 text-brand-lime border border-brand-lime/20 hover:bg-brand-lime hover:text-brand-deep transition-all shadow-lg shadow-brand-lime/5"
-                        title="Read Translation (AI Voice)"
-                      >
-                        <Volume2 size={18} />
-                      </button>
                     </div>
                   </div>
                   {idx < verses.length - 1 && <div className="h-px bg-white/5 w-1/4 mx-auto" />}
@@ -508,25 +497,26 @@ export const AyahCard = ({
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime">Source: {selectedTafsir?.name || 'Tafsir'}</p>
                             <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{selectedTafsir?.language_name} • {surahName} {surahNumber}:{verseRange}</p>
                           </div>
-                          <button
-                            onClick={() => {
-                              const text = (tafsir || '').replace(/<[^>]*>?/gm, '');
-                              ttsService.speak(text, languageName);
-                            }}
-                            className="flex items-center gap-3 px-5 py-2.5 bg-brand-lime/10 border border-brand-lime/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-brand-lime hover:bg-brand-lime hover:text-brand-deep transition-all shadow-lg shadow-brand-lime/10"
-                          >
-                            <Volume2 size={14} />
-                            Listen to Tafsir
-                          </button>
                         </div>
                         
                         <div 
-                          className="prose prose-invert prose-sm md:prose-base max-w-none font-medium text-white/70 leading-relaxed tafsir-content" 
+                          className="prose prose-invert prose-sm md:prose-base max-w-none font-medium text-white/70 leading-relaxed tafsir-content space-y-4 md:space-y-6" 
                           dangerouslySetInnerHTML={{ 
                             __html: tafsir 
-                              ? (tafsir.includes('<p') || tafsir.includes('<div') 
-                                  ? tafsir 
-                                  : tafsir.split('\n').filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join(''))
+                              ? (() => {
+                                  // First normalize any <br> tags to newlines
+                                  let normalized = tafsir.replace(/<br\s*\/?>/gi, '\n');
+                                  
+                                  if (normalized.includes('<p') || normalized.includes('<div')) {
+                                    return normalized;
+                                  } 
+
+                                  // Split by one or more newlines and wrap in <p> tags
+                                  return normalized.split(/\n+/)
+                                    .filter(p => p.trim())
+                                    .map(p => `<p>${p.trim()}</p>`)
+                                    .join('');
+                                })()
                               : '<p className="italic opacity-50">Tafsir not available for this verse.</p>'
                           }} 
                         />

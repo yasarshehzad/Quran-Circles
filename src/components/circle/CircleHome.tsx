@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import { Users, Calendar, Trophy, ArrowRight, MessageSquareQuote, Settings, ArrowLeft, Plus, MessageSquare, Flame, User as UserIcon, RefreshCw, UserCircle, Palette, Check, Clock, Share2 } from 'lucide-react';
+import { Users, Calendar, Trophy, ArrowRight, MessageSquareQuote, Settings, ArrowLeft, Plus, MessageSquare, Flame, User as UserIcon, RefreshCw, UserCircle, Palette, Check, Clock, Share2, BookOpen } from 'lucide-react';
 import { Circle, Reflection, Participant, Bookmark } from '../../types';
 import { AyahCard } from './AyahCard';
 import { StreakCard, ProgressSummary } from './StreakCard';
@@ -44,6 +44,7 @@ interface CircleHomeProps {
   selectedDate: string;
   onDateChange: (date: string) => void;
   onUpdateParticipant: (participantId: string, updates: Partial<Participant>) => void;
+  onAddLocalParticipant?: (name: string) => void;
   onShowProfile: () => void;
   translationFontSize: number;
   setTranslationFontSize: (size: number) => void;
@@ -92,6 +93,7 @@ export const CircleHome = ({
   selectedDate,
   onDateChange,
   onUpdateParticipant,
+  onAddLocalParticipant,
   onShowProfile,
   translationFontSize,
   setTranslationFontSize,
@@ -121,6 +123,13 @@ export const CircleHome = ({
     setCurrentPromptIndex((prev) => (prev + 1) % prompts.length);
   };
   
+  const selectableParticipantIds = React.useMemo(() => {
+    if (!user) return [];
+    return circle.participants
+      .filter(p => p.id === user.uid || p.parentUid === user.uid)
+      .map(p => p.id);
+  }, [user, circle.participants]);
+  
   const activeParticipant = circle.participants.find(p => p.id === activeParticipantId);
   const isOwnProfile = activeParticipantId === user?.uid;
   const isBookmarked = bookmarks.some(b => currentVerses.some(v => v.verse_key === b.ayahKey));
@@ -139,21 +148,38 @@ export const CircleHome = ({
           >
             <ArrowLeft size={28} strokeWidth={2.5} />
           </button>
-          <div className="space-y-3">
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-              <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter text-white">{circle.name}</h2>
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <Badge variant="lime">Code: {circle.inviteCode}</Badge>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              {/* Supertitle for Plan Name */}
+              {circle.planName && (
+                <div className="flex items-center justify-center md:justify-start gap-2 text-brand-lime font-black uppercase tracking-[0.2em] text-[10px] md:text-xs">
+                  <BookOpen size={16} strokeWidth={3} />
+                  <span>Current Plan: {circle.planName}</span>
+                </div>
+              )}
+              <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter text-white">{circle.name}</h2>
+                <div className="flex items-center justify-center md:justify-start gap-2">
+                  <Badge variant="lime">Code: {circle.inviteCode}</Badge>
+                </div>
               </div>
             </div>
+
             <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4 text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em]">
-                <span className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-white/40"><Users size={14} strokeWidth={3} /> {circle.participants.length} members</span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-brand-lime/10 text-brand-lime rounded-xl border border-brand-lime/20"><Trophy size={14} strokeWidth={3} /> {circle.streak.current} Day Streak</span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-white/40 capitalize"><RefreshCw size={12} strokeWidth={3} className="text-brand-lime" /> {circle.participationMode}</span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-white/40"><Clock size={12} strokeWidth={3} className="text-brand-lime" /> {circle.deadlineConfig.time}</span>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/50 border-t border-white/10 pt-5">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-brand-lime/20 text-brand-lime"><Trophy size={14} strokeWidth={3} /></span>
+                  <span className="text-white">{circle.streak.current} Day Streak</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-white/80"><Users size={14} strokeWidth={3} /></span>
+                  <span>{circle.participants.length} Members</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-white/80"><Clock size={14} strokeWidth={3} /></span>
+                  <span>{circle.deadlineConfig.time} Deadline</span>
+                </div>
               </div>
-              <p className="text-white/30 italic text-xs md:text-sm font-medium mt-1">"Building a shared Quran habit, one verse at a time."</p>
             </div>
           </div>
         </div>
@@ -314,11 +340,16 @@ export const CircleHome = ({
               participants={circle.participants} 
               reflections={reflections} 
               date={todayDate}
+              selectableIds={selectableParticipantIds}
               onSelectParticipant={(id) => {
-                // Allow selecting any participant if admin or hybrid mode
-                setActiveParticipantId(id);
+                if (selectableParticipantIds.includes(id)) {
+                  setActiveParticipantId(id);
+                } else {
+                  toast.error("You can only post on behalf of yourself or users you've created.");
+                }
               }}
               activeParticipantId={activeParticipantId}
+              onAddLocalParticipant={(circle.participationMode === 'shared' || circle.participationMode === 'hybrid') ? onAddLocalParticipant : undefined}
             />
           </div>
 

@@ -93,7 +93,11 @@ export default function App() {
   const [currentVerses, setCurrentVerses] = useState<any[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [audio] = useState(new Audio());
+  const [audio] = useState(() => {
+    const a = new Audio();
+    a.preload = "auto";
+    return a;
+  });
   const [audioProgress, setAudioProgress] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const [currentAudioVerseIndex, setCurrentAudioVerseIndex] = useState(0);
@@ -243,7 +247,12 @@ export default function App() {
   useEffect(() => {
     if (circles.length === 0) return;
     
-    const unsubscribes = circles.map(circle => {
+    // Do not create subcollection listeners for circles that are still pending write to the server.
+    // If we do, the server's security rules will evaluates `get(/circles/...)` and fail 
+    // because the circle hasn't sync'd yet, throwing a Permission Denied error that kills the listener.
+    const syncedCircles = circles.filter(c => !c.isPending);
+
+    const unsubscribes = syncedCircles.map(circle => {
       return quranFoundation.user.onPostsUpdate(circle.id, (updatedReflections) => {
         setReflections(prev => {
           // Filter out old reflections for this circle and add new ones
@@ -518,9 +527,11 @@ export default function App() {
     setAudioProgress(0);
   }, [currentVerses]);
 
-  // Audio Logic initialization
+   // Audio Logic initialization
   useEffect(() => {
     audio.preload = "auto";
+    audio.volume = 1;
+    audio.muted = false;
   }, [audio]);
 
   // 1. Effect to handle source loading when verse or reciter changes
@@ -640,11 +651,14 @@ export default function App() {
       audio.pause();
       setIsPlaying(false);
     } else {
-      // If no src or error, the useEffect will handle loading and playing
+      setIsPlaying(true);
+      // Synchronous play to bless the audio element on iOS/Safari
+      const p = audio.play();
+      if (p !== undefined) p.catch(() => {});
+
       if (!audio.src || audio.src === window.location.href || audio.error) {
         setCurrentAudioVerseIndex(0);
       }
-      setIsPlaying(true);
     }
   };
 
@@ -660,6 +674,12 @@ export default function App() {
 
   const handleCreateCircle = async () => {
     if (!user) return;
+    
+    if (!circleForm.name || circleForm.name.trim().length === 0) {
+      toast.error("Please enter a name for your circle.");
+      setCreateStep(1);
+      return;
+    }
     
     if (circleForm.planId === 'custom' && (chapters.length === 0 || juzs.length === 0)) {
       toast.error("Quran data is still loading. Please wait a moment and try again.");
@@ -677,7 +697,9 @@ export default function App() {
       }
     }
 
-    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const inviteCode = Array.from(crypto.getRandomValues(new Uint8Array(6)))
+      .map(b => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[b % 36])
+      .join('');
     
     let verses: string[] = [];
     let planName = '';
@@ -745,7 +767,7 @@ export default function App() {
     try {
       const createdCircle = await quranFoundation.user.createRoom(newCircle);
       setCreatedCircleId(createdCircle.id);
-      setCreateStep(5);
+      setCreateStep(4);
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, 'circles');
     }
@@ -815,6 +837,28 @@ export default function App() {
       await quranFoundation.user.updateParticipant(activeCircle.id, participantId, updates);
     } catch (err) {
       console.error("Update participant failed:", err);
+    }
+  };
+
+  const handleAddLocalParticipant = async (name: string) => {
+    if (!activeCircle || !user || !name.trim()) return;
+    const newParticipant: Participant = {
+      id: Math.random().toString(36).substring(2, 9),
+      name: name.trim(),
+      type: 'lightweight',
+      parentUid: user.uid,
+      avatar: PREDEFINED_AVATARS[0],
+      color: AVATAR_COLORS[0]
+    };
+
+    try {
+      await quranFoundation.user.updateRoom(activeCircle.id, {
+        participants: [...activeCircle.participants, newParticipant]
+      });
+      toast.success("User added successfully!");
+    } catch (err) {
+      console.error("Error adding local member:", err);
+      toast.error("Failed to add user.");
     }
   };
 
@@ -1704,7 +1748,13 @@ export default function App() {
                               <h3 className="font-display font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-tight group-hover:text-brand-lime transition-colors duration-300 leading-tight truncate">{circle.name}</h3>
                               <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[9px] sm:text-[10px] font-bold text-white/40 uppercase tracking-widest">
                                 <span className="flex items-center gap-1.5 bg-white/5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/5"><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={2.5}/> {circle.participants.length}</span>
-                                <span className="flex items-center gap-1.5 bg-white/5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/5 truncate max-w-[150px]"><BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={2.5}/> {QURAN_PLANS.find(p => p.id === circle.planId)?.name || 'Custom'}</span>
+                                <span className="flex flex-1 min-w-0 items-center gap-1.5 bg-white/5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/5">
+                                  <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" strokeWidth={2.5}/> 
+                                  <span className="truncate">
+                                    {circle.planName || QURAN_PLANS.find(p => p.id === circle.planId)?.name || 'Custom Plan'}
+                                    {circle.versesPerDay ? ` (${circle.versesPerDay} v/day)` : ''}
+                                  </span>
+                                </span>
                               </div>
                             </div>
 
@@ -1776,7 +1826,7 @@ export default function App() {
                   </button>
                   <div>
                     <h2 className="text-4xl font-display font-black uppercase tracking-tighter">Create Circle</h2>
-                    <p className="text-[10px] text-brand-lime font-black uppercase tracking-[0.3em]">Step {createStep} of 5</p>
+                    <p className="text-[10px] text-brand-lime font-black uppercase tracking-[0.3em]">Step {createStep} of 4</p>
                   </div>
                 </div>
 
@@ -1784,7 +1834,7 @@ export default function App() {
                 <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${(createStep / 5) * 100}%` }}
+                    animate={{ width: `${(createStep / 4) * 100}%` }}
                     className="h-full bg-brand-lime lime-glow"
                   />
                 </div>
@@ -2102,92 +2152,12 @@ export default function App() {
 
                       <div className="flex gap-4">
                         <Button variant="outline" size="lg" className="flex-1 py-5" onClick={() => setCreateStep(2)}>Back</Button>
-                        <Button size="lg" className="flex-[2] py-5 text-xl" onClick={() => setCreateStep(4)}>Next Step</Button>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {createStep === 4 && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
-                      <div className="space-y-4">
-                        <h3 className="text-2xl font-display font-black uppercase tracking-tight">Deadline & Timezone</h3>
-                        <p className="text-white/40 font-medium">When should the daily reflection be completed by?</p>
-                      </div>
-
-                      <div className="space-y-10">
-                        <div className="grid sm:grid-cols-2 gap-6">
-                          <button
-                            onClick={() => setCircleForm({...circleForm, deadlineType: 'local'})}
-                            className={cn(
-                              "text-left p-8 rounded-[2rem] border transition-all space-y-4",
-                              circleForm.deadlineType === 'local' 
-                                ? "bg-brand-lime text-brand-deep lime-glow border-brand-lime" 
-                                : "bg-white/5 border-white/10 hover:border-white/20"
-                            )}
-                          >
-                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center", circleForm.deadlineType === 'local' ? "bg-brand-deep text-brand-lime" : "bg-white/5 text-white/40")}>
-                              <Globe size={28} strokeWidth={2.5} />
-                            </div>
-                            <div className="space-y-2">
-                              <p className="font-display font-black text-2xl uppercase tracking-tight">Local Time</p>
-                              <p className={cn("text-sm font-medium leading-relaxed", circleForm.deadlineType === 'local' ? "text-brand-deep/60" : "text-white/40")}>Deadline is based on each member's own timezone. Best for global circles.</p>
-                            </div>
-                          </button>
-
-                          <button
-                            onClick={() => setCircleForm({...circleForm, deadlineType: 'shared'})}
-                            className={cn(
-                              "text-left p-8 rounded-[2rem] border transition-all space-y-4",
-                              circleForm.deadlineType === 'shared' 
-                                ? "bg-brand-lime text-brand-deep lime-glow border-brand-lime" 
-                                : "bg-white/5 border-white/10 hover:border-white/20"
-                            )}
-                          >
-                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center", circleForm.deadlineType === 'shared' ? "bg-brand-deep text-brand-lime" : "bg-white/5 text-white/40")}>
-                              <Clock size={28} strokeWidth={2.5} />
-                            </div>
-                            <div className="space-y-2">
-                              <p className="font-display font-black text-2xl uppercase tracking-tight">Shared Time</p>
-                              <p className={cn("text-sm font-medium leading-relaxed", circleForm.deadlineType === 'shared' ? "text-brand-deep/60" : "text-white/40")}>One fixed deadline for everyone. Best for local study circles.</p>
-                            </div>
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-6">
-                          <div className="space-y-3">
-                            <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] ml-6">Deadline Time</label>
-                            <input 
-                              type="time" 
-                              value={circleForm.deadlineTime}
-                              onChange={(e) => setCircleForm({...circleForm, deadlineTime: e.target.value})}
-                              className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-[2rem] outline-none font-bold focus:border-brand-lime focus:ring-4 focus:ring-brand-lime/10 transition-all text-white"
-                            />
-                          </div>
-                          <div className="space-y-3">
-                            <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] ml-6">Timezone</label>
-                            <select 
-                              value={circleForm.timezone}
-                              onChange={(e) => setCircleForm({...circleForm, timezone: e.target.value})}
-                              className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-[2rem] text-sm outline-none font-bold focus:border-brand-lime focus:ring-4 focus:ring-brand-lime/10 transition-all appearance-none text-white"
-                            >
-                              <option value={Intl.DateTimeFormat().resolvedOptions().timeZone}>My Timezone</option>
-                              <option value="UTC">UTC</option>
-                              <option value="Europe/London">London</option>
-                              <option value="America/New_York">New York</option>
-                              <option value="Asia/Dubai">Dubai</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-4">
-                        <Button variant="outline" size="lg" className="flex-1 py-5" onClick={() => setCreateStep(3)}>Back</Button>
                         <Button size="lg" className="flex-[2] py-5 text-xl" onClick={handleCreateCircle}>Create Circle</Button>
                       </div>
                     </motion.div>
                   )}
 
-                  {createStep === 5 && createdCircleId && (
+                  {createStep === 4 && createdCircleId && (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
                       <div className="text-center space-y-4">
                         <div className="w-24 h-24 bg-brand-lime text-brand-deep rounded-[2rem] flex items-center justify-center mx-auto lime-glow mb-8">
@@ -2490,6 +2460,7 @@ export default function App() {
                   selectedDate={selectedDate}
                   onDateChange={setSelectedDate}
                   onUpdateParticipant={handleUpdateParticipant}
+                  onAddLocalParticipant={handleAddLocalParticipant}
                   onShowProfile={() => setShowProfileModal(true)}
                   translationFontSize={translationFontSize}
                   setTranslationFontSize={setTranslationFontSize}
@@ -2503,6 +2474,9 @@ export default function App() {
                     if (currentAudioVerseIndex === index) {
                       toggleAudio();
                     } else {
+                      const p = audio.play();
+                      if (p !== undefined) p.catch(() => {});
+                      
                       setCurrentAudioVerseIndex(index);
                       setIsPlaying(true);
                     }
@@ -2531,17 +2505,71 @@ export default function App() {
                       defaultValue={activeCircle.name} 
                       onBlur={(e: any) => updateCircleSettings({ name: e.target.value })}
                     />
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] ml-2">Participation Mode</label>
-                      <select 
-                        className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-2xl text-base text-white focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all appearance-none"
-                        defaultValue={activeCircle.participationMode}
-                        onChange={(e) => updateCircleSettings({ participationMode: e.target.value as any })}
-                      >
-                        <option value="shared">Shared Device</option>
-                        <option value="individual">Individual</option>
-                        <option value="hybrid">Hybrid</option>
-                      </select>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] ml-2">Participation Mode</label>
+                        <select 
+                          className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-2xl text-base text-white focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all appearance-none"
+                          defaultValue={activeCircle.participationMode}
+                          onChange={(e) => updateCircleSettings({ participationMode: e.target.value as any })}
+                        >
+                          <option value="shared">Shared Device</option>
+                          <option value="individual">Individual</option>
+                          <option value="hybrid">Hybrid</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] ml-2">Deadline Type (Daily)</label>
+                        <select 
+                          className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-2xl text-base text-white focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all appearance-none"
+                          defaultValue={activeCircle.deadlineConfig?.type || 'local'}
+                          onChange={(e) => updateCircleSettings({ 
+                            deadlineConfig: { 
+                              ...(activeCircle.deadlineConfig || { time: '23:59', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }), 
+                              type: e.target.value as any 
+                            } 
+                          })}
+                        >
+                          <option value="local">Local Time</option>
+                          <option value="shared">Shared Timezone</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] ml-2">Deadline Time</label>
+                        <input 
+                          type="time" 
+                          defaultValue={activeCircle.deadlineConfig?.time || '23:59'}
+                          className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-2xl text-base text-white focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all"
+                          onBlur={(e) => updateCircleSettings({ 
+                            deadlineConfig: { 
+                              ...(activeCircle.deadlineConfig || { type: 'local', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }), 
+                              time: e.target.value 
+                            } 
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] ml-2">Circle Timezone</label>
+                        <select 
+                          className="w-full p-5 bg-brand-deep/50 border border-white/10 rounded-2xl text-base text-white focus:ring-2 focus:ring-brand-lime/20 outline-none transition-all appearance-none"
+                          defaultValue={activeCircle.deadlineConfig?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone}
+                          onChange={(e) => updateCircleSettings({ 
+                            deadlineConfig: { 
+                              ...(activeCircle.deadlineConfig || { type: 'local', time: '23:59' }), 
+                              timezone: e.target.value 
+                            } 
+                          })}
+                        >
+                          <option value={Intl.DateTimeFormat().resolvedOptions().timeZone}>My Timezone</option>
+                          <option value="UTC">UTC</option>
+                          <option value="Europe/London">London</option>
+                          <option value="America/New_York">New York</option>
+                          <option value="Asia/Dubai">Dubai</option>
+                        </select>
+                      </div>
                     </div>
                   </Card>
                 </section>

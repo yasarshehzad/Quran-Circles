@@ -39,6 +39,7 @@ export type DeadlineType = 'local' | 'shared';
 
 export interface Circle {
   id: string;
+  isPending?: boolean;
   name: string;
   inviteCode: string;
   adminUid: string;

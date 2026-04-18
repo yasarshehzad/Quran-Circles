@@ -59,17 +59,13 @@ service cloud.firestore {
     }
 
     function isValidCircle(data) {
-      return data.keys().hasAll(['name', 'inviteCode', 'adminUid', 'members', 'participants', 'planId', 'startDate', 'participationMode', 'deadlineConfig', 'streak']) &&
+      return data.keys().hasAll(['name', 'inviteCode', 'adminUid', 'members', 'participants', 'startDate']) &&
              data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.inviteCode is string && data.inviteCode.size() == 6 &&
+             data.inviteCode is string && data.inviteCode.size() > 0 &&
              data.adminUid is string &&
              data.members is list &&
              data.participants is list &&
-             data.planId is string &&
-             data.startDate is string &&
-             data.participationMode is string &&
-             data.deadlineConfig is map &&
-             data.streak is map;
+             data.startDate is string;
     }
 
     function isValidReflection(data) {

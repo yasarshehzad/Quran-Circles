@@ -65,9 +65,14 @@ export const StreakCard: React.FC<StreakCardProps> = ({ circle, reflections }) =
                   {isDone ? <CheckCircle2 size={16} strokeWidth={4} /> : <Hourglass size={14} strokeWidth={3} />}
                 </div>
               </div>
-              <div className="space-y-1">
-                <p className={cn("font-black uppercase tracking-widest text-lg", isDone ? "text-white" : "text-white/60")}>{p.name}</p>
-                <Badge variant="outline" className={cn("text-[9px] border-white/10", isDone ? "text-brand-lime" : "text-white/40")}>
+              <div className="space-y-1 w-full px-1">
+                <p 
+                  className={cn("font-black tracking-wide text-sm sm:text-base break-words w-full line-clamp-2 leading-tight", isDone ? "text-white" : "text-white/60")}
+                  title={p.name}
+                >
+                  {p.name}
+                </p>
+                <Badge variant="outline" className={cn("text-[9px] border-white/10 mt-1 inline-block", isDone ? "text-brand-lime" : "text-white/40")}>
                   {p.type === 'auth' ? 'Member' : 'Local'}
                 </Badge>
               </div>
@@ -108,6 +113,8 @@ interface ProgressSummaryProps {
   date: string;
   onSelectParticipant?: (id: string) => void;
   activeParticipantId?: string | null;
+  selectableIds?: string[];
+  onAddLocalParticipant?: (name: string) => void;
 }
 
 export const ProgressSummary: React.FC<ProgressSummaryProps> = ({ 
@@ -115,8 +122,11 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
   reflections, 
   date,
   onSelectParticipant,
-  activeParticipantId
+  activeParticipantId,
+  selectableIds,
+  onAddLocalParticipant
 }) => {
+  const [newMemberName, setNewMemberName] = React.useState('');
   const progress = getDayProgress(participants, reflections, date);
 
   return (
@@ -138,14 +148,15 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
         {participants.map(p => {
           const isDone = progress.completed.some(cp => cp.id === p.id);
           const isActive = activeParticipantId === p.id;
+          const isSelectable = onSelectParticipant && (!selectableIds || selectableIds.includes(p.id));
           
           return (
             <div 
               key={p.id}
-              onClick={() => onSelectParticipant?.(p.id)}
+              onClick={() => isSelectable && onSelectParticipant(p.id)}
               className={cn(
-                "flex items-center justify-between px-8 py-6 rounded-[2rem] border-2 transition-all duration-500 group relative overflow-hidden",
-                onSelectParticipant ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : "",
+                "flex items-center justify-between px-5 py-5 sm:px-8 sm:py-6 rounded-[2rem] border-2 transition-all duration-500 group relative overflow-hidden",
+                isSelectable ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : "",
                 isActive 
                   ? "bg-brand-lime/20 border-brand-lime lime-glow" 
                   : isDone 
@@ -157,48 +168,76 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                 <div className="absolute top-0 right-0 w-24 h-24 bg-brand-lime/5 rounded-full -mr-12 -mt-12 blur-2xl" />
               )}
               
-              <div className="flex items-center gap-6 relative z-10">
+              <div className="flex items-center gap-4 sm:gap-5 relative z-10 flex-1 min-w-0 pr-2">
                 <div 
                   className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl border-2 transition-all duration-500 shadow-lg",
+                    "w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-[0.8rem] flex items-center justify-center font-black text-sm sm:text-base border-2 transition-all duration-500 shadow-lg",
                     isActive ? "border-brand-lime text-brand-deep bg-brand-lime" : isDone ? "border-brand-lime text-brand-deep" : "border-white/10 text-white/40"
                   )}
                   style={{ backgroundColor: (isActive || isDone) ? (p.color || '#A3E635') : 'transparent' }}
                 >
                   {p.avatar || p.name[0]}
                 </div>
-                <div className="space-y-1">
-                  <span className={cn("text-lg font-black uppercase tracking-widest", (isDone || isActive) ? "text-white" : "text-white/40")}>{p.name}</span>
-                  <div className="flex items-center gap-2">
-                    <p className="text-[10px] font-bold uppercase tracking-tighter opacity-60">
-                      {isActive ? 'Writing for them...' : isDone ? 'Reflection Posted' : 'Waiting on them...'}
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <span 
+                    className={cn(
+                      "text-sm sm:text-base font-bold tracking-tight block line-clamp-2 leading-tight break-words", 
+                      (isDone || isActive) ? "text-white" : "text-white/60"
+                    )} 
+                    title={p.name}
+                  >
+                    {p.name}
+                  </span>
+                  <div className="flex items-center gap-2 pt-1">
+                    <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider opacity-60 truncate">
+                      {isActive ? "Today's reader" : isDone ? 'Reflection Posted' : 'Waiting'}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-4 relative z-10">
-                {isActive ? (
-                  <div className="w-10 h-10 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center shadow-lg shadow-brand-lime/40">
-                    <Plus size={24} strokeWidth={3} />
-                  </div>
-                ) : isDone ? (
+              <div className="flex items-center gap-3 relative z-10 shrink-0">
+                {isActive ? null : isDone ? (
                   <div className="flex flex-col items-end">
-                    <div className="w-10 h-10 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center shadow-lg shadow-brand-lime/20">
-                      <CheckCircle2 size={24} strokeWidth={3} />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center shadow-lg shadow-brand-lime/20">
+                      <CheckCircle2 size={20} strokeWidth={3} className="sm:w-6 sm:h-6" />
                     </div>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-end">
-                    <div className="w-10 h-10 bg-white/5 text-white/20 rounded-full flex items-center justify-center border border-white/10">
-                      <Hourglass size={20} strokeWidth={3} className="animate-pulse" />
-                    </div>
-                  </div>
-                )}
+                ) : null}
               </div>
             </div>
           );
         })}
+
+        {onAddLocalParticipant && (
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (newMemberName.trim()) {
+                onAddLocalParticipant(newMemberName);
+                setNewMemberName('');
+              }
+            }}
+            className="flex items-center gap-2 p-1.5 sm:p-2 bg-black/20 rounded-full border border-white/10 focus-within:border-brand-lime/50 focus-within:ring-2 focus-within:ring-brand-lime/20 transition-all duration-300"
+          >
+            <div className="flex-1 min-w-0 pl-4 sm:pl-5">
+              <input 
+                type="text" 
+                value={newMemberName}
+                onChange={(e) => setNewMemberName(e.target.value)}
+                placeholder="Type member's name..." 
+                className="w-full bg-transparent outline-none py-2 text-sm sm:text-base font-bold text-white placeholder:text-white/30"
+              />
+            </div>
+            <button 
+              type="submit"
+              disabled={!newMemberName.trim()}
+              className="h-9 sm:h-10 px-4 sm:px-6 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center shrink-0 transition-all disabled:opacity-50 disabled:bg-white/10 disabled:text-white font-black text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95"
+            >
+              Add
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

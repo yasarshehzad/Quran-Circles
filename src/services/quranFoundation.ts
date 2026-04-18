@@ -259,46 +259,25 @@ export const contentApi = {
         throw new Error("No audio file found in API response");
       }
 
-      let url = audioFile.url;
-      
-      // Remove any whitespace
-      url = url.trim();
+      let url = audioFile.url.trim();
 
-      // 1. Handle protocol-relative and relative URLs
-      if (url.startsWith('//')) {
-        url = `https:${url}`;
-      } else if (!url.startsWith('http')) {
-        // Check if the URL string itself contains a common host but missed the protocol
-        const commonHosts = ['quran.com', 'quranicaudio.com', 'everyayah.com', 'islamicnetwork.com'];
-        const hasHost = commonHosts.some(host => url.includes(host));
-
-        if (hasHost) {
-          // If it starts with a host but no protocol, prefix it
-          url = `https://${url.startsWith('/') ? url.slice(1) : url}`;
-        } else {
-          // Remove leading slash for safe concatenation
-          const cleanPath = url.startsWith('/') ? url.slice(1) : url;
-          
-          // Dynamic prefixing based on known structures
-          if (cleanPath.startsWith('quran/')) {
-            // New v4 structure uses mirrors.quran.com/quran/...
-            url = `https://mirrors.quran.com/${cleanPath}`;
-          } else if (cleanPath.toLowerCase().includes('alafasy') && cleanPath.endsWith('.mp3')) {
-            // High-reliability override for Alafasy ayah-by-ayah if it matches the standard 6-digit pattern
-            const match = cleanPath.match(/(\d{6})\.mp3$/);
-            if (match) {
-              url = `https://everyayah.com/data/Alafasy_128kbps/${match[1]}.mp3`;
-            } else {
-              url = `https://mirrors.quran.com/${cleanPath}`;
-            }
-          } else {
-            // mirrors.quran.com is generally more reliable for relative ayah paths than audio.quran.com
-            url = `https://mirrors.quran.com/${cleanPath}`;
-          }
+      // If it is a relative path (e.g., Alafasy/mp3/001001.mp3)
+      if (!url.startsWith('http') && !url.startsWith('//')) {
+        const cleanPath = url.startsWith('/') ? url.slice(1) : url;
+        // Prefix with verses.quran.com for official paths
+        url = `https://verses.quran.com/${cleanPath}`;
+      } else {
+        // If it starts with //
+        if (url.startsWith('//')) {
+          url = `https:${url}`;
+        }
+        // Force replace audio.quran.com with verses.quran.com as it resolves CORS issues
+        if (url.includes('audio.quran.com')) {
+          url = url.replace('audio.quran.com', 'verses.quran.com');
         }
       }
-      
-      // 2. FORCE HTTPS - Browsers served over HTTPS will block or fail to play non-HTTPS audio
+
+      // Force HTTPS
       if (url.startsWith('http:')) {
         url = url.replace('http:', 'https:');
       }
@@ -467,8 +446,12 @@ export const userApi = {
       const user = auth.currentUser;
       if (!user) return () => {};
       const q = query(collection(db, 'circles'), where('members', 'array-contains', user.uid));
-      return onSnapshot(q, (snapshot) => {
-        callback(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Circle)));
+      return onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
+        callback(snapshot.docs.map(d => ({ 
+          id: d.id, 
+          ...d.data(),
+          isPending: d.metadata.hasPendingWrites
+        } as Circle)));
       });
     }
     // Real API would likely use WebSockets or polling
