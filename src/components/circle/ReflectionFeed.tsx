@@ -45,11 +45,11 @@ export const ReflectionFeed = ({ reflections, participants, onReact, currentPart
           {sortedDates.map((date) => (
             <div key={date} className="space-y-8">
               <div className="flex items-center gap-4 px-4">
-                <div className="h-px flex-1 bg-white/5" />
+                <div className="border-t border-white/10 flex-1" />
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">
                   {format(parseISO(date), 'MMMM do, yyyy')}
                 </span>
-                <div className="h-px flex-1 bg-white/5" />
+                <div className="border-t border-white/10 flex-1" />
               </div>
 
               {Object.entries(groupedReflections[date]).map(([verse, verseReflections]) => (
@@ -106,14 +106,14 @@ export const ReflectionFeed = ({ reflections, participants, onReact, currentPart
                                     key={emoji}
                                     onClick={() => onReact(r.id, emoji)}
                                     className={cn(
-                                      "px-5 py-2.5 rounded-2xl text-base flex items-center gap-3 transition-all duration-300 border",
+                                      "group px-5 py-2.5 rounded-2xl text-base flex items-center gap-3 transition-all duration-300 border",
                                       hasReacted 
                                         ? 'bg-brand-lime border-brand-lime text-brand-deep lime-glow scale-105' 
-                                        : 'bg-white/5 border-white/10 text-white/40 hover:border-brand-lime/50 hover:text-brand-lime hover:bg-white/10'
+                                        : 'bg-white/5 border-white/10 hover:border-brand-lime/30 hover:bg-white/10'
                                     )}
                                   >
-                                    <span className="text-xl">{emoji}</span>
-                                    {reactors.length > 0 && <span className="font-black">{reactors.length}</span>}
+                                    <span className={cn("text-xl transition-all duration-300", !hasReacted && "opacity-90 group-hover:opacity-100 group-hover:scale-110")}>{emoji}</span>
+                                    {reactors.length > 0 && <span className={cn("font-black", !hasReacted && "text-white/40 group-hover:text-white/80")}>{reactors.length}</span>}
                                   </button>
                                 );
                               })}

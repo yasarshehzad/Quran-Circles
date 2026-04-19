@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import { Users, Calendar, Trophy, ArrowRight, MessageSquareQuote, Settings, ArrowLeft, Plus, MessageSquare, Flame, User as UserIcon, RefreshCw, UserCircle, Palette, Check, Clock, Share2, BookOpen } from 'lucide-react';
+import { Users, Calendar, Trophy, ArrowRight, MessageSquareQuote, Settings, ArrowLeft, Plus, MessageSquare, Flame, User as UserIcon, RefreshCw, UserCircle, Palette, Check, Clock, Share2, BookOpen, X, Copy } from 'lucide-react';
 import { Circle, Reflection, Participant, Bookmark } from '../../types';
+import { QURAN_PLANS } from '../../constants';
 import { AyahCard } from './AyahCard';
 import { StreakCard, ProgressSummary } from './StreakCard';
 import { Button, Card, Badge } from '../ui/Base';
@@ -105,6 +106,7 @@ export const CircleHome = ({
   const [activeTab, setActiveTab] = React.useState<'reflections' | 'calendar'>('reflections');
   const [currentPromptIndex, setCurrentPromptIndex] = React.useState(0);
   const [calendarMonthOffset, setCalendarMonthOffset] = React.useState(0);
+  const [isInviteModalOpen, setIsInviteModalOpen] = React.useState(false);
 
   const versesPerDay = circle.versesPerDay || 1;
   const isPlural = versesPerDay > 1;
@@ -188,10 +190,7 @@ export const CircleHome = ({
             variant="outline" 
             size="lg" 
             className="flex-1 md:flex-none py-4 md:py-6" 
-            onClick={() => {
-              navigator.clipboard.writeText(circle.inviteCode);
-              toast.success('Invite code copied to clipboard!');
-            }} 
+            onClick={() => setIsInviteModalOpen(true)} 
             icon={Share2}
           >
             Invite
@@ -439,7 +438,8 @@ export const CircleHome = ({
                       // Check if this date is within the circle's plan
                       const start = new Date(circle.startDate);
                       start.setHours(0,0,0,0);
-                      const planDays = Math.ceil((circle.verses?.length || 0) / (circle.versesPerDay || 1));
+                      const planSize = circle.verses?.length || QURAN_PLANS.find(p => p.id === circle.planId)?.verses.length || 0;
+                      const planDays = Math.ceil(planSize / (circle.versesPerDay || 1));
                       const end = new Date(start);
                       end.setDate(end.getDate() + planDays);
                       
@@ -500,6 +500,69 @@ export const CircleHome = ({
           </div>
         </section>
       </div>
+
+      {/* Invite Modal */}
+      <AnimatePresence>
+        {isInviteModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-deep/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-brand-deep border border-white/10 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl shadow-brand-lime/5 relative"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-lime to-transparent opacity-50" />
+              
+              <div className="p-6 md:p-8 space-y-8">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-display font-black uppercase tracking-tight">Invite to Circle</h3>
+                    <p className="text-white/40 text-sm font-medium leading-relaxed">
+                      Share this incredibly powerful invite code with friends or family. They can enter it on their dashboard to instantly join your circle.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setIsInviteModalOpen(false)}
+                    className="p-2 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center gap-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-lime/80">Your Unique Code</p>
+                  <p className="font-mono text-4xl md:text-5xl font-black text-white tracking-[0.2em]">{circle.inviteCode}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Button 
+                    className="w-full py-4 text-sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(circle.inviteCode);
+                      toast.success('Invite code copied to clipboard!');
+                    }}
+                    icon={Copy}
+                  >
+                    Copy Code
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="w-full py-4 text-sm"
+                    onClick={() => setIsInviteModalOpen(false)}
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

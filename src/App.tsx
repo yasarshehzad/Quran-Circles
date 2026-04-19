@@ -54,7 +54,9 @@ import {
   Quote,
   Search,
   Menu,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { format, parseISO, differenceInDays, startOfDay, subDays } from 'date-fns';
 
@@ -109,6 +111,19 @@ export default function App() {
   const [chapters, setChapters] = useState<any[]>([]);
   const [juzs, setJuzs] = useState<any[]>([]);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [isLightMode, setIsLightMode] = useState(() => {
+    return localStorage.getItem('theme') === 'light';
+  });
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.body.classList.add('light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.body.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    }
+  }, [isLightMode]);
 
   // Quran Settings State
   const [translationId, setTranslationId] = useState(131); // Default: Clear Quran
@@ -873,14 +888,15 @@ export default function App() {
 
   const checkAndUpdateStreak = async (circle: Circle) => {
     const today = format(new Date(), 'yyyy-MM-dd');
-    const progress = getDayProgress(circle.participants, reflections, today);
+    const circleReflections = reflections.filter(r => r.circleId === circle.id);
+    const progress = getDayProgress(circle.participants, circleReflections, today);
 
     // We check if it's complete. Note: reflections might be one behind if called immediately after createPost
     // But since we use onSnapshot, it will trigger again.
     // However, for immediate feedback, we can check if (progress.completed.length + 1) === circle.participants.length
     if (progress.isComplete && circle.streak.lastDate !== today) {
       try {
-        const newStreak = calculateStreak(circle, reflections);
+        const newStreak = calculateStreak(circle, circleReflections);
         await quranFoundation.user.updateRoom(circle.id, {
           streak: {
             current: newStreak,
@@ -997,9 +1013,15 @@ export default function App() {
               <div className="w-10 h-10 bg-brand-lime text-brand-deep rounded-xl flex items-center justify-center lime-glow">
                 <BookOpen size={20} strokeWidth={2.5} />
               </div>
-              <h1 className="font-display font-black text-lg tracking-tighter uppercase">Reflection</h1>
+              <h1 className="font-display font-black text-lg tracking-tighter uppercase">Quran</h1>
             </div>
             <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsLightMode(!isLightMode)} 
+                className="text-white/40 p-2"
+              >
+                {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
               <button onClick={() => setShowQFInfo(true)} className="text-white/40 p-2"><Info size={20} /></button>
               {view === 'circle' && activeCircle && (
                 <button onClick={() => setView('circle-settings')} className="text-white/40 p-2"><Settings size={20} /></button>
@@ -1035,7 +1057,7 @@ export default function App() {
                 </div>
                 {isSidebarOpen && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-                    <h1 className="font-display font-black text-2xl tracking-tighter leading-none">REFLECTION</h1>
+                    <h1 className="font-display font-black text-2xl tracking-tighter leading-none">QURAN</h1>
                     <p className="text-[10px] font-black text-brand-lime uppercase tracking-[0.3em] mt-1">Circles</p>
                   </motion.div>
                 )}
@@ -1106,12 +1128,25 @@ export default function App() {
                   </div>
                 )}
               </div>
-              <button onClick={logout} className={cn(
-                "w-full flex items-center gap-3 rounded-2xl font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-300",
-                isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
-              )} title="Sign Out">
-                <LogOut size={20} /> {isSidebarOpen && "Sign Out"}
-              </button>
+              <div className="space-y-2">
+                <button 
+                  onClick={() => setIsLightMode(!isLightMode)} 
+                  className={cn(
+                    "w-full flex items-center gap-3 rounded-2xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300",
+                    isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
+                  )} 
+                  title={isLightMode ? "Dark Mode" : "Light Mode"}
+                >
+                  {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
+                  {isSidebarOpen && (isLightMode ? "Dark Mode" : "Light Mode")}
+                </button>
+                <button onClick={logout} className={cn(
+                  "w-full flex items-center gap-3 rounded-2xl font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-300",
+                  isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
+                )} title="Sign Out">
+                  <LogOut size={20} /> {isSidebarOpen && "Sign Out"}
+                </button>
+              </div>
             </div>
           </aside>
         )}
@@ -1120,7 +1155,15 @@ export default function App() {
           <AnimatePresence mode="wait">
             
             {view === 'landing' && (
-              <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-[85vh] flex flex-col items-center justify-center py-12">
+              <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-[85vh] flex flex-col items-center justify-center py-12 relative">
+                
+                <button 
+                  onClick={() => setIsLightMode(!isLightMode)} 
+                  className="absolute top-0 right-4 sm:right-8 p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all backdrop-blur-md border border-white/10 z-50"
+                >
+                  {isLightMode ? <Moon size={24} /> : <Sun size={24} />}
+                </button>
+
                 <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                   <div className="space-y-12 text-center lg:text-left">
                     <div className="space-y-6">
@@ -1172,12 +1215,11 @@ export default function App() {
                     </form>
 
                     <div className="relative py-4">
-                      <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-                      <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em] font-black text-white/20 bg-brand-forest/20 backdrop-blur-xl px-6 py-1 rounded-full border border-white/5">Or continue with</div>
+                      <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em] font-black text-white/40 bg-white/5 backdrop-blur-xl px-6 py-1 rounded-full w-max mx-auto">OR</div>
                     </div>
 
                     <Button variant="secondary" onClick={loginWithGoogle} className="w-full py-5">
-                      Continue with Google
+                      {isRegistering ? 'Continue with Google' : 'Sign in with Google'}
                     </Button>
 
                     <p className="text-center text-base font-bold text-white/40">
@@ -1523,7 +1565,7 @@ export default function App() {
                           </div>
                         </GlassCard>
                       </div>
-                      <div className="w-20 h-20 rounded-full bg-brand-deep border-4 border-brand-lime flex items-center justify-center text-2xl font-display font-black text-brand-lime shadow-[0_0_30px_rgba(190,255,0,0.3)] hidden md:flex">
+                      <div className="flex w-20 h-20 rounded-full bg-brand-deep border-4 border-brand-lime items-center justify-center text-2xl font-display font-black text-brand-lime shadow-2xl shadow-brand-lime/30 order-first md:order-none shrink-0 -mb-6 md:mb-0 z-20">
                         {s.step}
                       </div>
                       <div className="flex-1 hidden md:block" />
@@ -2430,7 +2472,7 @@ export default function App() {
                 <CircleHome 
                   circle={activeCircle}
                   currentVerses={currentVerses}
-                  reflections={reflections}
+                  reflections={reflections.filter(r => r.circleId === activeCircle.id)}
                   bookmarks={bookmarks}
                   isPlaying={isPlaying}
                   onToggleAudio={toggleAudio}

@@ -436,13 +436,13 @@ export const AyahCard = ({
                       </div>
                     </div>
                   </div>
-                  {idx < verses.length - 1 && <div className="h-px bg-white/5 w-1/4 mx-auto" />}
+                  {idx < verses.length - 1 && <div className="border-t border-white/10 w-1/4 mx-auto" />}
                 </div>
               );
             })}
           </div>
           
-          <div className="h-px bg-white/5 w-full" />
+          <div className="border-t border-white/10 w-full" />
           
           <div className="space-y-8">
             <div className="flex flex-wrap items-center gap-6">

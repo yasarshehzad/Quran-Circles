@@ -452,6 +452,8 @@ export const userApi = {
           ...d.data(),
           isPending: d.metadata.hasPendingWrites
         } as Circle)));
+      }, (error) => {
+        console.error("Firestore error onRoomsUpdate:", error.message);
       });
     }
     // Real API would likely use WebSockets or polling
@@ -467,6 +469,8 @@ export const userApi = {
         } else {
           callback(null);
         }
+      }, (error) => {
+        console.error("Firestore error onRoomUpdate:", error.message);
       });
     }
     return () => {};
@@ -534,6 +538,8 @@ export const userApi = {
       );
       return onSnapshot(q, (snapshot) => {
         callback(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Reflection)));
+      }, (error) => {
+        console.error("Firestore error onPostsUpdate:", error.message);
       });
     }
     return () => {};
@@ -593,6 +599,8 @@ export const userApi = {
       const q = query(collection(db, 'bookmarks'), where('uid', '==', user.uid));
       return onSnapshot(q, (snapshot) => {
         callback(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Bookmark)));
+      }, (error) => {
+        console.error("Firestore error onBookmarksUpdate:", error.message);
       });
     }
     return () => {};

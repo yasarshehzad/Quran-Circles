@@ -10,11 +10,11 @@
   --color-brand-deep: #062C22;
   --color-brand-forest: #0A3D31;
   --color-brand-lime: #D9F99D;
-  --color-brand-accent: #10B981;
+  --color-brand-accent: #047857;
   
-  --color-paper-bg: #F5F5F0;
-  --color-paper-ink: #2C2C24;
-  --color-paper-accent: #5A5A40;
+  --color-paper-bg: #EAEFEC;
+  --color-paper-ink: #1B2B26;
+  --color-paper-accent: #4A635B;
 
   --radius-3xl: 2rem;
   --radius-4xl: 3rem;
@@ -30,7 +30,7 @@
     opacity: 0.98;
   }
 
-  body.paper-mode {
+  body.light {
     @apply bg-paper-bg text-paper-ink;
     background-image: none;
   }
@@ -44,20 +44,24 @@
   @apply bg-brand-forest/40 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden;
 }
 
-.paper-mode .bento-card {
-  @apply bg-white border-paper-accent/10 shadow-sm;
+.light .bento-card {
+  @apply bg-white border-paper-accent/10 shadow-sm text-paper-ink;
 }
 
 .bento-card:hover {
   @apply bg-brand-forest/60 border-white/10;
 }
 
-.paper-mode .bento-card:hover {
+.light .bento-card:hover {
   @apply bg-white border-paper-accent/20 shadow-md;
 }
 
 .lime-glow {
   box-shadow: 0 0 40px -10px rgba(217, 249, 157, 0.3);
+}
+
+.light .lime-glow {
+  box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.3);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -80,3 +84,83 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-white/10 rounded-full hover:bg-brand-lime/50 transition-colors;
 }
+
+.light ::-webkit-scrollbar-thumb {
+  @apply bg-black/10 hover:bg-brand-accent/50;
+}
+
+/* --- LIGHT MODE COMPREHENSIVE OVERRIDES --- */
+/* Base Text */
+.light .text-white { color: var(--color-paper-ink) !important; }
+.light .text-white\/5 { color: rgba(27, 43, 38, 0.2) !important; }
+.light .text-white\/10 { color: rgba(27, 43, 38, 0.4) !important; }
+.light .text-white\/20 { color: rgba(27, 43, 38, 0.5) !important; }
+.light .text-white\/30 { color: rgba(27, 43, 38, 0.6) !important; }
+.light .text-white\/40 { color: rgba(27, 43, 38, 0.7) !important; }
+.light .text-white\/50,
+.light .text-white\/60,
+.light .text-white\/70,
+.light .text-white\/80,
+.light .text-white\/90,
+.light .text-white\/95 { color: var(--color-paper-accent) !important; }
+.light .placeholder\:text-white\/20::placeholder,
+.light .placeholder\:text-white\/30::placeholder,
+.light .placeholder\:text-white\/40::placeholder { color: rgba(27, 43, 38, 0.4) !important; }
+
+/* Backgrounds - Brand Deep mappings */
+.light .bg-brand-deep,
+.light .bg-brand-deep\/90,
+.light .bg-brand-deep\/80 { background-color: var(--color-paper-bg) !important; }
+
+.light .bg-brand-deep\/50,
+.light .bg-brand-deep\/40,
+.light .bg-brand-deep\/30,
+.light .bg-brand-deep\/20 { background-color: rgba(255, 255, 255, 0.6) !important; }
+
+/* Backgrounds - Brand Forest mappings */
+.light .bg-brand-forest,
+.light .bg-brand-forest\/30,
+.light .bg-brand-forest\/40,
+.light .bg-brand-forest\/60 { background-color: #FFFFFF !important; }
+
+/* Transparency Overlays (Using brand-forest tint instead of black to avoid dirty grey) */
+.light .bg-white\/5 { background-color: rgba(10, 61, 49, 0.03) !important; filter: drop-shadow(0px 1px 2px rgba(10,61,49,0.02)); }
+.light .bg-white\/10 { background-color: rgba(10, 61, 49, 0.06) !important; }
+.light .bg-white\/20 { background-color: rgba(10, 61, 49, 0.1) !important; }
+.light .bg-black\/20 { background-color: rgba(10, 61, 49, 0.05) !important; }
+.light .bg-black\/40 { background-color: rgba(10, 61, 49, 0.08) !important; }
+
+.light .hover\:bg-white\/5:hover { background-color: rgba(10, 61, 49, 0.06) !important; }
+.light .hover\:bg-white\/10:hover { background-color: rgba(10, 61, 49, 0.09) !important; }
+
+/* Borders */
+.light .border-white\/5 { border-color: rgba(10, 61, 49, 0.08) !important; }
+.light .border-white\/10 { border-color: rgba(10, 61, 49, 0.15) !important; }
+.light .border-white\/20 { border-color: rgba(10, 61, 49, 0.2) !important; }
+
+/* Brand Lime mappings to Brand Accent */
+.light .bg-brand-lime { background-color: var(--color-brand-accent) !important; }
+.light .text-brand-lime { color: var(--color-brand-accent) !important; }
+.light .border-brand-lime { border-color: var(--color-brand-accent) !important; }
+.light .focus\:border-brand-lime:focus { border-color: var(--color-brand-accent) !important; }
+.light .focus\:ring-brand-lime\/10:focus { --tw-ring-color: rgba(16, 185, 129, 0.1) !important; }
+.light .focus\:ring-brand-lime\/20:focus { --tw-ring-color: rgba(16, 185, 129, 0.2) !important; }
+.light .focus-within\:ring-brand-lime\/10:focus-within { --tw-ring-color: rgba(16, 185, 129, 0.1) !important; }
+.light .focus-within\:ring-brand-lime\/20:focus-within { --tw-ring-color: rgba(16, 185, 129, 0.2) !important; }
+.light .focus-within\:border-brand-lime\/50:focus-within { border-color: rgba(16, 185, 129, 0.5) !important; }
+.light .border-brand-lime\/30 { border-color: rgba(16, 185, 129, 0.3) !important; }
+.light .bg-brand-lime\/5 { background-color: rgba(16, 185, 129, 0.05) !important; }
+.light .bg-brand-lime\/10 { background-color: rgba(16, 185, 129, 0.1) !important; }
+.light .bg-brand-lime\/20 { background-color: rgba(16, 185, 129, 0.2) !important; }
+
+/* Text lime opacity mappings */
+.light .text-brand-lime\/10 { color: rgba(4, 120, 87, 0.25) !important; }
+.light .group-hover\:text-brand-lime\/20:hover { color: rgba(4, 120, 87, 0.4) !important; }
+
+/* Text mappings */
+.light .text-brand-deep { color: #FFFFFF !important; }
+
+/* Filter modifications for light mode clarity */
+.light .drop-shadow-2xl { filter: drop-shadow(0px 10px 15px rgba(10, 61, 49, 0.05)) !important; }
+.light .drop-shadow-lg { filter: drop-shadow(0px 4px 6px rgba(10, 61, 49, 0.05)) !important; }
+

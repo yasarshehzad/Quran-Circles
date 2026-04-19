@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#f8f4ed" />
+  <circle cx="50" cy="50" r="40" fill="#36604d" />
+  
+  <g stroke="#1a2e24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Rehal Bottom Legs -->
+    <path d="M 46,65 L 24,80 L 28,84 L 50,68 Z" fill="#cf9d5a" />
+    <path d="M 54,65 L 76,80 L 72,84 L 50,68 Z" fill="#cf9d5a" />
+
+    <!-- Rehal Side Posts -->
+    <path d="M 12,54 L 22,23 L 26,24 L 17,56 Z" fill="#cf9d5a" />
+    <path d="M 88,54 L 78,23 L 74,24 L 83,56 Z" fill="#cf9d5a" />
+
+    <!-- Book Main Cover -->
+    <path d="M 50,68 Q 32,65 14,51 L 26,24 Q 38,26 50,35 Z" fill="#1a2e24" />
+    <path d="M 50,68 Q 68,65 86,51 L 74,24 Q 62,26 50,35 Z" fill="#1a2e24" />
+
+    <!-- Book Pages -->
+    <path d="M 50,63 Q 32,59 18,48 L 28,26 Q 38,28 50,36 Z" fill="#f2ead6" />
+    <path d="M 50,63 Q 68,59 82,48 L 72,26 Q 62,28 50,36 Z" fill="#f2ead6" />
+    
+    <!-- Spine Line -->
+    <line x1="50" y1="36" x2="50" y2="63" />
+    
+    <!-- Page Margins -->
+    <path d="M 29,28 L 21,45 Q 35,55 47,58" fill="none" stroke-width="1.5" />
+    <path d="M 71,28 L 79,45 Q 65,55 53,58" fill="none" stroke-width="1.5" />
+  </g>
+</svg>
