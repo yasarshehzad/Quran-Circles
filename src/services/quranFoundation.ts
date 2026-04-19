@@ -264,16 +264,16 @@ export const contentApi = {
       // If it is a relative path (e.g., Alafasy/mp3/001001.mp3)
       if (!url.startsWith('http') && !url.startsWith('//')) {
         const cleanPath = url.startsWith('/') ? url.slice(1) : url;
-        // Prefix with verses.quran.com for official paths
-        url = `https://verses.quran.com/${cleanPath}`;
+        // Prefix with audio.qurancdn.com for official paths
+        url = `https://audio.qurancdn.com/${cleanPath}`;
       } else {
         // If it starts with //
         if (url.startsWith('//')) {
           url = `https:${url}`;
         }
-        // Force replace audio.quran.com with verses.quran.com as it resolves CORS issues
-        if (url.includes('audio.quran.com')) {
-          url = url.replace('audio.quran.com', 'verses.quran.com');
+        // Force replace outdated subdomains with audio.qurancdn.com
+        if (url.includes('audio.quran.com') || url.includes('verses.quran.com')) {
+          url = url.replace('audio.quran.com', 'audio.qurancdn.com').replace('verses.quran.com', 'audio.qurancdn.com');
         }
       }
 
