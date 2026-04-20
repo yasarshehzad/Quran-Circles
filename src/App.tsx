@@ -86,6 +86,7 @@ export default function App() {
   const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'stats' | 'how-it-works' | 'features' | 'help-center' | 'contact-us'>('landing');
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
   
   const [circles, setCircles] = useState<Circle[]>([]);
   const [activeCircle, setActiveCircle] = useState<Circle | null>(null);
@@ -1209,7 +1210,7 @@ export default function App() {
                     </div>
                     
                     <p className="text-xl md:text-3xl text-white/40 font-medium max-w-xl leading-relaxed">
-                      Build a reflection habit with friends and family. A private, small-group space to grow together through the Quran.
+                      Private Quran habit circles for families and friends.
                     </p>
                   </div>
 
@@ -1220,7 +1221,9 @@ export default function App() {
 
                     <div className="space-y-3">
                       <h3 className="text-4xl font-display font-black uppercase tracking-tighter">{isRegistering ? 'New Journey' : 'Welcome Back'}</h3>
-                      <p className="text-white/40 font-medium text-lg">Sign in to continue your reflection</p>
+                      <p className="text-white/40 font-medium text-lg">
+                        {isRegistering ? 'Create an account to start your reflection journey' : 'Sign in to continue your reflection'}
+                      </p>
                     </div>
 
                     <form onSubmit={handleEmailAuth} className="space-y-8">
@@ -1562,6 +1565,7 @@ export default function App() {
                     <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-12 border-t border-white/5">
                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10">© 2026 Quran Circles. All rights reserved.</p>
                       <div className="flex items-center gap-6">
+                        <button onClick={() => setShowAboutModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10 hover:text-white/30 transition-colors">About</button>
                         <button onClick={() => setShowPrivacyModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10 hover:text-white/30 transition-colors">Privacy</button>
                         <button onClick={() => setShowTermsModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10 hover:text-white/30 transition-colors">Terms</button>
                       </div>
@@ -3110,6 +3114,99 @@ export default function App() {
             </button>
           </div>
         )}
+
+        {/* About Modal */}
+        <AnimatePresence>
+          {showAboutModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                onClick={() => setShowAboutModal(false)}
+                className="absolute inset-0 bg-brand-deep/80 backdrop-blur-md" 
+              />
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-full max-w-2xl bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden"
+              >
+                <div className="p-8 md:p-12 space-y-8">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <h2 className="text-3xl font-display font-black uppercase tracking-tight">About This <span className="text-brand-lime">Project</span></h2>
+                      <p className="text-brand-lime font-bold uppercase tracking-widest text-xs">Consistency through gentle accountability</p>
+                    </div>
+                    <button onClick={() => setShowAboutModal(false)} className="w-10 h-10 shrink-0 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors">
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="prose prose-invert max-w-none space-y-8 text-white/60 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
+                    
+                    <div className="space-y-4">
+                      <h4 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-rose-400"></div>
+                        The Problem
+                      </h4>
+                      <p>Many people want to stay consistent with the Qur'an beyond Ramadan, but maintaining that habit alone can be difficult.</p>
+                      <p>Most tools are either built for solo use or feel too public and social. There is less support for small, private groups trying to stay consistent together.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2 mt-8">
+                        <div className="w-2 h-2 rounded-full bg-brand-lime"></div>
+                        The Solution
+                      </h4>
+                      <p className="text-white"><strong>Quran Reflection Circles is a private small-group Quran habit app for families, friends, spouses, and halaqah groups.</strong></p>
+                      <p>Each circle can:</p>
+                      <ul className="list-disc pl-5 space-y-2 text-white/80">
+                        <li>Follow one shared ayah each day</li>
+                        <li>Reflect independently, in their own time</li>
+                        <li>Share takeaways privately</li>
+                        <li>Build a shared streak together</li>
+                      </ul>
+                      <p className="border-l-2 border-brand-lime pl-4 italic text-white/80 py-2">The core idea is simple: Consistency through gentle group accountability.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-white font-black uppercase tracking-widest text-sm mt-8">Participation Modes</h4>
+                      <p>Designed for real-life use:</p>
+                      <div className="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
+                        <div>
+                          <strong className="text-white block mb-1">Shared-Device Mode</strong>
+                          <p className="text-sm">For families using one phone or tablet together.</p>
+                        </div>
+                        <div className="pt-4 border-t border-white/5">
+                          <strong className="text-white block mb-1">Individual Mode</strong>
+                          <p className="text-sm">Each member participates from their own device.</p>
+                        </div>
+                        <div className="pt-4 border-t border-white/5">
+                          <strong className="text-white block mb-1">Hybrid Mode</strong>
+                          <p className="text-sm">Supports both in-person and remote participation.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2 mt-8">
+                        <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                        Core Mechanic
+                      </h4>
+                      <div className="bg-brand-deep/30 p-6 rounded-2xl border border-brand-lime/20 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-5"><Flame size={100} /></div>
+                        <p className="text-white font-bold text-lg relative z-10">A circle's streak only continues when all members complete the day.</p>
+                        <p className="relative z-10 mt-2">This makes the group habit collaborative, not individual.</p>
+                      </div>
+                    </div>
+
+                  </div>
+                  <Button className="w-full py-4 text-brand-deep font-black" onClick={() => setShowAboutModal(false)}>Close</Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Privacy Modal */}
         <AnimatePresence>
