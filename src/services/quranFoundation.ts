@@ -632,8 +632,34 @@ export const userApi = {
   },
 
   /**
-   * Streak & Progress Tracking API
+   * Streak & Analytics Tracking API
    */
+
+  getGlobalAnalytics: async (): Promise<{ currentStreak: number; longestStreak: number; readingTimeMinutes: number; targetJuz: number; currentJuz: number }> => {
+    if (IS_DEMO_MODE) {
+      // Return beautiful mock data for the deep analytics UI
+      return { 
+        currentStreak: 15, 
+        longestStreak: 45, 
+        readingTimeMinutes: 1340,
+        targetJuz: 30,
+        currentJuz: 4
+      };
+    }
+    // Real flow would fetch from actual QF endpoints sequentially or in parallel
+    const streak = await qfAuthFetch('/auth/get/v1/streaks').catch(() => ({ streak: 0, longest_streak: 0 }));
+    const time = await qfAuthFetch('/auth/get/v1/activity-days-estimate-reading-time').catch(() => ({ time: 0 }));
+    const goals = await qfAuthFetch('/auth/get/v1/goals-get-todays-plan').catch(() => ({ current: 0, target: 0 }));
+    
+    return {
+      currentStreak: streak.streak || 0,
+      longestStreak: streak.longest_streak || 0,
+      readingTimeMinutes: time.time || 0,
+      targetJuz: goals.target || 0,
+      currentJuz: goals.current || 0
+    };
+  },
+
   getStreak: async (roomId: string): Promise<{ current: number; lastDate: string }> => {
     if (IS_DEMO_MODE) {
       // Simple mock streak for demo

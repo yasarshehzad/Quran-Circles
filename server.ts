@@ -133,6 +133,54 @@ async function startServer() {
     }
   });
 
+  // --- Quran Foundation interactive OAuth endpoints ---
+  const getQfRedirectUri = (req: express.Request) => {
+    // In production behind proxies, trust x-forwarded-proto/host
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    return `${proto}://${host}/auth/qf/callback`;
+  };
+
+  app.get('/api/auth/qf/url', (req, res) => {
+    const redirectUri = getQfRedirectUri(req);
+    const clientId = process.env.QF_CLIENT_ID || 'demo-client';
+    
+    const qfAuthUrlBase = process.env.QF_AUTH_URL || "https://auth.quran.foundation/oauth/authorize";
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'read activity:read', 
+    });
+
+    res.json({ url: `${qfAuthUrlBase}?${params.toString()}` });
+  });
+
+  app.get(['/auth/qf/callback', '/auth/qf/callback/'], async (req, res) => {
+    const { code } = req.query;
+    
+    // In a real flow, exchange code for tokens here.
+    // Then postMessage back to trigger frontend update.
+    res.send(`
+      <html>
+        <body>
+          <script>
+            // For demo/UI consistency:
+            localStorage.setItem('qf_oauth_code', '${code || "demo"}');
+            if (window.opener) {
+              window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS', qf: true }, '*');
+              window.close();
+            } else {
+              window.location.href = '/';
+            }
+          </script>
+          <p>Authentication successful. This window should close automatically.</p>
+        </body>
+      </html>
+    `);
+  });
+
   // Contact Form Endpoint
   app.post("/api/contact", async (req, res) => {
     const { name, email, message } = req.body;

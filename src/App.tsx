@@ -77,12 +77,13 @@ import { AyahCard } from './components/circle/AyahCard';
 import { ReflectionFeed } from './components/circle/ReflectionFeed';
 import { CircleHome } from './components/circle/CircleHome';
 import { QFInfoPanel } from './components/circle/QFInfoPanel';
-import { Lock, LogIn } from 'lucide-react';
+import { StatsDashboard } from './components/StatsDashboard';
+import { Lock, LogIn, PieChart } from 'lucide-react';
 
 export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'how-it-works' | 'features' | 'help-center' | 'contact-us'>('landing');
+  const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'stats' | 'how-it-works' | 'features' | 'help-center' | 'contact-us'>('landing');
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   
@@ -1116,14 +1117,15 @@ export default function App() {
                   <BookmarkIcon size={22} /> {isSidebarOpen && "Bookmarks"}
                 </button>
                 <button 
-                  onClick={() => setShowQFInfo(true)}
+                  onClick={() => setView('stats')}
                   className={cn(
-                    "w-full flex items-center gap-4 rounded-2xl font-bold text-white/40 hover:text-white hover:bg-white/5 transition-all duration-300",
-                    isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
+                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300",
+                    isSidebarOpen ? "px-6 py-4" : "p-4 justify-center",
+                    view === 'stats' ? "bg-brand-lime text-brand-deep lime-glow" : "text-white/40 hover:text-white hover:bg-white/5"
                   )}
-                  title="How it works"
+                  title="Analytics"
                 >
-                  <Info size={22} /> {isSidebarOpen && "How it works"}
+                  <PieChart size={22} /> {isSidebarOpen && "Analytics"}
                 </button>
                 <button 
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -1139,11 +1141,34 @@ export default function App() {
             </div>
 
             <div className={cn("pt-8 border-t border-white/5", !isSidebarOpen && "flex flex-col items-center gap-4")}>
+              <div className="space-y-2 mb-4">
+                <button 
+                  onClick={() => setShowQFInfo(true)}
+                  className={cn(
+                    "w-full flex items-center gap-3 rounded-2xl font-bold text-white/40 hover:text-white hover:bg-white/5 transition-all duration-300",
+                    isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
+                  )}
+                  title="How it works"
+                >
+                  <Info size={20} /> {isSidebarOpen && "How it works"}
+                </button>
+                <button 
+                  onClick={() => setIsLightMode(!isLightMode)} 
+                  className={cn(
+                    "w-full flex items-center gap-3 rounded-2xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300",
+                    isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
+                  )} 
+                  title={isLightMode ? "Dark Mode" : "Light Mode"}
+                >
+                  {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
+                  {isSidebarOpen && (isLightMode ? "Dark Mode" : "Light Mode")}
+                </button>
+              </div>
+
               <div 
                 className={cn(
-                  "flex items-center gap-4 px-2 cursor-pointer group hover:bg-white/5 p-2 rounded-2xl transition-all", 
-                  isSidebarOpen ? "mb-8" : "mb-4",
-                  view === 'profile' && "bg-white/5"
+                  "flex items-center gap-4 px-2 cursor-pointer group hover:bg-white/5 p-2 rounded-2xl transition-all border border-transparent", 
+                  view === 'profile' && "bg-white/5 border-white/10"
                 )}
                 onClick={() => setView('profile')}
               >
@@ -1156,25 +1181,6 @@ export default function App() {
                     <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Active Member</p>
                   </div>
                 )}
-              </div>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => setIsLightMode(!isLightMode)} 
-                  className={cn(
-                    "w-full flex items-center gap-3 rounded-2xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300",
-                    isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
-                  )} 
-                  title={isLightMode ? "Dark Mode" : "Light Mode"}
-                >
-                  {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
-                  {isSidebarOpen && (isLightMode ? "Dark Mode" : "Light Mode")}
-                </button>
-                <button onClick={logout} className={cn(
-                  "w-full flex items-center gap-3 rounded-2xl font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-300",
-                  isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
-                )} title="Sign Out">
-                  <LogOut size={20} /> {isSidebarOpen && "Sign Out"}
-                </button>
               </div>
             </div>
           </aside>
@@ -2770,6 +2776,12 @@ export default function App() {
                     ))}
                   </div>
                 )}
+              </motion.div>
+            )}
+
+            {view === 'stats' && (
+              <motion.div key="stats" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                <StatsDashboard user={user} reflections={reflections} circles={circles} />
               </motion.div>
             )}
 
