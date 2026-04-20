@@ -991,6 +991,35 @@ export default function App() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setAuthError('');
+    setIsAuthLoading(true);
+    try {
+      const result = await loginWithGoogle();
+      if (!result) {
+        // user closed popup
+        toast.error('Login popup was closed. If it closed instantly, please open the app in a new tab instead of the preview iframe.');
+        setIsAuthLoading(false);
+        return;
+      }
+    } catch (err: any) {
+      console.error('Google login error:', err);
+      let errMsg = err.message;
+      if (err.code === 'auth/popup-blocked') {
+        errMsg = 'Login popup was blocked by your browser. Please allow popups for this site.';
+        toast.error(errMsg);
+      } else if (err.code === 'auth/unauthorized-domain') {
+        errMsg = 'This domain is not authorized for OAuth operations for your Firebase project. Please add it to your Firebase Console under Authentication -> Settings -> Authorized domains.';
+        toast.error(errMsg, { duration: 10000 });
+      } else {
+        toast.error(errMsg || 'Failed to sign in with Google');
+      }
+      setAuthError(errMsg);
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
   const handleExplore = async () => {
     try {
       await loginAnonymously();
@@ -1218,7 +1247,7 @@ export default function App() {
                       <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em] font-black text-white/40 bg-white/5 backdrop-blur-xl px-6 py-1 rounded-full w-max mx-auto">OR</div>
                     </div>
 
-                    <Button variant="secondary" onClick={loginWithGoogle} className="w-full py-5">
+                    <Button variant="secondary" onClick={handleGoogleLogin} className="w-full py-5">
                       {isRegistering ? 'Continue with Google' : 'Sign in with Google'}
                     </Button>
 
@@ -2450,7 +2479,7 @@ export default function App() {
                       <p className="text-white/60">You need to be signed in to join a circle and track your progress.</p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <Button onClick={loginWithGoogle} className="w-full py-4">Sign in with Google</Button>
+                      <Button onClick={handleGoogleLogin} className="w-full py-4">Sign in with Google</Button>
                       <Button variant="outline" onClick={() => setView('landing')} className="w-full py-4">Back to Home</Button>
                     </div>
                   </Card>
