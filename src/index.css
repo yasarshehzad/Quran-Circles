@@ -142,7 +142,7 @@
 .light .bg-brand-lime { background-color: var(--color-brand-accent) !important; }
 .light .text-brand-lime { color: var(--color-brand-accent) !important; }
 .light .border-brand-lime { border-color: var(--color-brand-accent) !important; }
-.light .border-t-brand-lime { border-top-color: var(--color-brand-accent) !important; }
+
 .light .focus\:border-brand-lime:focus { border-color: var(--color-brand-accent) !important; }
 .light .focus\:ring-brand-lime\/10:focus { --tw-ring-color: rgba(16, 185, 129, 0.1) !important; }
 .light .focus\:ring-brand-lime\/20:focus { --tw-ring-color: rgba(16, 185, 129, 0.2) !important; }
@@ -152,6 +152,10 @@
 .light .border-brand-lime\/10 { border-color: rgba(16, 185, 129, 0.1) !important; }
 .light .border-brand-lime\/20 { border-color: rgba(16, 185, 129, 0.2) !important; }
 .light .border-brand-lime\/30 { border-color: rgba(16, 185, 129, 0.3) !important; }
+
+/* Specific border side colors MUST come after generic border-color shorthand to avoid being overridden */
+.light .border-t-brand-lime { border-top-color: var(--color-brand-accent) !important; }
+
 .light .bg-brand-lime\/5 { background-color: rgba(16, 185, 129, 0.05) !important; }
 .light .bg-brand-lime\/10 { background-color: rgba(16, 185, 129, 0.1) !important; }
 .light .bg-brand-lime\/20 { background-color: rgba(16, 185, 129, 0.2) !important; }

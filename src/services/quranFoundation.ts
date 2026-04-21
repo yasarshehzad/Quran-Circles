@@ -81,25 +81,8 @@ async function qfFetch(endpoint: string, options: RequestInit & { silent?: boole
   const { silent, ...fetchOptions } = options;
   let url = endpoint.startsWith('http') ? endpoint : `${CONTENT_BASE_URL}${endpoint}`;
   
-  // If it's a Quran.com API call, use the local proxy to avoid CORS and network issues
-  if (url.startsWith(CONTENT_BASE_URL)) {
-    const relativeEndpoint = url.replace(CONTENT_BASE_URL, '');
-    
-    // Parse existing query params from the endpoint if any
-    const [path, query] = relativeEndpoint.split('?');
-    
-    // Construct relative proxy URL
-    let proxyPath = `/api/quran/proxy?endpoint=${encodeURIComponent(path)}`;
-    
-    if (query) {
-      const params = new URLSearchParams(query);
-      params.forEach((value, key) => {
-        proxyPath += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-      });
-    }
-    
-    url = proxyPath;
-  }
+  // Directly call the Quran.com API - local proxy removed to support static site deployments
+  // on custom domains (like GitHub pages or Vercel) where server.ts is not running.
 
   try {
     const response = await fetch(url, {
