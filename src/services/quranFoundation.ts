@@ -84,13 +84,25 @@ async function qfFetch(endpoint: string, options: RequestInit & { silent?: boole
   // Directly call the Quran.com API - local proxy removed to support static site deployments
   // on custom domains (like GitHub pages or Vercel) where server.ts is not running.
 
+  const isQuranCom = url.includes('api.quran.com');
+  const isGet = !fetchOptions.method || fetchOptions.method.toUpperCase() === 'GET';
+
+  // Construct headers safely to avoid triggering strict CORS preflight on public APIs
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+  };
+
+  // Only append JSON content-type and API keys if it's NOT a public Quran.com GET request
+  if (!isQuranCom || !isGet) {
+    if (!isGet) headers['Content-Type'] = 'application/json';
+    if (API_KEY && !isQuranCom) headers['X-API-Key'] = API_KEY;
+  }
+
   try {
     const response = await fetch(url, {
       ...fetchOptions,
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        ...(API_KEY ? { 'X-API-Key': API_KEY } : {}),
+        ...headers,
         ...fetchOptions.headers,
       },
     });

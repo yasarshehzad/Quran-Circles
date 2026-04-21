@@ -1041,8 +1041,8 @@ export default function App() {
         {user && (
           <header className="md:hidden flex items-center justify-between p-6 bg-brand-deep/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
             <div className="flex items-center gap-3" onClick={() => setView('dashboard')}>
-              <div className="w-10 h-10 bg-brand-lime text-brand-deep rounded-xl flex items-center justify-center lime-glow">
-                <BookOpen size={20} strokeWidth={2.5} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-white/5 p-1">
+                <img src="/favicon.svg" className="w-full h-full object-contain" alt="Quran Circles Logo" />
               </div>
               <h1 className="font-display font-black text-lg tracking-tighter uppercase">Quran</h1>
             </div>
@@ -1081,10 +1081,10 @@ export default function App() {
             <div className="space-y-12">
               <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setView('dashboard')}>
                 <div className={cn(
-                  "bg-brand-lime text-brand-deep rounded-2xl flex items-center justify-center lime-glow transition-all duration-500 group-hover:scale-105",
+                  "rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-105 shrink-0 bg-white/5 p-1",
                   isSidebarOpen ? "w-14 h-14" : "w-12 h-12"
                 )}>
-                  <BookOpen size={isSidebarOpen ? 28 : 24} strokeWidth={2.5} />
+                  <img src="/favicon.svg" className="w-full h-full object-contain" alt="Quran Circles Logo" />
                 </div>
                 {isSidebarOpen && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
