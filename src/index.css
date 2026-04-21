@@ -142,12 +142,15 @@
 .light .bg-brand-lime { background-color: var(--color-brand-accent) !important; }
 .light .text-brand-lime { color: var(--color-brand-accent) !important; }
 .light .border-brand-lime { border-color: var(--color-brand-accent) !important; }
+.light .border-t-brand-lime { border-top-color: var(--color-brand-accent) !important; }
 .light .focus\:border-brand-lime:focus { border-color: var(--color-brand-accent) !important; }
 .light .focus\:ring-brand-lime\/10:focus { --tw-ring-color: rgba(16, 185, 129, 0.1) !important; }
 .light .focus\:ring-brand-lime\/20:focus { --tw-ring-color: rgba(16, 185, 129, 0.2) !important; }
 .light .focus-within\:ring-brand-lime\/10:focus-within { --tw-ring-color: rgba(16, 185, 129, 0.1) !important; }
 .light .focus-within\:ring-brand-lime\/20:focus-within { --tw-ring-color: rgba(16, 185, 129, 0.2) !important; }
 .light .focus-within\:border-brand-lime\/50:focus-within { border-color: rgba(16, 185, 129, 0.5) !important; }
+.light .border-brand-lime\/10 { border-color: rgba(16, 185, 129, 0.1) !important; }
+.light .border-brand-lime\/20 { border-color: rgba(16, 185, 129, 0.2) !important; }
 .light .border-brand-lime\/30 { border-color: rgba(16, 185, 129, 0.3) !important; }
 .light .bg-brand-lime\/5 { background-color: rgba(16, 185, 129, 0.05) !important; }
 .light .bg-brand-lime\/10 { background-color: rgba(16, 185, 129, 0.1) !important; }
@@ -155,7 +158,26 @@
 
 /* Text lime opacity mappings */
 .light .text-brand-lime\/10 { color: rgba(4, 120, 87, 0.25) !important; }
-.light .group-hover\:text-brand-lime\/20:hover { color: rgba(4, 120, 87, 0.4) !important; }
+.light .group:hover .group-hover\:text-brand-lime\/20 { color: rgba(4, 120, 87, 0.4) !important; }
+.light .hover\:text-brand-lime:hover { color: var(--color-brand-accent) !important; }
+.light .group:hover .group-hover\:text-brand-lime { color: var(--color-brand-accent) !important; }
+
+/* Hover Border */
+.light .hover\:border-brand-lime\/30:hover { border-color: rgba(16, 185, 129, 0.3) !important; }
+.light .hover\:border-brand-lime\/40:hover { border-color: rgba(16, 185, 129, 0.4) !important; }
+.light .group:hover .group-hover\:border-brand-lime\/30 { border-color: rgba(16, 185, 129, 0.3) !important; }
+.light .group:hover .group-hover\:border-brand-lime\/40 { border-color: rgba(16, 185, 129, 0.4) !important; }
+
+/* Hover Background */
+.light .hover\:bg-brand-lime:hover { background-color: var(--color-brand-accent) !important; }
+.light .group:hover .group-hover\:bg-brand-lime { background-color: var(--color-brand-accent) !important; }
+.light .group:hover .group-hover\:bg-brand-lime\/10 { background-color: rgba(16, 185, 129, 0.1) !important; }
+.light .group:hover .group-hover\:bg-brand-lime\/20 { background-color: rgba(16, 185, 129, 0.2) !important; }
+
+/* Hover Shadow & Decoration */
+.light .hover\:shadow-brand-lime\/10:hover { --tw-shadow-color: rgba(16, 185, 129, 0.1) !important; --tw-shadow: var(--tw-shadow-colored); }
+.light .group:hover .group-hover\:shadow-brand-lime\/10 { --tw-shadow-color: rgba(16, 185, 129, 0.1) !important; --tw-shadow: var(--tw-shadow-colored); }
+.light .hover\:decoration-brand-lime:hover { text-decoration-color: var(--color-brand-accent) !important; }
 
 /* Text mappings */
 .light .text-brand-deep { color: #FFFFFF !important; }
