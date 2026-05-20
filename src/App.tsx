@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { generateRandomString, generateCodeChallenge } from './lib/pkce';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { 
   collection, 
@@ -172,6 +173,88 @@ export default function App() {
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+
+  // QF OAuth Callback Handler
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    const savedState = localStorage.getItem('qf_oauth_state');
+    const codeVerifier = localStorage.getItem('qf_pkce_verifier');
+
+    // Listener for popup OAuth success
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'QF_OAUTH_SUCCESS') {
+        toast.success(`Welcome to Quran Circles!`);
+        setIsAuthLoading(false);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    if (code && state) {
+      if (state !== savedState) {
+        toast.error('Invalid OAuth state. Please try logging in again.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        if (window.opener) window.close();
+        return;
+      }
+
+      setIsAuthLoading(true);
+      fetch('/api/qf/oauth/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          code_verifier: codeVerifier,
+          redirect_uri: window.location.origin + '/callback'
+        })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed token exchange');
+        return res.json();
+      })
+      .then(async data => {
+        if (data.id_token) {
+          const payloadBase64 = data.id_token.split('.')[1];
+          const payload = JSON.parse(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')));
+          
+          const uid = payload.sub;
+          const userEmail = payload.email || `${uid}@quran.foundation`;
+          const secret = uid + '_qf_oauth_secret';
+
+          try {
+            await loginWithEmail(userEmail, secret);
+          } catch(err: any) {
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+              await registerWithEmail(userEmail, secret);
+            } else {
+              throw err;
+            }
+          }
+          
+          if (window.opener) {
+            window.opener.postMessage({ type: 'QF_OAUTH_SUCCESS' }, '*');
+            window.close();
+          } else {
+            toast.success(`Welcome to Quran Circles, ${payload.first_name || 'friend'}!`);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+      })
+      .catch(err => {
+        console.error('OAuth Callback Error:', err);
+        setAuthError('OAuth Login failed.');
+        if (window.opener) window.close();
+      })
+      .finally(() => {
+        setIsAuthLoading(false);
+        localStorage.removeItem('qf_oauth_state');
+        localStorage.removeItem('qf_pkce_verifier');
+      });
+    }
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -993,31 +1076,41 @@ export default function App() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleQFLogin = async () => {
     setAuthError('');
     setIsAuthLoading(true);
+
     try {
-      const result = await loginWithGoogle();
-      if (!result) {
-        // user closed popup
-        toast.error('Login popup was closed. If it closed instantly, please open the app in a new tab instead of the preview iframe.');
-        setIsAuthLoading(false);
-        return;
-      }
+      const codeVerifier = generateRandomString(64);
+      const state = generateRandomString(32);
+      const nonce = generateRandomString(32);
+      
+      localStorage.setItem('qf_pkce_verifier', codeVerifier);
+      localStorage.setItem('qf_oauth_state', state);
+
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+
+      const clientId = import.meta.env.VITE_QF_CLIENT_ID || 'quran-circles-demo';
+      const redirectUri = window.location.origin + '/callback';
+
+      const authUrl = new URL('https://prelive-oauth2.quran.foundation/oauth2/auth');
+      authUrl.searchParams.set('response_type', 'code');
+      authUrl.searchParams.set('client_id', clientId);
+      authUrl.searchParams.set('redirect_uri', redirectUri);
+      authUrl.searchParams.set('scope', 'openid offline_access user collection note post');
+      authUrl.searchParams.set('state', state);
+      authUrl.searchParams.set('nonce', nonce);
+      authUrl.searchParams.set('code_challenge', codeChallenge);
+      authUrl.searchParams.set('code_challenge_method', 'S256');
+
+      const width = 500;
+      const height = 700;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      window.open(authUrl.toString(), 'qf_oauth', `width=${width},height=${height},top=${top},left=${left},toolbar=no,location=no,status=no,menubar=no`);
     } catch (err: any) {
-      console.error('Google login error:', err);
-      let errMsg = err.message;
-      if (err.code === 'auth/popup-blocked') {
-        errMsg = 'Login popup was blocked by your browser. Please allow popups for this site.';
-        toast.error(errMsg);
-      } else if (err.code === 'auth/unauthorized-domain') {
-        errMsg = 'This domain is not authorized for OAuth operations for your Firebase project. Please add it to your Firebase Console under Authentication -> Settings -> Authorized domains.';
-        toast.error(errMsg, { duration: 10000 });
-      } else {
-        toast.error(errMsg || 'Failed to sign in with Google');
-      }
-      setAuthError(errMsg);
-    } finally {
+      console.error('QF login error:', err);
+      setAuthError('Failed to initialize login.');
       setIsAuthLoading(false);
     }
   };
@@ -1256,8 +1349,8 @@ export default function App() {
                       <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em] font-black text-white/40 bg-white/5 backdrop-blur-xl px-6 py-1 rounded-full w-max mx-auto">OR</div>
                     </div>
 
-                    <Button variant="secondary" onClick={handleGoogleLogin} className="w-full py-5">
-                      {isRegistering ? 'Continue with Google' : 'Sign in with Google'}
+                    <Button variant="secondary" onClick={handleQFLogin} className="w-full py-5 bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep transition-all duration-300">
+                      {isRegistering ? 'Continue with Quran Foundation' : 'Sign in with Quran Foundation'}
                     </Button>
 
                     <p className="text-center text-base font-bold text-white/40">
@@ -2489,7 +2582,7 @@ export default function App() {
                       <p className="text-white/60">You need to be signed in to join a circle and track your progress.</p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <Button onClick={handleGoogleLogin} className="w-full py-4">Sign in with Google</Button>
+                      <Button onClick={handleQFLogin} className="w-full py-4 bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep">Sign in with Quran Foundation</Button>
                       <Button variant="outline" onClick={() => setView('landing')} className="w-full py-4">Back to Home</Button>
                     </div>
                   </Card>

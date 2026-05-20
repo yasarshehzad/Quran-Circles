@@ -134,51 +134,83 @@ async function startServer() {
   });
 
   // --- Quran Foundation interactive OAuth endpoints ---
-  const getQfRedirectUri = (req: express.Request) => {
-    // In production behind proxies, trust x-forwarded-proto/host
-    const proto = req.headers['x-forwarded-proto'] || req.protocol;
-    const host = req.headers['x-forwarded-host'] || req.get('host');
-    return `${proto}://${host}/auth/qf/callback`;
-  };
-
-  app.get('/api/auth/qf/url', (req, res) => {
-    const redirectUri = getQfRedirectUri(req);
-    const clientId = process.env.QF_CLIENT_ID || 'demo-client';
+  app.post('/api/qf/oauth/exchange', async (req, res) => {
+    const { code, code_verifier, redirect_uri } = req.body;
+    const clientId = process.env.QF_CLIENT_ID;
+    const clientSecret = process.env.QF_CLIENT_SECRET;
     
-    const qfAuthUrlBase = process.env.QF_AUTH_URL || "https://auth.quran.foundation/oauth/authorize";
+    // Default to prelive for testing User APIs unless overridden
+    const tokenEndpoint = process.env.QF_OAUTH_TOKEN_URL || "https://prelive-oauth2.quran.foundation/oauth2/token";
 
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: 'read activity:read', 
-    });
+    if (!clientId || !clientSecret) {
+      return res.status(500).json({ error: "Missing QF_CLIENT_ID or QF_CLIENT_SECRET server configuration" });
+    }
 
-    res.json({ url: `${qfAuthUrlBase}?${params.toString()}` });
+    try {
+      // Exchange authorization code for tokens securely on backend
+      const exchangeBody = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirect_uri,
+        client_id: clientId,
+        client_secret: clientSecret,
+        code_verifier: code_verifier
+      });
+
+      const response = await fetch(tokenEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: exchangeBody
+      });
+
+      if (!response.ok) {
+        const errObj = await response.json().catch(() => ({}));
+        console.error("QF OAuth Exchange Error:", errObj);
+        return res.status(response.status).json(errObj);
+      }
+
+      const tokenData = await response.json();
+      res.json(tokenData);
+    } catch (error) {
+      console.error('Error exchanging oauth code:', error);
+      res.status(500).json({ error: "Internal server error during token exchange" });
+    }
   });
 
-  app.get(['/auth/qf/callback', '/auth/qf/callback/'], async (req, res) => {
-    const { code } = req.query;
+  // User APIs Serverless Proxy Handler
+  app.use('/api/qf/user-proxy', express.json(), async (req, res) => {
+    const qfUserApiBase = process.env.QF_USER_API_URL || "https://apis-prelive.quran.foundation/auth/v1";
+    const clientId = process.env.QF_CLIENT_ID;
+    const authHeader = req.headers.authorization; 
     
-    // In a real flow, exchange code for tokens here.
-    // Then postMessage back to trigger frontend update.
-    res.send(`
-      <html>
-        <body>
-          <script>
-            // For demo/UI consistency:
-            localStorage.setItem('qf_oauth_code', '${code || "demo"}');
-            if (window.opener) {
-              window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS', qf: true }, '*');
-              window.close();
-            } else {
-              window.location.href = '/';
-            }
-          </script>
-          <p>Authentication successful. This window should close automatically.</p>
-        </body>
-      </html>
-    `);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "Missing Bearer token" });
+    }
+    
+    const userAccessToken = authHeader.split('Bearer ')[1];
+    const targetUrl = `${qfUserApiBase}${req.url}`;
+    
+    try {
+      const response = await fetch(targetUrl, {
+        method: req.method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'x-auth-token': userAccessToken,
+          'x-client-id': clientId || '',
+        },
+        body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined
+      });
+      
+      const responseText = await response.text();
+      let data = responseText;
+      try { data = JSON.parse(responseText); } catch (e) {}
+
+      res.status(response.status).send(data);
+    } catch (error) {
+      console.error('Proxy Error for User API:', error);
+      res.status(500).json({ error: "Failed to proxy User API request" });
+    }
   });
 
   // Contact Form Endpoint
