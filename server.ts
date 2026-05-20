@@ -134,6 +134,13 @@ async function startServer() {
   });
 
   // --- Quran Foundation interactive OAuth endpoints ---
+  app.get('/api/qf/oauth/config', (req, res) => {
+    res.json({
+      clientId: process.env.QF_CLIENT_ID || '',
+      authUrl: process.env.QF_OAUTH_AUTH_URL || 'https://prelive-oauth2.quran.foundation/oauth2/auth'
+    });
+  });
+
   app.post('/api/qf/oauth/exchange', async (req, res) => {
     const { code, code_verifier, redirect_uri } = req.body;
     const clientId = process.env.QF_CLIENT_ID;

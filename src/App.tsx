@@ -1081,6 +1081,19 @@ export default function App() {
     setIsAuthLoading(true);
 
     try {
+      // Dynamically load Client ID and Auth base URL from backend to ensure we don't use stale fallback client ID
+      const configRes = await fetch('/api/qf/oauth/config');
+      if (!configRes.ok) {
+        throw new Error('Could not load OAuth configuration from server.');
+      }
+      const config = await configRes.json();
+      const clientId = config.clientId || 'quran-circles-demo';
+      const authBaseUrl = config.authUrl || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
+
+      if (clientId === 'quran-circles-demo') {
+        toast.error('The server has not yet been configured with your real Quran Foundation Client ID. Falling back to demo ID.', { duration: 6000 });
+      }
+
       const codeVerifier = generateRandomString(64);
       const state = generateRandomString(32);
       const nonce = generateRandomString(32);
@@ -1089,11 +1102,9 @@ export default function App() {
       localStorage.setItem('qf_oauth_state', state);
 
       const codeChallenge = await generateCodeChallenge(codeVerifier);
-
-      const clientId = import.meta.env.VITE_QF_CLIENT_ID || 'quran-circles-demo';
       const redirectUri = window.location.origin + '/callback';
 
-      const authUrl = new URL('https://prelive-oauth2.quran.foundation/oauth2/auth');
+      const authUrl = new URL(authBaseUrl);
       authUrl.searchParams.set('response_type', 'code');
       authUrl.searchParams.set('client_id', clientId);
       authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -1110,7 +1121,7 @@ export default function App() {
       window.open(authUrl.toString(), 'qf_oauth', `width=${width},height=${height},top=${top},left=${left},toolbar=no,location=no,status=no,menubar=no`);
     } catch (err: any) {
       console.error('QF login error:', err);
-      setAuthError('Failed to initialize login.');
+      setAuthError(err.message || 'Failed to initialize login.');
       setIsAuthLoading(false);
     }
   };
