@@ -482,7 +482,7 @@ export default function App() {
     if (activeCircle.verses && activeCircle.verses.length > 0) {
       verses = activeCircle.verses;
     } else {
-      const plan = QURAN_PLANS.find(p => p.id === activeCircle.planId);
+      const plan = QURAN_PLANS.find(p => p.id === activeCircle.planId) || QURAN_PLANS[1]; // fallback to daily-wisdom
       if (plan) {
         verses = plan.verses;
       }
@@ -555,7 +555,7 @@ export default function App() {
       name: "The Rahmans (Family)",
       inviteCode: "FAM999",
       adminUid: uid,
-      planId: "ramadan-30",
+      planId: "daily-wisdom",
       startDate: format(subDays(new Date(), 5), 'yyyy-MM-dd'),
       members: [uid],
       participants: [
@@ -563,6 +563,8 @@ export default function App() {
         { id: 'p1', name: "Mama", type: 'lightweight', parentUid: uid },
         { id: 'p2', name: "Zaid", type: 'lightweight', parentUid: uid }
       ],
+      versesPerDay: 1,
+      frequency: 'daily',
       participationMode: 'shared',
       deadlineConfig: { type: 'local', timezone: 'Europe/London', time: '23:59' },
       streak: { current: 5, lastDate: format(subDays(new Date(), 1), 'yyyy-MM-dd') }
@@ -573,7 +575,7 @@ export default function App() {
       name: "Global Hifz Friends",
       inviteCode: "GLOB88",
       adminUid: uid,
-      planId: "juz-30",
+      planId: "last-10-surahs",
       startDate: format(subDays(new Date(), 10), 'yyyy-MM-dd'),
       members: [uid, 'user2', 'user3'],
       participants: [
@@ -581,6 +583,8 @@ export default function App() {
         { id: 'user2', name: "Omar (Dubai)", type: 'auth' },
         { id: 'user3', name: "Sara (NYC)", type: 'auth' }
       ],
+      versesPerDay: 1,
+      frequency: 'daily',
       participationMode: 'individual',
       deadlineConfig: { type: 'shared', timezone: 'UTC', time: '22:00' },
       streak: { current: 10, lastDate: format(subDays(new Date(), 1), 'yyyy-MM-dd') }

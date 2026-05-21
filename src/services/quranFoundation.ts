@@ -31,12 +31,12 @@ import { Circle, Reflection, Bookmark, Participant, ChatMessage } from '../types
 // --- Configuration ---
 
 const CONTENT_BASE_URL = 'https://api.quran.com/api/v4';
-const USER_API_BASE_URL = import.meta.env.VITE_QF_USER_API_URL || 'https://api.quran.foundation/v1'; 
-const API_KEY = import.meta.env.VITE_QF_API_KEY || '';
+const USER_API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_QF_USER_API_URL : process.env.VITE_QF_USER_API_URL) || 'https://api.quran.foundation/v1'; 
+const API_KEY = (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_QF_API_KEY : process.env.VITE_QF_API_KEY) || '';
 
 // Toggle for Demo Mode (uses mock data/Firebase instead of real QF User API)
 // We are in demo mode if NO user API URL is provided
-const IS_DEMO_MODE = !import.meta.env.VITE_QF_USER_API_URL;
+const IS_DEMO_MODE = !(typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_QF_USER_API_URL : process.env.VITE_QF_USER_API_URL);
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
