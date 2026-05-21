@@ -206,8 +206,34 @@ export default function App() {
           redirect_uri: window.location.origin + '/callback'
         })
       })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed token exchange');
+      .then(async res => {
+        if (!res.ok) {
+          // If the express backend is missing (e.g. hosted statically on Vercel/Netlify), attempt a direct PKCE exchange.
+          if (res.status === 404) {
+            let tokenUrl = import.meta.env.VITE_QF_OAUTH_TOKEN_URL || 'https://prelive-oauth2.quran.foundation/oauth2/token';
+            if (tokenUrl && tokenUrl.includes('quran.foundation') && !tokenUrl.includes('/token')) {
+              tokenUrl = tokenUrl.endsWith('/') ? `${tokenUrl}oauth2/token` : `${tokenUrl}/oauth2/token`;
+            }
+            
+            const clientId = import.meta.env.VITE_QF_CLIENT_ID;
+            if (!clientId) throw new Error('Missing VITE_QF_CLIENT_ID for static token exchange');
+            
+            const directRes = await fetch(tokenUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: window.location.origin + '/callback',
+                client_id: clientId,
+                code_verifier: codeVerifier || ''
+              })
+            });
+            if (!directRes.ok) throw new Error('Direct PKCE token exchange failed. Confirm your VITE_QF_CLIENT_ID and callback config.');
+            return directRes.json();
+          }
+          throw new Error('Failed token exchange from backend');
+        }
         return res.json();
       })
       .then(async data => {
@@ -1062,6 +1088,10 @@ export default function App() {
     try {
       let clientId = import.meta.env.VITE_QF_CLIENT_ID;
       let authBaseUrl = import.meta.env.VITE_QF_OAUTH_AUTH_URL || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
+
+      if (authBaseUrl && authBaseUrl.includes('quran.foundation') && !authBaseUrl.includes('/auth') && !authBaseUrl.includes('/authorize')) {
+        authBaseUrl = authBaseUrl.endsWith('/') ? `${authBaseUrl}oauth2/auth` : `${authBaseUrl}/oauth2/auth`;
+      }
 
       if (!clientId) {
         try {

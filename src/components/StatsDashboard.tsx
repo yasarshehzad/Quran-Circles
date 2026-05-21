@@ -1,12 +1,10 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Flame, Trophy, Calendar, Target, Activity, Link as LinkIcon, BookOpen, Clock } from 'lucide-react';
 import { format, subDays, startOfDay, parseISO, differenceInDays } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Reflection, Circle } from '../types';
 import { Card, GlassCard, Button } from './ui/Base';
-import { quranFoundation } from '../services/quranFoundation';
-import { toast } from 'sonner';
 
 interface StatsDashboardProps {
   user: any;
@@ -15,63 +13,6 @@ interface StatsDashboardProps {
 }
 
 export const StatsDashboard: React.FC<StatsDashboardProps> = ({ user, reflections, circles }) => {
-  const [qfAnalytics, setQfAnalytics] = useState<{
-    currentStreak: number; longestStreak: number; readingTimeMinutes: number; targetJuz: number; currentJuz: number;
-  } | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-
-  useEffect(() => {
-    // Check if we are connected (in real app, check token existence)
-    const hasCode = localStorage.getItem('qf_oauth_code');
-    if (hasCode || quranFoundation.isDemo) {
-      setIsConnected(true);
-      fetchQfAnalytics();
-    }
-
-    const handleMessage = (event: MessageEvent) => {
-      // Validate origin is from standard domains
-      if (!event.origin.endsWith('.run.app') && !event.origin.includes('localhost')) {
-        return;
-      }
-      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
-        setIsConnected(true);
-        fetchQfAnalytics();
-        toast.success("Successfully connected to Quran Foundation!");
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  const fetchQfAnalytics = async () => {
-    try {
-      const data = await quranFoundation.user.getGlobalAnalytics();
-      setQfAnalytics(data);
-    } catch (err) {
-      console.error("Failed to fetch QF analytics:", err);
-    }
-  };
-
-  const handleConnectQF = async () => {
-    try {
-      setIsConnecting(true);
-      const res = await fetch('/api/auth/qf/url');
-      if (!res.ok) throw new Error('Failed to get Auth URL');
-      const { url } = await res.json();
-
-      const authWindow = window.open(url, 'oauth_popup', 'width=600,height=700');
-      if (!authWindow) {
-        toast.error('Please allow popups for this site to connect your account.');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Could not initiate Quran Foundation login.');
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
   const stats = useMemo(() => {
     if (!user) return null;
 
@@ -218,44 +159,7 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ user, reflection
           <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter">Your Analytics</h1>
           <p className="opacity-50 text-lg md:text-xl font-medium max-w-2xl">Track your personal progress and consistency across all your circles.</p>
         </div>
-        {!isConnected && (
-          <Button onClick={handleConnectQF} isLoading={isConnecting} className="shrink-0 group" icon={LinkIcon}>
-            Connect Quran Foundation
-          </Button>
-        )}
       </div>
-
-      <AnimatePresence>
-        {qfAnalytics && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="px-4">
-            <GlassCard className="p-8 border-brand-lime/20 bg-brand-lime/5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-5">
-                <BookOpen size={180} />
-              </div>
-              <h3 className="text-xl md:text-2xl font-display font-black uppercase tracking-tight mb-8 text-brand-lime">Quran Foundation Deep Analytics</h3>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-brand-lime opacity-80"><Flame size={18}/> <span className="text-xs font-bold uppercase tracking-widest">Global Streak</span></div>
-                  <p className="text-4xl font-display font-black tracking-tighter">{qfAnalytics.currentStreak}</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-brand-lime opacity-80"><Trophy size={18}/> <span className="text-xs font-bold uppercase tracking-widest">Global Longest</span></div>
-                  <p className="text-4xl font-display font-black tracking-tighter">{qfAnalytics.longestStreak}</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-brand-lime opacity-80"><Clock size={18}/> <span className="text-xs font-bold uppercase tracking-widest">Est. Time Read</span></div>
-                  <p className="text-4xl font-display font-black tracking-tighter">{Math.floor(qfAnalytics.readingTimeMinutes / 60)}<span className="text-lg opacity-50 ml-1">hrs</span> {qfAnalytics.readingTimeMinutes % 60}<span className="text-lg opacity-50 ml-1">m</span></p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-brand-lime opacity-80"><Target size={18}/> <span className="text-xs font-bold uppercase tracking-widest">Daily Goal</span></div>
-                  <p className="text-4xl font-display font-black tracking-tighter">{qfAnalytics.currentJuz}<span className="text-lg opacity-50 mx-1">/</span>{qfAnalytics.targetJuz} <span className="text-lg opacity-50">Juz</span></p>
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
         <GlassCard className="p-8 space-y-6">
