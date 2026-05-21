@@ -167,7 +167,6 @@ export default function App() {
   }, [view, activeCircle?.id]);
 
   // App State
-  const [authError, setAuthError] = useState('');
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
@@ -241,7 +240,7 @@ export default function App() {
       })
       .catch(err => {
         console.error('OAuth Callback Error:', err);
-        setAuthError('OAuth Login failed.');
+        toast.error('OAuth Login failed: ' + err.message);
         if (window.opener) window.close();
       })
       .finally(() => {
@@ -1058,17 +1057,29 @@ export default function App() {
   };
 
   const handleQFLogin = async () => {
-    setAuthError('');
     setIsAuthLoading(true);
 
     try {
-      const configRes = await fetch('/api/qf/oauth/config');
-      if (!configRes.ok) {
-        throw new Error('Could not load OAuth configuration from server.');
+      let clientId = import.meta.env.VITE_QF_CLIENT_ID;
+      let authBaseUrl = import.meta.env.VITE_QF_OAUTH_AUTH_URL || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
+
+      if (!clientId) {
+        try {
+          const configRes = await fetch('/api/qf/oauth/config');
+          if (configRes.ok) {
+            const text = await configRes.text();
+            try {
+              const config = JSON.parse(text);
+              clientId = config.clientId;
+              if (config.authUrl) authBaseUrl = config.authUrl;
+            } catch (e) {
+              console.warn('Backend /api/qf/oauth/config did not return JSON. Assuming static site hosting.');
+            }
+          }
+        } catch (e) {
+          console.warn('Backend fetch failed. Assuming static site hosting.');
+        }
       }
-      const config = await configRes.json();
-      const clientId = config.clientId;
-      const authBaseUrl = config.authUrl || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
 
       if (!clientId || clientId === 'quran-circles-demo') {
         setShowQFConfigHelp(true);
@@ -1099,7 +1110,7 @@ export default function App() {
       window.location.href = authUrl.toString();
     } catch (err: any) {
       console.error('QF login error:', err);
-      setAuthError(err.message || 'Failed to initialize login.');
+      toast.error(err.message || 'Failed to initialize login.');
       setIsAuthLoading(false);
     }
   };
@@ -1308,8 +1319,8 @@ export default function App() {
                       </p>
                     </div>
 
-                    <Button onClick={handleQFLogin} className="w-full py-8 text-xl font-bold bg-brand-lime border-none text-brand-deep hover:bg-white transition-all duration-300">
-                      Sign In / Sign Up
+                    <Button onClick={handleQFLogin} disabled={isAuthLoading} className="w-full py-8 text-xl font-bold bg-brand-lime border-none text-brand-deep hover:bg-white transition-all duration-300">
+                      {isAuthLoading ? 'Please Wait...' : 'Sign In / Sign Up'}
                     </Button>
                     
                     <div className="pt-4 text-center">
@@ -2531,7 +2542,9 @@ export default function App() {
                       <p className="text-white/60">You need to be signed in to join a circle and track your progress.</p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <Button onClick={handleQFLogin} className="w-full py-4 font-bold bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep">Sign In / Sign Up</Button>
+                      <Button onClick={handleQFLogin} disabled={isAuthLoading} className="w-full py-4 font-bold bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep">
+                        {isAuthLoading ? 'Please Wait...' : 'Sign In / Sign Up'}
+                      </Button>
                       <Button variant="outline" onClick={() => setView('landing')} className="w-full py-4">Back to Home</Button>
                     </div>
                   </Card>
@@ -3380,10 +3393,12 @@ export default function App() {
                       </ul>
                     </div>
 
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm mt-6">How to Configure Secrets in Google AI Studio:</h4>
+                    <h4 className="text-white font-black uppercase tracking-widest text-sm mt-6">How to Configure Secrets in Google AI Studio (or Vercel/Netlify):</h4>
                     <ol className="list-decimal list-inside space-y-3 font-medium text-white/80">
                       <li>
-                        Open the <strong>Settings</strong> button (located in the top bar or side menu of your Google AI Studio build dashboard).
+                        <strong>In AI Studio:</strong> Open the <strong>Settings</strong> button (located in the top bar or side menu of your Google AI Studio build dashboard).
+                        <br/>
+                        <strong>In Vercel/Netlify:</strong> Go to your Project Settings &gt; Environment Variables. You MUST prefix variables with <code className="bg-black/20 px-1 rounded">VITE_</code> (e.g. <code className="bg-black/20 px-1 rounded">VITE_QF_CLIENT_ID</code>).
                       </li>
                       <li>
                         Navigate to the <strong>Secrets</strong> or <strong>Environment Variables</strong> section.
