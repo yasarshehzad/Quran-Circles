@@ -619,7 +619,6 @@ export default function App() {
         });
       }
       
-      alert("Demo data seeded! Check your dashboard.");
       setView('dashboard');
     } catch (err) {
       console.error("Seeding error:", err);
