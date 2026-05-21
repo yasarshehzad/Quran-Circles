@@ -1096,11 +1096,7 @@ export default function App() {
       authUrl.searchParams.set('code_challenge', codeChallenge);
       authUrl.searchParams.set('code_challenge_method', 'S256');
 
-      const width = 500;
-      const height = 700;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-      window.open(authUrl.toString(), 'qf_oauth', `width=${width},height=${height},top=${top},left=${left},toolbar=no,location=no,status=no,menubar=no`);
+      window.location.href = authUrl.toString();
     } catch (err: any) {
       console.error('QF login error:', err);
       setAuthError(err.message || 'Failed to initialize login.');
