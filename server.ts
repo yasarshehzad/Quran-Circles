@@ -135,19 +135,31 @@ async function startServer() {
 
   // --- Quran Foundation interactive OAuth endpoints ---
   app.get('/api/qf/oauth/config', (req, res) => {
+    let authUrl = process.env.QF_OAUTH_AUTH_URL?.trim() || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
+    
+    // Auto-fix if user only provided the domain without the path
+    if (authUrl.includes('quran.foundation') && !authUrl.includes('/auth') && !authUrl.includes('/authorize')) {
+      authUrl = authUrl.endsWith('/') ? `${authUrl}oauth2/auth` : `${authUrl}/oauth2/auth`;
+    }
+
     res.json({
-      clientId: process.env.QF_CLIENT_ID || '',
-      authUrl: process.env.QF_OAUTH_AUTH_URL || 'https://prelive-oauth2.quran.foundation/oauth2/auth'
+      clientId: process.env.QF_CLIENT_ID?.trim() || '',
+      authUrl: authUrl
     });
   });
 
   app.post('/api/qf/oauth/exchange', async (req, res) => {
     const { code, code_verifier, redirect_uri } = req.body;
-    const clientId = process.env.QF_CLIENT_ID;
-    const clientSecret = process.env.QF_CLIENT_SECRET;
+    const clientId = process.env.QF_CLIENT_ID?.trim();
+    const clientSecret = process.env.QF_CLIENT_SECRET?.trim();
     
     // Default to prelive for testing User APIs unless overridden
-    const tokenEndpoint = process.env.QF_OAUTH_TOKEN_URL || "https://prelive-oauth2.quran.foundation/oauth2/token";
+    let tokenEndpoint = process.env.QF_OAUTH_TOKEN_URL?.trim() || "https://prelive-oauth2.quran.foundation/oauth2/token";
+    
+    // Auto-fix if user only provided the domain without the path
+    if (tokenEndpoint.includes('quran.foundation') && !tokenEndpoint.includes('/token')) {
+      tokenEndpoint = tokenEndpoint.endsWith('/') ? `${tokenEndpoint}oauth2/token` : `${tokenEndpoint}/oauth2/token`;
+    }
 
     if (!clientId || !clientSecret) {
       return res.status(500).json({ error: "Missing QF_CLIENT_ID or QF_CLIENT_SECRET server configuration" });
@@ -186,7 +198,15 @@ async function startServer() {
 
   // User APIs Serverless Proxy Handler
   app.use('/api/qf/user-proxy', express.json(), async (req, res) => {
-    const qfUserApiBase = process.env.QF_USER_API_URL || "https://apis-prelive.quran.foundation/auth/v1";
+    let qfUserApiBase = process.env.QF_USER_API_URL?.trim() || "https://apis-prelive.quran.foundation/auth/v1";
+    
+    // Auto-fix if user only provided the domain without the path
+    if (qfUserApiBase.includes('apis-prelive.quran.foundation') && !qfUserApiBase.includes('/auth/v1')) {
+      qfUserApiBase = qfUserApiBase.endsWith('/') ? `${qfUserApiBase}auth/v1` : `${qfUserApiBase}/auth/v1`;
+    } else if (qfUserApiBase.includes('apis.quran.foundation') && !qfUserApiBase.includes('/auth/v1')) { // prod fallback
+      qfUserApiBase = qfUserApiBase.endsWith('/') ? `${qfUserApiBase}auth/v1` : `${qfUserApiBase}/auth/v1`;
+    }
+
     const clientId = process.env.QF_CLIENT_ID;
     const authHeader = req.headers.authorization; 
     

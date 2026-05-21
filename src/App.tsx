@@ -61,7 +61,7 @@ import {
 } from 'lucide-react';
 import { format, parseISO, differenceInDays, startOfDay, subDays } from 'date-fns';
 
-import { auth, db, loginWithGoogle, loginAnonymously, logout, loginWithEmail, registerWithEmail } from './firebase';
+import { auth, db, loginAnonymously, logout, loginWithEmail, registerWithEmail } from './firebase';
 import { handleFirestoreError, OperationType } from './services/firestoreService';
 import { quranFoundation } from './services/quranFoundation';
 import { ProgressSummary } from './components/circle/StreakCard';
@@ -88,6 +88,7 @@ export default function App() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showQFConfigHelp, setShowQFConfigHelp] = useState(false);
   
   const [circles, setCircles] = useState<Circle[]>([]);
   const [activeCircle, setActiveCircle] = useState<Circle | null>(null);
@@ -165,10 +166,7 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [view, activeCircle?.id]);
 
-  // Email Auth State
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
+  // App State
   const [authError, setAuthError] = useState('');
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
@@ -1059,39 +1057,23 @@ export default function App() {
     }
   };
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError('');
-    setIsAuthLoading(true);
-    try {
-      if (isRegistering) {
-        await registerWithEmail(email, password);
-      } else {
-        await loginWithEmail(email, password);
-      }
-    } catch (err: any) {
-      setAuthError(err.message);
-    } finally {
-      setIsAuthLoading(false);
-    }
-  };
-
   const handleQFLogin = async () => {
     setAuthError('');
     setIsAuthLoading(true);
 
     try {
-      // Dynamically load Client ID and Auth base URL from backend to ensure we don't use stale fallback client ID
       const configRes = await fetch('/api/qf/oauth/config');
       if (!configRes.ok) {
         throw new Error('Could not load OAuth configuration from server.');
       }
       const config = await configRes.json();
-      const clientId = config.clientId || 'quran-circles-demo';
+      const clientId = config.clientId;
       const authBaseUrl = config.authUrl || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
 
-      if (clientId === 'quran-circles-demo') {
-        toast.error('The server has not yet been configured with your real Quran Foundation Client ID. Falling back to demo ID.', { duration: 6000 });
+      if (!clientId || clientId === 'quran-circles-demo') {
+        setShowQFConfigHelp(true);
+        setIsAuthLoading(false);
+        return;
       }
 
       const codeVerifier = generateRandomString(64);
@@ -1323,56 +1305,16 @@ export default function App() {
                       <p className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-center leading-none">Join the <br/> Circle</p>
                     </div>
 
-                    <div className="space-y-3">
-                      <h3 className="text-4xl font-display font-black uppercase tracking-tighter">{isRegistering ? 'New Journey' : 'Welcome Back'}</h3>
-                      <p className="text-white/40 font-medium text-lg">
-                        {isRegistering ? 'Create an account to start your reflection journey' : 'Sign in to continue your reflection'}
+                    <div className="space-y-3 text-center">
+                      <h3 className="text-4xl font-display font-black uppercase tracking-tighter">Welcome</h3>
+                      <p className="text-white/40 font-medium text-base">
+                        Join private reading circles, track your daily progress, and reflect on the Quran together.
                       </p>
                     </div>
 
-                    <form onSubmit={handleEmailAuth} className="space-y-8">
-                      <Input 
-                        label="Email Address"
-                        type="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@example.com"
-                        required
-                      />
-
-                      <Input 
-                        label="Password"
-                        type="password" 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                      />
-
-                      {authError && <p className="text-xs text-rose-400 font-bold bg-rose-500/10 p-4 rounded-2xl border border-rose-500/20">{authError}</p>}
-
-                      <Button type="submit" className="w-full py-6 text-xl" disabled={isAuthLoading}>
-                        {isAuthLoading ? 'Please wait...' : isRegistering ? 'Create Account' : 'Sign In'}
-                      </Button>
-                    </form>
-
-                    <div className="relative py-4">
-                      <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em] font-black text-white/40 bg-white/5 backdrop-blur-xl px-6 py-1 rounded-full w-max mx-auto">OR</div>
-                    </div>
-
-                    <Button variant="secondary" onClick={handleQFLogin} className="w-full py-5 bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep transition-all duration-300">
-                      {isRegistering ? 'Continue with Quran Foundation' : 'Sign in with Quran Foundation'}
+                    <Button onClick={handleQFLogin} className="w-full py-8 text-xl font-bold bg-brand-lime border-none text-brand-deep hover:bg-white transition-all duration-300">
+                      Sign In / Sign Up
                     </Button>
-
-                    <p className="text-center text-base font-bold text-white/40">
-                      {isRegistering ? 'Already have an account?' : "Don't have an account?"}{' '}
-                      <button 
-                        onClick={() => setIsRegistering(!isRegistering)}
-                        className="text-brand-lime underline decoration-brand-lime/30 decoration-2 underline-offset-8 hover:decoration-brand-lime transition-all"
-                      >
-                        {isRegistering ? 'Sign In' : 'Create One'}
-                      </button>
-                    </p>
                     
                     <div className="pt-4 text-center">
                       <button onClick={seedDemoData} className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] hover:text-brand-lime transition-colors">
@@ -2593,7 +2535,7 @@ export default function App() {
                       <p className="text-white/60">You need to be signed in to join a circle and track your progress.</p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <Button onClick={handleQFLogin} className="w-full py-4 bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep">Sign in with Quran Foundation</Button>
+                      <Button onClick={handleQFLogin} className="w-full py-4 font-bold bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep">Sign In / Sign Up</Button>
                       <Button variant="outline" onClick={() => setView('landing')} className="w-full py-4">Back to Home</Button>
                     </div>
                   </Card>
@@ -3388,6 +3330,89 @@ export default function App() {
                     <p>We strive to provide a reliable service but do not guarantee uninterrupted access. We reserve the right to modify or discontinue features as needed to improve the platform.</p>
                   </div>
                   <Button className="w-full py-4" onClick={() => setShowTermsModal(false)}>Close</Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Quran Foundation OAuth Configuration Help Modal */}
+        <AnimatePresence>
+          {showQFConfigHelp && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                onClick={() => setShowQFConfigHelp(false)}
+                className="absolute inset-0 bg-brand-deep/80 backdrop-blur-md" 
+              />
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-full max-w-2xl bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden"
+              >
+                <div className="p-8 md:p-12 space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-3xl font-display font-black uppercase tracking-tight">Oauth <span className="text-brand-lime">Setup Assistant</span></h2>
+                    <button onClick={() => setShowQFConfigHelp(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors">
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="prose prose-invert max-w-none space-y-6 text-white/70 font-medium leading-relaxed max-h-[55vh] overflow-y-auto custom-scrollbar pr-4">
+                    <div className="p-5 bg-brand-lime/10 border border-brand-lime/20 rounded-3xl space-y-2">
+                      <p className="text-brand-lime font-bold">Good news! Your Redirect URLs are Whitelisted!</p>
+                      <p className="text-xs text-white/80">
+                        Quran Foundation has whitelisted your callback URLs for your pre-live and production clients. You are ready!
+                      </p>
+                    </div>
+
+                    <p>
+                      Currently, your app is running with an empty or demo configuration fallback (<code className="bg-white/10 px-2 py-0.5 rounded text-brand-lime">quran-circles-demo</code>), which prevents signing in. To complete the setup, please provide your real Client ID and Secret in Google AI Studio.
+                    </p>
+
+                    <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-200/90 text-sm mt-4">
+                      <p className="font-bold flex items-center gap-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                        Important: Pre-Live vs Production URLs
+                      </p>
+                      <p className="mb-2">If you receive an <strong>"OAuth 2.0 Client does not exist"</strong> error when signing in, it means your environment variables are mismatched.</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>If you are using a <strong>Pre-live Client ID</strong>, your <code className="bg-black/20 px-1 rounded">QF_OAUTH_AUTH_URL</code> must be set to <code className="bg-black/20 px-1 rounded">https://prelive-oauth2.quran.foundation</code></li>
+                        <li>Do NOT use <code className="bg-black/20 px-1 rounded">https://oauth2.quran.foundation</code> unless you are using a fully approved Production Client ID.</li>
+                      </ul>
+                    </div>
+
+                    <h4 className="text-white font-black uppercase tracking-widest text-sm mt-6">How to Configure Secrets in Google AI Studio:</h4>
+                    <ol className="list-decimal list-inside space-y-3 font-medium text-white/80">
+                      <li>
+                        Open the <strong>Settings</strong> button (located in the top bar or side menu of your Google AI Studio build dashboard).
+                      </li>
+                      <li>
+                        Navigate to the <strong>Secrets</strong> or <strong>Environment Variables</strong> section.
+                      </li>
+                      <li>
+                        Add the following environment variable keys with their respective values:
+                        <ul className="list-disc list-inside pl-5 mt-2 space-y-1 text-xs font-mono text-brand-lime">
+                          <li>QF_CLIENT_ID = [your-real-client-id]</li>
+                          <li>QF_CLIENT_SECRET = [your-real-client-secret]</li>
+                        </ul>
+                      </li>
+                      <li>
+                        Submit/Save the settings. The platform will automatically rebuild and reboot the app with your real credentials!
+                      </li>
+                    </ol>
+
+                    <h4 className="text-white font-black uppercase tracking-widest text-sm text-[11px] font-mono">Whitelisted Callbacks reference:</h4>
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl font-mono text-xs space-y-2 select-all">
+                      <p className="text-white/40">// Development / Preview Frame Callback:</p>
+                      <p className="text-white break-all">{window.location.origin}/callback</p>
+                      <p className="text-white/40 mt-2">// Production Website Callback:</p>
+                      <p className="text-white break-all">https://qurancircles.site/callback</p>
+                    </div>
+                  </div>
+                  <Button className="w-full py-4 bg-brand-lime text-brand-deep hover:bg-brand-lime/90 font-black uppercase tracking-wider" onClick={() => setShowQFConfigHelp(false)}>Got it, Let's configure!</Button>
                 </div>
               </motion.div>
             </div>
