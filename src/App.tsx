@@ -1086,7 +1086,13 @@ export default function App() {
     setIsAuthLoading(true);
 
     try {
-      let clientId = import.meta.env.VITE_QF_CLIENT_ID || '44aa776a-1447-4077-8be2-80a4cbdd0dfb';
+      let clientId = import.meta.env.VITE_QF_CLIENT_ID;
+      
+      // Override demo with live client ID
+      if (!clientId || clientId === 'quran-circles-demo') {
+        clientId = '44aa776a-1447-4077-8be2-80a4cbdd0dfb'; 
+      }
+      
       let authBaseUrl = import.meta.env.VITE_QF_OAUTH_AUTH_URL || 'https://oauth2.quran.foundation/oauth2/auth';
 
       if (authBaseUrl && authBaseUrl.includes('quran.foundation') && !authBaseUrl.includes('/auth') && !authBaseUrl.includes('/authorize')) {
@@ -1111,7 +1117,11 @@ export default function App() {
         }
       }
 
-      if (!clientId || clientId === 'quran-circles-demo') {
+      if (clientId === 'quran-circles-demo') {
+        clientId = '44aa776a-1447-4077-8be2-80a4cbdd0dfb';
+      }
+
+      if (!clientId) {
         setShowQFConfigHelp(true);
         setIsAuthLoading(false);
         return;
