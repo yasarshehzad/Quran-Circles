@@ -88,7 +88,6 @@ export default function App() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
-  const [showQFConfigHelp, setShowQFConfigHelp] = useState(false);
   
   const [circles, setCircles] = useState<Circle[]>([]);
   const [activeCircle, setActiveCircle] = useState<Circle | null>(null);
@@ -1122,8 +1121,8 @@ export default function App() {
       }
 
       if (!clientId) {
-        setShowQFConfigHelp(true);
         setIsAuthLoading(false);
+        toast.error("Quran Foundation Client ID is missing. Please check your hosting environment variables.");
         return;
       }
 
@@ -3385,92 +3384,7 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Quran Foundation OAuth Configuration Help Modal */}
-        <AnimatePresence>
-          {showQFConfigHelp && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-              <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                exit={{ opacity: 0 }} 
-                onClick={() => setShowQFConfigHelp(false)}
-                className="absolute inset-0 bg-brand-deep/80 backdrop-blur-md" 
-              />
-              <motion.div 
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-2xl bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden"
-              >
-                <div className="p-8 md:p-12 space-y-8">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-3xl font-display font-black uppercase tracking-tight">Oauth <span className="text-brand-lime">Setup Assistant</span></h2>
-                    <button onClick={() => setShowQFConfigHelp(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors">
-                      <X size={20} />
-                    </button>
-                  </div>
-                  <div className="prose prose-invert max-w-none space-y-6 text-white/70 font-medium leading-relaxed max-h-[55vh] overflow-y-auto custom-scrollbar pr-4">
-                    <div className="p-5 bg-brand-lime/10 border border-brand-lime/20 rounded-3xl space-y-2">
-                      <p className="text-brand-lime font-bold">Good news! Your Redirect URLs are Whitelisted!</p>
-                      <p className="text-xs text-white/80">
-                        Quran Foundation has whitelisted your callback URLs for your pre-live and production clients. You are ready!
-                      </p>
-                    </div>
-
-                    <p>
-                      Currently, your app is running with an empty or demo configuration fallback (<code className="bg-white/10 px-2 py-0.5 rounded text-brand-lime">quran-circles-demo</code>), which prevents signing in. To complete the setup, please provide your real Client ID and Secret in Google AI Studio.
-                    </p>
-
-                    <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-200/90 text-sm mt-4">
-                      <p className="font-bold flex items-center gap-2 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                        Important: Pre-Live vs Production URLs
-                      </p>
-                      <p className="mb-2">If you receive an <strong>"OAuth 2.0 Client does not exist"</strong> error when signing in, it means your environment variables are mismatched.</p>
-                      <ul className="list-disc pl-5 space-y-1">
-                        <li>If you are using a <strong>Pre-live Client ID</strong>, your <code className="bg-black/20 px-1 rounded">QF_OAUTH_AUTH_URL</code> must be set to <code className="bg-black/20 px-1 rounded">https://prelive-oauth2.quran.foundation</code></li>
-                        <li>Do NOT use <code className="bg-black/20 px-1 rounded">https://oauth2.quran.foundation</code> unless you are using a fully approved Production Client ID.</li>
-                      </ul>
-                    </div>
-
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm mt-6">How to Configure Secrets in Google AI Studio (or Vercel/Netlify):</h4>
-                    <ol className="list-decimal list-inside space-y-3 font-medium text-white/80">
-                      <li>
-                        <strong>In AI Studio:</strong> Open the <strong>Settings</strong> button (located in the top bar or side menu of your Google AI Studio build dashboard).
-                        <br/>
-                        <strong>In Vercel/Netlify:</strong> Go to your Project Settings &gt; Environment Variables. You MUST prefix variables with <code className="bg-black/20 px-1 rounded">VITE_</code> (e.g. <code className="bg-black/20 px-1 rounded">VITE_QF_CLIENT_ID</code>).
-                      </li>
-                      <li>
-                        Navigate to the <strong>Secrets</strong> or <strong>Environment Variables</strong> section.
-                      </li>
-                      <li>
-                        Add the following environment variable keys with their respective values:
-                        <ul className="list-disc list-inside pl-5 mt-2 space-y-1 text-xs font-mono text-brand-lime">
-                          <li>VITE_QF_CLIENT_ID = [your-real-client-id]</li>
-                          <li>VITE_QF_OAUTH_AUTH_URL = https://prelive-oauth2.quran.foundation</li>
-                          <li>VITE_QF_OAUTH_TOKEN_URL = https://prelive-oauth2.quran.foundation</li>
-                        </ul>
-                        <p className="mt-2 text-sm"><em>Note: If you are using backend Express deployments, define QF_CLIENT_ID and QF_CLIENT_SECRET without VITE_ instead.</em></p>
-                      </li>
-                      <li>
-                        Submit/Save the settings. The platform will automatically rebuild and reboot the app with your real credentials!
-                      </li>
-                    </ol>
-
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm text-[11px] font-mono">Whitelisted Callbacks reference:</h4>
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl font-mono text-xs space-y-2 select-all">
-                      <p className="text-white/40">// Development / Preview Frame Callback:</p>
-                      <p className="text-white break-all">{window.location.origin}/callback</p>
-                      <p className="text-white/40 mt-2">// Production Website Callback:</p>
-                      <p className="text-white break-all">https://qurancircles.site/callback</p>
-                    </div>
-                  </div>
-                  <Button className="w-full py-4 bg-brand-lime text-brand-deep hover:bg-brand-lime/90 font-black uppercase tracking-wider" onClick={() => setShowQFConfigHelp(false)}>Got it, Let's configure!</Button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+        {/* Quran Foundation OAuth Configuration Help Modal Removed */}
 
       </div>
     </div>
