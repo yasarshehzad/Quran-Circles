@@ -210,12 +210,12 @@ export default function App() {
         if (!res.ok) {
           // If the express backend is missing (e.g. hosted statically on Vercel/Netlify), attempt a direct PKCE exchange.
           if (res.status === 404) {
-            let tokenUrl = import.meta.env.VITE_QF_OAUTH_TOKEN_URL || 'https://prelive-oauth2.quran.foundation/oauth2/token';
+            let tokenUrl = import.meta.env.VITE_QF_OAUTH_TOKEN_URL || 'https://oauth2.quran.foundation/oauth2/token';
             if (tokenUrl && tokenUrl.includes('quran.foundation') && !tokenUrl.includes('/token')) {
               tokenUrl = tokenUrl.endsWith('/') ? `${tokenUrl}oauth2/token` : `${tokenUrl}/oauth2/token`;
             }
             
-            const clientId = import.meta.env.VITE_QF_CLIENT_ID;
+            const clientId = import.meta.env.VITE_QF_CLIENT_ID || '44aa776a-1447-4077-8be2-80a4cbdd0dfb';
             if (!clientId) throw new Error('Missing VITE_QF_CLIENT_ID for static token exchange');
             
             const directRes = await fetch(tokenUrl, {
@@ -1086,8 +1086,8 @@ export default function App() {
     setIsAuthLoading(true);
 
     try {
-      let clientId = import.meta.env.VITE_QF_CLIENT_ID;
-      let authBaseUrl = import.meta.env.VITE_QF_OAUTH_AUTH_URL || 'https://prelive-oauth2.quran.foundation/oauth2/auth';
+      let clientId = import.meta.env.VITE_QF_CLIENT_ID || '44aa776a-1447-4077-8be2-80a4cbdd0dfb';
+      let authBaseUrl = import.meta.env.VITE_QF_OAUTH_AUTH_URL || 'https://oauth2.quran.foundation/oauth2/auth';
 
       if (authBaseUrl && authBaseUrl.includes('quran.foundation') && !authBaseUrl.includes('/auth') && !authBaseUrl.includes('/authorize')) {
         authBaseUrl = authBaseUrl.endsWith('/') ? `${authBaseUrl}oauth2/auth` : `${authBaseUrl}/oauth2/auth`;
@@ -3436,9 +3436,11 @@ export default function App() {
                       <li>
                         Add the following environment variable keys with their respective values:
                         <ul className="list-disc list-inside pl-5 mt-2 space-y-1 text-xs font-mono text-brand-lime">
-                          <li>QF_CLIENT_ID = [your-real-client-id]</li>
-                          <li>QF_CLIENT_SECRET = [your-real-client-secret]</li>
+                          <li>VITE_QF_CLIENT_ID = [your-real-client-id]</li>
+                          <li>VITE_QF_OAUTH_AUTH_URL = https://prelive-oauth2.quran.foundation</li>
+                          <li>VITE_QF_OAUTH_TOKEN_URL = https://prelive-oauth2.quran.foundation</li>
                         </ul>
+                        <p className="mt-2 text-sm"><em>Note: If you are using backend Express deployments, define QF_CLIENT_ID and QF_CLIENT_SECRET without VITE_ instead.</em></p>
                       </li>
                       <li>
                         Submit/Save the settings. The platform will automatically rebuild and reboot the app with your real credentials!
