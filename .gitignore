@@ -8,3 +8,5 @@ coverage/
 !.env.example
 .aistudio/
 public/*.tar.gz
+.wrangler/
+*.patch
