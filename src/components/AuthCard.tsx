@@ -7,7 +7,7 @@ import {
   getFriendlyAuthErrorMessage 
 } from '../firebase';
 import { Button, Input } from './ui/Base';
-import { Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkles, Compass, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkles, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AuthCardProps {
@@ -88,27 +88,6 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       }
     } catch (err: any) {
       console.error("Email auth failed:", err);
-      const msg = getFriendlyAuthErrorMessage(err);
-      setErrorMessage(msg);
-      toast.error(msg);
-    } finally {
-      setIsLoading(false);
-      setAuthMethod(null);
-    }
-  };
-
-  const handleGuestLogin = async () => {
-    setErrorMessage(null);
-    setIsLoading(true);
-    setAuthMethod('guest');
-    try {
-      const res = await loginAnonymously();
-      if (res?.user) {
-        toast.success("Welcome! Exploring as guest.");
-        onSuccess?.();
-      }
-    } catch (err: any) {
-      console.error("Guest login failed:", err);
       const msg = getFriendlyAuthErrorMessage(err);
       setErrorMessage(msg);
       toast.error(msg);
@@ -283,29 +262,23 @@ export const AuthCard: React.FC<AuthCardProps> = ({
         </Button>
       </form>
 
-      {/* 3. Secondary options: Guest explore & Demo Scenarios */}
-      <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-center border-t border-white/5">
-        <button
-          type="button"
-          onClick={handleGuestLogin}
-          disabled={isLoading}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-white/40 hover:text-brand-lime transition-colors uppercase tracking-wider py-1 cursor-pointer"
-        >
-          <Compass size={14} />
-          <span>Explore as Guest</span>
-        </button>
-
-        {onSeedDemo && (
+      {/* 3. Try Demo Scenarios (Main preview option) */}
+      {onSeedDemo && (
+        <div className="pt-4 border-t border-black/10 dark:border-white/10 space-y-2 text-center">
           <button
             type="button"
             onClick={onSeedDemo}
-            className="inline-flex items-center gap-1.5 text-xs font-black text-brand-lime/70 hover:text-brand-lime transition-colors uppercase tracking-wider py-1 cursor-pointer"
+            disabled={isLoading}
+            className="w-full py-4 px-6 rounded-full bg-brand-forest/10 dark:bg-white/10 hover:bg-brand-forest hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep text-brand-forest dark:text-brand-lime border border-brand-forest/20 dark:border-white/15 transition-all font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 group cursor-pointer active:scale-98 shadow-sm"
           >
-            <Sparkles size={14} />
-            <span>Try Demo Scenarios</span>
+            <Sparkles size={16} className="shrink-0 group-hover:scale-110 transition-transform" />
+            <span>Try Demo Scenarios (Instant Preview)</span>
           </button>
-        )}
-      </div>
+          <p className="text-[10px] text-paper-accent dark:text-white/40 font-medium">
+            Explore ready-made Family & Global circles without signing in first
+          </p>
+        </div>
+      )}
     </div>
   );
 };

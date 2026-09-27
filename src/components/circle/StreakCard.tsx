@@ -139,12 +139,12 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
     <div className="space-y-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4">
         <div className="space-y-2">
-          <p className="text-[12px] font-black text-brand-lime uppercase tracking-[0.5em]">Daily Accountability</p>
+          <p className="text-[12px] font-black text-brand-forest dark:text-brand-lime uppercase tracking-[0.5em]">Daily Accountability</p>
           <h3 className="text-4xl font-display font-black uppercase tracking-tighter">Member Status</h3>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Circle Rule:</span>
-          <span className="text-[10px] font-black text-brand-lime bg-brand-lime/10 border border-brand-lime/20 px-4 py-2 rounded-full uppercase tracking-widest lime-glow">
+          <span className="text-[10px] font-black text-paper-accent dark:text-white/40 uppercase tracking-widest">Circle Rule:</span>
+          <span className="text-[10px] font-black text-brand-forest dark:text-brand-lime bg-brand-forest/10 dark:bg-brand-lime/10 border border-brand-forest/20 dark:border-brand-lime/20 px-4 py-2 rounded-full uppercase tracking-widest">
             Streak only completes when ALL reflect
           </span>
         </div>
@@ -189,19 +189,19 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                     <span 
                       className={cn(
                         "text-base font-bold tracking-tight truncate block", 
-                        (isDone || isActive) ? "text-white" : "text-white/80"
+                        (isDone || isActive) ? "text-paper-ink dark:text-white" : "text-paper-ink/80 dark:text-white/80"
                       )} 
                       title={p.name}
                     >
                       {p.name}
                     </span>
                     {isActive && (
-                      <span className="px-2 py-0.5 rounded-full bg-brand-lime/20 border border-brand-lime/30 text-brand-lime text-[9px] font-black uppercase tracking-wider shrink-0">
+                      <span className="px-2 py-0.5 rounded-full bg-brand-forest/10 dark:bg-brand-lime/20 border border-brand-forest/20 dark:border-brand-lime/30 text-brand-forest dark:text-brand-lime text-[9px] font-black uppercase tracking-wider shrink-0">
                         You
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] font-medium tracking-wide text-white/45 truncate">
+                  <p className="text-[11px] font-semibold tracking-wide text-paper-accent dark:text-white/60 truncate">
                     {isActive ? "Today's reader" : isDone ? 'Reflection Posted' : 'Waiting for reflection'}
                   </p>
                 </div>
@@ -215,7 +215,7 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                       e.stopPropagation();
                       onNudgeParticipant(p);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-lime/10 hover:bg-brand-lime text-brand-lime hover:text-brand-deep text-xs font-black uppercase tracking-wider transition-all duration-200 border border-brand-lime/30 active:scale-95 shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-forest/10 dark:bg-brand-lime/10 hover:bg-brand-forest hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep text-brand-forest dark:text-brand-lime text-xs font-black uppercase tracking-wider transition-all duration-200 border border-brand-forest/20 dark:border-brand-lime/30 active:scale-95 shadow-sm cursor-pointer"
                     title={`Send encouragement nudge to ${p.name}`}
                   >
                     <Bell size={13} strokeWidth={2.5} className="shrink-0" />

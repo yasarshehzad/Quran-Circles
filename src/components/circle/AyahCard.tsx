@@ -214,17 +214,17 @@ export const AyahCard = ({
             {onOpenStudyDrawer && (
               <button 
                 onClick={onOpenStudyDrawer}
-                className="h-12 md:h-14 px-4 sm:px-5 rounded-2xl border border-white/10 bg-white/5 hover:bg-brand-lime hover:text-brand-deep flex items-center gap-2 transition-all duration-300 text-xs font-black uppercase tracking-wider group"
+                className="h-12 md:h-14 px-4 sm:px-5 rounded-2xl border border-white/10 bg-white/5 hover:bg-brand-forest hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep flex items-center gap-2.5 transition-all duration-300 text-xs font-black uppercase tracking-wider group"
                 title="Open Study Drawer (Tafsir, Comparison, Insights)"
               >
-                <BookOpen size={18} strokeWidth={2.5} className="text-brand-lime group-hover:text-brand-deep transition-colors" />
+                <BookOpen size={18} strokeWidth={2.5} className="text-brand-forest dark:text-brand-lime group-hover:text-white dark:group-hover:text-brand-deep transition-colors" />
                 <span className="hidden sm:inline">Study & Tafsir</span>
               </button>
             )}
           </div>
           <div className="text-right">
-            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-brand-lime font-black mb-2">Today's Focus</p>
-            <p className="text-sm md:text-base font-bold text-white/40 uppercase tracking-widest">{format(new Date(), 'MMMM do, yyyy')}</p>
+            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-brand-forest dark:text-brand-lime font-black mb-1.5">Today's Focus</p>
+            <p className="text-sm md:text-base font-bold text-paper-accent dark:text-white/50 uppercase tracking-widest">{format(new Date(), 'MMMM do, yyyy')}</p>
           </div>
         </div>
 
@@ -489,23 +489,25 @@ export const AyahCard = ({
           <div className="border-t border-white/10 w-full" />
           
           <div className="space-y-8">
-            <div className="flex flex-wrap items-center gap-6">
-              <span className="px-5 py-2 bg-brand-lime/10 text-brand-lime text-[11px] font-black rounded-xl uppercase tracking-[0.3em] border border-brand-lime/20">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              <span className="px-5 py-2.5 bg-brand-forest/10 dark:bg-brand-lime/10 text-brand-forest dark:text-brand-lime text-[11px] font-black rounded-xl uppercase tracking-[0.25em] border border-brand-forest/20 dark:border-brand-lime/20 shadow-sm">
                 {surahName} {surahNumber}:{verseRange}
               </span>
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <button 
                   onClick={() => {
                     if (onOpenStudyDrawer) onOpenStudyDrawer();
                     else handleToggleTafsir();
                   }}
                   className={cn(
-                    "text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer",
-                    showTafsir ? "bg-brand-lime text-brand-deep" : "text-brand-lime/80 hover:text-brand-lime bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/20"
+                    "text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer shadow-sm active:scale-95",
+                    showTafsir 
+                      ? "bg-brand-forest text-white dark:bg-brand-lime dark:text-brand-deep" 
+                      : "text-brand-forest dark:text-brand-lime bg-brand-forest/10 dark:bg-brand-lime/10 hover:bg-brand-forest/20 dark:hover:bg-brand-lime/20 border border-brand-forest/20 dark:border-brand-lime/30"
                   )}
                 >
-                  <BookOpen size={14} />
+                  <BookOpen size={15} strokeWidth={2.5} />
                   <span>Study & Tafsir</span>
                 </button>
 
@@ -515,10 +517,10 @@ export const AyahCard = ({
                     navigator.clipboard.writeText(text);
                     toast.success('Verse reference copied!');
                   }}
-                  className="text-white/30 hover:text-brand-lime hover:bg-brand-lime/5 text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 px-4 py-2 rounded-lg"
+                  className="text-paper-accent dark:text-white/40 hover:text-brand-forest dark:hover:text-brand-lime hover:bg-black/5 dark:hover:bg-brand-lime/5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 px-3.5 py-2.5 rounded-xl cursor-pointer"
                 >
-                  <Share2 size={14} />
-                  Share
+                  <Share2 size={15} strokeWidth={2.5} />
+                  <span>Share</span>
                 </button>
               </div>
             </div>

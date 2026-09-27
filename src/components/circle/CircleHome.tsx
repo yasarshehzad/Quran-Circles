@@ -220,7 +220,7 @@ export const CircleHome = ({
         <section className="lg:col-span-7 space-y-12">
           <div className="flex items-center justify-between px-4">
             <div className="space-y-2">
-              <p className="text-[11px] font-black text-brand-lime uppercase tracking-[0.4em]">Today's Focus</p>
+              <p className="text-[11px] font-black text-brand-forest dark:text-brand-lime uppercase tracking-[0.4em]">Today's Focus</p>
               <h3 className="text-3xl font-display font-black uppercase tracking-tight">The {isPlural ? 'Verses' : 'Verse'}</h3>
             </div>
             <div className="px-6 py-3 bg-brand-lime text-brand-deep rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] lime-glow">
@@ -264,7 +264,7 @@ export const CircleHome = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between px-6">
                   <div className="flex items-center gap-3">
-                    <p className="text-[11px] font-black text-brand-lime uppercase tracking-[0.4em]">Your Reflection</p>
+                    <p className="text-[11px] font-black text-brand-forest dark:text-brand-lime uppercase tracking-[0.4em]">Your Reflection</p>
                     {activeParticipant && !isOwnProfile && (
                       <Badge variant="outline" className="bg-brand-accent/10 text-brand-accent border-brand-accent/20 text-[8px]">
                         Writing for {activeParticipant.name}
@@ -273,7 +273,7 @@ export const CircleHome = ({
                   </div>
                   <button 
                     onClick={cyclePrompt}
-                    className="text-[10px] font-black text-white/20 uppercase tracking-widest hover:text-brand-lime transition-colors flex items-center gap-2"
+                    className="text-[10px] font-black text-paper-accent dark:text-white/40 uppercase tracking-widest hover:text-brand-forest dark:hover:text-brand-lime transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <RefreshCw size={12} /> New Prompt
                   </button>
@@ -283,7 +283,7 @@ export const CircleHome = ({
                     value={newReflection}
                     onChange={(e) => setNewReflection(e.target.value)}
                     placeholder={prompts[currentPromptIndex]}
-                    className="w-full p-6 md:p-10 bg-brand-forest/30 border border-white/10 rounded-[2rem] md:rounded-[2.5rem] focus:ring-4 focus:ring-brand-lime/20 outline-none transition-all min-h-[180px] md:min-h-[220px] resize-none font-medium text-lg md:text-xl text-white placeholder:text-white/20 backdrop-blur-xl"
+                    className="w-full p-6 md:p-10 bg-white/70 dark:bg-brand-forest/30 border border-black/10 dark:border-white/10 rounded-[2rem] md:rounded-[2.5rem] focus:ring-4 focus:ring-brand-forest/20 dark:focus:ring-brand-lime/20 outline-none transition-all min-h-[180px] md:min-h-[220px] resize-none font-medium text-lg md:text-xl text-paper-ink dark:text-white placeholder:text-paper-accent/50 dark:placeholder:text-white/30 backdrop-blur-xl"
                   />
                 </div>
               </div>
@@ -296,8 +296,8 @@ export const CircleHome = ({
                     {activeParticipant?.avatar || activeParticipant?.name[0] || '?'}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Posting as</span>
-                    <span className="font-bold text-white">{activeParticipant?.name || 'Select Member'}</span>
+                    <span className="text-[10px] font-black text-paper-accent dark:text-white/30 uppercase tracking-widest">Posting as</span>
+                    <span className="font-bold text-paper-ink dark:text-white">{activeParticipant?.name || 'Select Member'}</span>
                   </div>
                 </div>
                 <Button 

@@ -1220,6 +1220,47 @@ export default function App() {
         )}
 
         <main className="flex-1 p-4 sm:p-6 md:p-12 overflow-y-auto">
+          {/* Big Constant Banner for Demo Mode */}
+          {user && user.isAnonymous && view !== 'landing' && (
+            <div className="sticky top-0 z-40 mb-8 -mt-2 md:-mt-6">
+              <div className="bg-gradient-to-r from-brand-forest via-emerald-950 to-brand-deep border-2 border-brand-lime/30 rounded-3xl p-5 md:p-6 shadow-2xl text-white flex flex-col lg:flex-row items-center justify-between gap-6 backdrop-blur-xl">
+                <div className="flex items-center gap-4 text-center lg:text-left">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-brand-lime text-brand-deep flex items-center justify-center shrink-0 shadow-lg lime-glow">
+                    <Sparkles size={26} strokeWidth={2.5} />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 justify-center lg:justify-start">
+                      <span className="px-3 py-1 rounded-full bg-brand-lime text-brand-deep text-[10px] font-black uppercase tracking-wider">
+                        Demo Mode Active
+                      </span>
+                      <span className="text-white/60 text-xs hidden sm:inline">• Previewing Experience</span>
+                    </div>
+                    <p className="text-base md:text-lg font-bold text-white leading-snug">
+                      Create an account or sign in to begin your Quran Circles journey and save your daily habit!
+                    </p>
+                    <p className="text-xs text-white/50 hidden md:block">
+                      Your demo data and reflections will not be preserved permanently unless you connect an account.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-center">
+                  <button
+                    onClick={() => setShowAuthModal(true)}
+                    className="flex-1 sm:flex-none px-7 py-3.5 rounded-full bg-brand-lime text-brand-deep font-black text-xs uppercase tracking-wider hover:bg-white transition-all shadow-xl active:scale-95 cursor-pointer"
+                  >
+                    Create Account
+                  </button>
+                  <button
+                    onClick={() => setShowAuthModal(true)}
+                    className="flex-1 sm:flex-none px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all border border-white/20 active:scale-95 cursor-pointer"
+                  >
+                    Sign In
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
             
             {view === 'landing' && (
@@ -3032,58 +3073,6 @@ export default function App() {
         <QFInfoPanel isOpen={showQFInfo} onClose={() => setShowQFInfo(false)} />
         <Toaster position="bottom-right" theme="dark" richColors />
 
-        {/* Floating Audio Player */}
-        <AnimatePresence>
-          {(isPlaying || audioProgress > 0) && (
-            <motion.div 
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-0 left-0 right-0 z-[60] p-4 md:p-6"
-            >
-              <div className="max-w-4xl mx-auto bg-brand-deep/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-2xl shadow-black/50 p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-8">
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                  <button 
-                    onClick={toggleAudio}
-                    className="w-12 h-12 md:w-14 md:h-14 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 active:scale-95 lime-glow flex-shrink-0"
-                  >
-                    {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
-                  </button>
-                  
-                  <div className="flex-1 md:w-48">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime/60 truncate">
-                      {currentVerses[currentAudioVerseIndex]?.verse_key || 'Recitation'}
-                    </p>
-                    <p className="text-xs font-bold text-white truncate">
-                      {chapters.find(c => c.id === parseInt(currentVerses[currentAudioVerseIndex]?.verse_key?.split(':')[0]))?.name_simple || 'Quran'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex-1 w-full space-y-2">
-                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/30">
-                    <span>{Math.floor(audioProgress / 60)}:{Math.floor(audioProgress % 60).toString().padStart(2, '0')}</span>
-                    <span>{Math.floor(audioDuration / 60)}:{Math.floor(audioDuration % 60).toString().padStart(2, '0')}</span>
-                  </div>
-                  <div 
-                    className="relative h-2 bg-white/5 rounded-full overflow-hidden group cursor-pointer" 
-                    onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = e.clientX - rect.left;
-                      const percentage = x / rect.width;
-                      handleSeek(percentage * audioDuration);
-                    }}
-                  >
-                    <div 
-                      className="absolute top-0 left-0 h-full bg-brand-lime lime-glow transition-all duration-100" 
-                      style={{ width: `${(audioProgress / (audioDuration || 1)) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {user && (view === 'dashboard' || view === 'bookmarks') && (
           <div className="md:hidden p-6 bg-brand-deep/80 backdrop-blur-xl border-t border-white/5 flex items-center justify-around sticky bottom-0 z-50">
