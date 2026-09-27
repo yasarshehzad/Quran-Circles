@@ -303,7 +303,7 @@ export const CircleHome = ({
                 <Button 
                   onClick={submitReflection} 
                   size="lg" 
-                  className="w-full md:w-auto px-12 py-6 text-2xl" 
+                  className="w-full md:w-auto px-10 py-5 text-base md:text-lg font-black tracking-wide gap-3 shadow-lg shadow-brand-lime/25" 
                   icon={MessageSquare} 
                   disabled={!newReflection.trim() || !activeParticipantId}
                 >

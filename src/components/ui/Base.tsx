@@ -13,7 +13,7 @@ export const Button = ({ children, onClick, className, variant = 'primary', disa
   const sizes = {
     sm: 'px-4 py-2 text-sm rounded-full font-bold',
     md: 'px-6 py-3 rounded-full font-bold tracking-tight',
-    lg: 'px-8 py-4 text-lg rounded-full font-black uppercase tracking-tighter',
+    lg: 'px-8 py-4 text-lg rounded-full font-black uppercase tracking-wide',
   };
 
   return (

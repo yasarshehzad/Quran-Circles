@@ -10,3 +10,4 @@ coverage/
 public/*.tar.gz
 .wrangler/
 *.patch
+bun.lock

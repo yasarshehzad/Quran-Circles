@@ -130,11 +130,42 @@ export const AyahCard = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const [tookTooLong, setTookTooLong] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!verses || verses.length === 0) {
+      const timer = setTimeout(() => {
+        setTookTooLong(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setTookTooLong(false);
+    }
+  }, [verses]);
+
   if (!verses || verses.length === 0) return (
-    <Card className="bg-brand-deep h-96 flex items-center justify-center border-white/5 bento-card">
-      <div className="flex flex-col items-center gap-8">
-        <div className="w-20 h-20 border-4 border-brand-lime/10 border-t-brand-lime rounded-full animate-spin" />
-        <div className="text-brand-lime font-black tracking-[0.4em] uppercase text-xs">Loading Today's Verses</div>
+    <Card className="bg-brand-deep min-h-[22rem] p-8 flex items-center justify-center border-white/5 bento-card text-center">
+      <div className="flex flex-col items-center gap-6 max-w-sm">
+        <div className="w-16 h-16 border-4 border-brand-lime/10 border-t-brand-lime rounded-full animate-spin" />
+        <div className="space-y-2">
+          <div className="text-brand-lime font-black tracking-[0.3em] uppercase text-xs">
+            {tookTooLong ? "Connecting to Quran API..." : "Loading Today's Verses"}
+          </div>
+          <p className="text-white/40 text-xs font-medium">
+            {tookTooLong 
+              ? "Fetching Quran Foundation verses. You can reload if it doesn't appear." 
+              : "Preparing today's daily focus..."}
+          </p>
+        </div>
+        {tookTooLong && (
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-5 py-2.5 bg-brand-lime text-brand-deep rounded-full text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 shadow-lg shadow-brand-lime/20"
+          >
+            <RefreshCw size={14} />
+            <span>Refresh Now</span>
+          </button>
+        )}
       </div>
     </Card>
   );

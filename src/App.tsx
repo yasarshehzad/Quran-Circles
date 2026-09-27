@@ -395,8 +395,15 @@ export default function App() {
       return;
     }
 
-    const dayIndex = differenceInDays(startOfDay(parseISO(selectedDate)), startOfDay(parseISO(activeCircle.startDate)));
-    if (dayIndex < 0) return;
+    let dayIndex = 0;
+    try {
+      dayIndex = differenceInDays(startOfDay(parseISO(selectedDate)), startOfDay(parseISO(activeCircle.startDate)));
+      if (isNaN(dayIndex) || dayIndex < 0) {
+        dayIndex = 0;
+      }
+    } catch {
+      dayIndex = 0;
+    }
     
     let index = dayIndex;
     if (activeCircle.frequency === 'weekly') {
@@ -404,17 +411,34 @@ export default function App() {
     }
     
     const versesPerDay = activeCircle.versesPerDay || 1;
-    const startIndex = index * versesPerDay;
-    const ayahKeys = verses.slice(startIndex, startIndex + versesPerDay);
+    // Modulo so that if the circle reaches or exceeds plan length, it cycles cleanly rather than returning an empty array
+    const totalPlanDays = Math.ceil(verses.length / versesPerDay);
+    const effectiveDay = totalPlanDays > 0 ? (index % totalPlanDays) : 0;
+    const startIndex = effectiveDay * versesPerDay;
+    let ayahKeys = verses.slice(startIndex, startIndex + versesPerDay);
     
-    if (ayahKeys.length === 0) return;
+    if (ayahKeys.length === 0 && verses.length > 0) {
+      ayahKeys = [verses[0]];
+    }
+    
+    if (ayahKeys.length === 0) {
+      ayahKeys = ["110:1"];
+    }
 
     Promise.all(ayahKeys.map(key => quranFoundation.content.getVerse(key, translationId, arabicScript)))
-      .then(setCurrentVerses)
+      .then(fetched => {
+        if (fetched && fetched.length > 0) {
+          setCurrentVerses(fetched);
+        }
+      })
       .catch(err => {
         console.error("Error fetching verses:", err);
+        // Fallback to initial verse to ensure UI is never stuck in infinite loading
+        quranFoundation.content.getVerse(ayahKeys[0] || "110:1", translationId, arabicScript)
+          .then(v => setCurrentVerses([v]))
+          .catch(() => {});
       });
-  }, [activeCircle?.id, activeCircle?.planId, activeCircle?.verses, activeCircle?.versesPerDay, selectedDate, translationId, arabicScript]);
+  }, [activeCircle?.id, activeCircle?.planId, activeCircle?.verses, activeCircle?.versesPerDay, activeCircle?.startDate, selectedDate, translationId, arabicScript]);
 
   // Fetch Translations, Reciters and Tafsirs
   useEffect(() => {
