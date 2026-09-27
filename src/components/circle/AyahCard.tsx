@@ -55,6 +55,7 @@ interface AyahCardProps {
   chapters: any[];
   currentAudioVerseIndex: number;
   onPlayVerse: (index: number) => void;
+  onOpenStudyDrawer?: () => void;
 }
 
 export const AyahCard = ({ 
@@ -84,7 +85,8 @@ export const AyahCard = ({
   tafsirs,
   chapters,
   currentAudioVerseIndex,
-  onPlayVerse
+  onPlayVerse,
+  onOpenStudyDrawer
 }: AyahCardProps) => {
   const [showTafsir, setShowTafsir] = React.useState(false);
   const [tafsir, setTafsir] = React.useState<string | null>(null);
@@ -157,13 +159,14 @@ export const AyahCard = ({
       
       <div className="space-y-12 relative">
         <div className="flex justify-between items-start">
-          <div className="flex gap-4 md:gap-6">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button 
               onClick={onToggleBookmark}
               className={cn(
                 "w-12 h-12 md:w-14 md:h-14 rounded-2xl border flex items-center justify-center transition-all duration-300", 
                 isBookmarked ? "bg-brand-lime text-brand-deep border-brand-lime lime-glow" : "bg-white/5 text-white border-white/10 hover:bg-white/10"
               )}
+              title={isBookmarked ? "Remove Bookmark" : "Bookmark Ayah"}
             >
               {isBookmarked ? <BookmarkCheck size={24} strokeWidth={2.5} fill="currentColor" /> : <Bookmark size={24} strokeWidth={2.5} />}
             </button>
@@ -177,6 +180,16 @@ export const AyahCard = ({
             >
               <Settings2 size={24} strokeWidth={2.5} />
             </button>
+            {onOpenStudyDrawer && (
+              <button 
+                onClick={onOpenStudyDrawer}
+                className="h-12 md:h-14 px-4 sm:px-5 rounded-2xl border border-white/10 bg-white/5 hover:bg-brand-lime hover:text-brand-deep flex items-center gap-2 transition-all duration-300 text-xs font-black uppercase tracking-wider group"
+                title="Open Study Drawer (Tafsir, Comparison, Insights)"
+              >
+                <BookOpen size={18} strokeWidth={2.5} className="text-brand-lime group-hover:text-brand-deep transition-colors" />
+                <span className="hidden sm:inline">Study & Tafsir</span>
+              </button>
+            )}
           </div>
           <div className="text-right">
             <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-brand-lime font-black mb-2">Today's Focus</p>
@@ -452,14 +465,17 @@ export const AyahCard = ({
               
               <div className="flex items-center gap-4">
                 <button 
-                  onClick={() => handleToggleTafsir()}
+                  onClick={() => {
+                    if (onOpenStudyDrawer) onOpenStudyDrawer();
+                    else handleToggleTafsir();
+                  }}
                   className={cn(
-                    "text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 px-4 py-2 rounded-lg",
-                    showTafsir ? "bg-brand-lime text-brand-deep" : "text-white/30 hover:text-brand-lime hover:bg-brand-lime/5"
+                    "text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer",
+                    showTafsir ? "bg-brand-lime text-brand-deep" : "text-brand-lime/80 hover:text-brand-lime bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/20"
                   )}
                 >
                   <BookOpen size={14} />
-                  {showTafsir ? 'Hide Tafsir' : 'See Tafsir'}
+                  <span>Study & Tafsir</span>
                 </button>
 
                 <button 

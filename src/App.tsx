@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { generateRandomString, generateCodeChallenge } from './lib/pkce';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { 
   collection, 
@@ -61,7 +60,7 @@ import {
 } from 'lucide-react';
 import { format, parseISO, differenceInDays, startOfDay, subDays } from 'date-fns';
 
-import { auth, db, loginAnonymously, logout, loginWithEmail, registerWithEmail } from './firebase';
+import { auth, db, loginAnonymously, logout, loginWithEmail, registerWithEmail, loginWithGoogle } from './firebase';
 import { handleFirestoreError, OperationType } from './services/firestoreService';
 import { quranFoundation } from './services/quranFoundation';
 import { ProgressSummary } from './components/circle/StreakCard';
@@ -79,11 +78,16 @@ import { ReflectionFeed } from './components/circle/ReflectionFeed';
 import { CircleHome } from './components/circle/CircleHome';
 import { QFInfoPanel } from './components/circle/QFInfoPanel';
 import { StatsDashboard } from './components/StatsDashboard';
+import { AuthCard } from './components/AuthCard';
+import { AuthModal } from './components/AuthModal';
+import { AudioPlayerDock } from './components/circle/AudioPlayerDock';
+import { MobileNav } from './components/MobileNav';
 import { Lock, LogIn, PieChart } from 'lucide-react';
 
 export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'stats' | 'how-it-works' | 'features' | 'help-center' | 'contact-us'>('landing');
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -106,6 +110,10 @@ export default function App() {
   const [audioProgress, setAudioProgress] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const [currentAudioVerseIndex, setCurrentAudioVerseIndex] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [repeatMode, setRepeatMode] = useState<'off' | '3x' | 'infinite'>('off');
+  const [repeatCount, setRepeatCount] = useState(0);
+  const [isAudioDockVisible, setIsAudioDockVisible] = useState(false);
   const [activeParticipantId, setActiveParticipantId] = useState<string | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [newReflection, setNewReflection] = useState('');
@@ -170,113 +178,7 @@ export default function App() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 
-  // QF OAuth Callback Handler
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const state = urlParams.get('state');
-    const savedState = localStorage.getItem('qf_oauth_state');
-    const codeVerifier = localStorage.getItem('qf_pkce_verifier');
 
-    // Listener for popup OAuth success
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'QF_OAUTH_SUCCESS') {
-        toast.success(`Welcome to Quran Circles!`);
-        setIsAuthLoading(false);
-      }
-    };
-    window.addEventListener('message', handleMessage);
-
-    if (code && state) {
-      if (state !== savedState) {
-        toast.error('Invalid OAuth state. Please try logging in again.');
-        window.history.replaceState({}, document.title, window.location.pathname);
-        if (window.opener) window.close();
-        return;
-      }
-
-      setIsAuthLoading(true);
-      fetch('/api/qf/oauth/exchange', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code,
-          code_verifier: codeVerifier,
-          redirect_uri: window.location.origin + '/callback'
-        })
-      })
-      .then(async res => {
-        if (!res.ok) {
-          // If the express backend is missing (e.g. hosted statically on Vercel/Netlify), attempt a direct PKCE exchange.
-          if (res.status === 404) {
-            let tokenUrl = import.meta.env.VITE_QF_OAUTH_TOKEN_URL || 'https://oauth2.quran.foundation/oauth2/token';
-            if (tokenUrl && tokenUrl.includes('quran.foundation') && !tokenUrl.includes('/token')) {
-              tokenUrl = tokenUrl.endsWith('/') ? `${tokenUrl}oauth2/token` : `${tokenUrl}/oauth2/token`;
-            }
-            
-            const clientId = import.meta.env.VITE_QF_CLIENT_ID || '44aa776a-1447-4077-8be2-80a4cbdd0dfb';
-            if (!clientId) throw new Error('Missing VITE_QF_CLIENT_ID for static token exchange');
-            
-            const directRes = await fetch(tokenUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              body: new URLSearchParams({
-                grant_type: 'authorization_code',
-                code,
-                redirect_uri: window.location.origin + '/callback',
-                client_id: clientId,
-                code_verifier: codeVerifier || ''
-              })
-            });
-            if (!directRes.ok) throw new Error('Direct PKCE token exchange failed. Confirm your VITE_QF_CLIENT_ID and callback config.');
-            return directRes.json();
-          }
-          throw new Error('Failed token exchange from backend');
-        }
-        return res.json();
-      })
-      .then(async data => {
-        if (data.id_token) {
-          const payloadBase64 = data.id_token.split('.')[1];
-          const payload = JSON.parse(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')));
-          
-          const uid = payload.sub;
-          const userEmail = payload.email || `${uid}@quran.foundation`;
-          const secret = uid + '_qf_oauth_secret';
-
-          try {
-            await loginWithEmail(userEmail, secret);
-          } catch(err: any) {
-            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-              await registerWithEmail(userEmail, secret);
-            } else {
-              throw err;
-            }
-          }
-          
-          if (window.opener) {
-            window.opener.postMessage({ type: 'QF_OAUTH_SUCCESS' }, '*');
-            window.close();
-          } else {
-            toast.success(`Welcome to Quran Circles, ${payload.first_name || 'friend'}!`);
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        }
-      })
-      .catch(err => {
-        console.error('OAuth Callback Error:', err);
-        toast.error('OAuth Login failed: ' + err.message);
-        if (window.opener) window.close();
-      })
-      .finally(() => {
-        setIsAuthLoading(false);
-        localStorage.removeItem('qf_oauth_state');
-        localStorage.removeItem('qf_pkce_verifier');
-      });
-    }
-
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -482,7 +384,7 @@ export default function App() {
     if (activeCircle.verses && activeCircle.verses.length > 0) {
       verses = activeCircle.verses;
     } else {
-      const plan = QURAN_PLANS.find(p => p.id === activeCircle.planId);
+      const plan = QURAN_PLANS.find(p => p.id === activeCircle.planId) || QURAN_PLANS[1]; // fallback to daily-wisdom
       if (plan) {
         verses = plan.verses;
       }
@@ -555,7 +457,7 @@ export default function App() {
       name: "The Rahmans (Family)",
       inviteCode: "FAM999",
       adminUid: uid,
-      planId: "ramadan-30",
+      planId: "daily-wisdom",
       startDate: format(subDays(new Date(), 5), 'yyyy-MM-dd'),
       members: [uid],
       participants: [
@@ -563,6 +465,8 @@ export default function App() {
         { id: 'p1', name: "Mama", type: 'lightweight', parentUid: uid },
         { id: 'p2', name: "Zaid", type: 'lightweight', parentUid: uid }
       ],
+      versesPerDay: 1,
+      frequency: 'daily',
       participationMode: 'shared',
       deadlineConfig: { type: 'local', timezone: 'Europe/London', time: '23:59' },
       streak: { current: 5, lastDate: format(subDays(new Date(), 1), 'yyyy-MM-dd') }
@@ -573,7 +477,7 @@ export default function App() {
       name: "Global Hifz Friends",
       inviteCode: "GLOB88",
       adminUid: uid,
-      planId: "juz-30",
+      planId: "last-10-surahs",
       startDate: format(subDays(new Date(), 10), 'yyyy-MM-dd'),
       members: [uid, 'user2', 'user3'],
       participants: [
@@ -581,6 +485,8 @@ export default function App() {
         { id: 'user2', name: "Omar (Dubai)", type: 'auth' },
         { id: 'user3', name: "Sara (NYC)", type: 'auth' }
       ],
+      versesPerDay: 1,
+      frequency: 'daily',
       participationMode: 'individual',
       deadlineConfig: { type: 'shared', timezone: 'UTC', time: '22:00' },
       streak: { current: 10, lastDate: format(subDays(new Date(), 1), 'yyyy-MM-dd') }
@@ -739,6 +645,19 @@ export default function App() {
     };
 
     const onEnded = () => {
+      if (repeatMode === '3x' && repeatCount < 2) {
+        setRepeatCount(prev => prev + 1);
+        audio.currentTime = 0;
+        audio.play().catch(console.error);
+        return;
+      }
+      if (repeatMode === 'infinite') {
+        audio.currentTime = 0;
+        audio.play().catch(console.error);
+        return;
+      }
+
+      setRepeatCount(0);
       setCurrentAudioVerseIndex(prev => {
         if (prev < currentVerses.length - 1) return prev + 1;
         setIsPlaying(false);
@@ -758,7 +677,7 @@ export default function App() {
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('ended', onEnded);
     };
-  }, [audio, currentVerses]);
+  }, [audio, currentVerses, repeatMode, repeatCount]);
 
   const handleSeek = (time: number) => {
     if (audio.duration) {
@@ -768,10 +687,12 @@ export default function App() {
   };
 
   const toggleAudio = () => {
+    setIsAudioDockVisible(true);
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
     } else {
+      audio.playbackRate = playbackRate;
       setIsPlaying(true);
       // Synchronous play to bless the audio element on iOS/Safari
       const p = audio.play();
@@ -889,8 +810,9 @@ export default function App() {
       const createdCircle = await quranFoundation.user.createRoom(newCircle);
       setCreatedCircleId(createdCircle.id);
       setCreateStep(4);
-    } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, 'circles');
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Failed to create circle. Please try again later.');
     }
   };
 
@@ -1080,78 +1002,7 @@ export default function App() {
     }
   };
 
-  const handleQFLogin = async () => {
-    setIsAuthLoading(true);
-
-    try {
-      let clientId = import.meta.env.VITE_QF_CLIENT_ID;
-      
-      // Override demo with live client ID
-      if (!clientId || clientId === 'quran-circles-demo') {
-        clientId = '44aa776a-1447-4077-8be2-80a4cbdd0dfb'; 
-      }
-      
-      let authBaseUrl = import.meta.env.VITE_QF_OAUTH_AUTH_URL || 'https://oauth2.quran.foundation/oauth2/auth';
-
-      if (authBaseUrl && authBaseUrl.includes('quran.foundation') && !authBaseUrl.includes('/auth') && !authBaseUrl.includes('/authorize')) {
-        authBaseUrl = authBaseUrl.endsWith('/') ? `${authBaseUrl}oauth2/auth` : `${authBaseUrl}/oauth2/auth`;
-      }
-
-      if (!clientId) {
-        try {
-          const configRes = await fetch('/api/qf/oauth/config');
-          if (configRes.ok) {
-            const text = await configRes.text();
-            try {
-              const config = JSON.parse(text);
-              clientId = config.clientId;
-              if (config.authUrl) authBaseUrl = config.authUrl;
-            } catch (e) {
-              console.warn('Backend /api/qf/oauth/config did not return JSON. Assuming static site hosting.');
-            }
-          }
-        } catch (e) {
-          console.warn('Backend fetch failed. Assuming static site hosting.');
-        }
-      }
-
-      if (clientId === 'quran-circles-demo') {
-        clientId = '44aa776a-1447-4077-8be2-80a4cbdd0dfb';
-      }
-
-      if (!clientId) {
-        setIsAuthLoading(false);
-        toast.error("Quran Foundation Client ID is missing. Please check your hosting environment variables.");
-        return;
-      }
-
-      const codeVerifier = generateRandomString(64);
-      const state = generateRandomString(32);
-      const nonce = generateRandomString(32);
-      
-      localStorage.setItem('qf_pkce_verifier', codeVerifier);
-      localStorage.setItem('qf_oauth_state', state);
-
-      const codeChallenge = await generateCodeChallenge(codeVerifier);
-      const redirectUri = window.location.origin + '/callback';
-
-      const authUrl = new URL(authBaseUrl);
-      authUrl.searchParams.set('response_type', 'code');
-      authUrl.searchParams.set('client_id', clientId);
-      authUrl.searchParams.set('redirect_uri', redirectUri);
-      authUrl.searchParams.set('scope', 'openid offline_access user collection note post');
-      authUrl.searchParams.set('state', state);
-      authUrl.searchParams.set('nonce', nonce);
-      authUrl.searchParams.set('code_challenge', codeChallenge);
-      authUrl.searchParams.set('code_challenge_method', 'S256');
-
-      window.location.href = authUrl.toString();
-    } catch (err: any) {
-      console.error('QF login error:', err);
-      toast.error(err.message || 'Failed to initialize login.');
-      setIsAuthLoading(false);
-    }
-  };
+  const openAuthModal = () => setShowAuthModal(true);
 
   const handleExplore = async () => {
     try {
@@ -1269,6 +1120,32 @@ export default function App() {
                 >
                   <ChevronRight size={22} className={cn("transition-transform duration-500", isSidebarOpen && "rotate-180")} /> {isSidebarOpen && "Collapse"}
                 </button>
+
+                {isSidebarOpen && circles.length > 0 && (
+                  <div className="pt-4 border-t border-white/5 space-y-2">
+                    <p className="px-4 text-[9px] font-black uppercase tracking-[0.25em] text-brand-lime">Your Circles</p>
+                    <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
+                      {circles.map(c => (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setActiveCircle(c);
+                            setView('circle');
+                          }}
+                          className={cn(
+                            "w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold truncate flex items-center justify-between transition-colors",
+                            activeCircle?.id === c.id 
+                              ? "bg-brand-lime/20 text-brand-lime font-black border border-brand-lime/30" 
+                              : "text-white/60 hover:text-white hover:bg-white/5"
+                          )}
+                        >
+                          <span className="truncate">{c.name}</span>
+                          <span className="text-[10px] opacity-60 ml-1 shrink-0">🔥{c.streak.current}d</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </nav>
             </div>
 
@@ -1324,12 +1201,23 @@ export default function App() {
             {view === 'landing' && (
               <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-h-[85vh] flex flex-col items-center justify-center py-12 relative">
                 
-                <button 
-                  onClick={() => setIsLightMode(!isLightMode)} 
-                  className="absolute top-0 right-4 sm:right-8 p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all backdrop-blur-md border border-white/10 z-50"
-                >
-                  {isLightMode ? <Moon size={24} /> : <Sun size={24} />}
-                </button>
+                <div className="absolute top-0 right-4 sm:right-8 flex items-center gap-3 z-50">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => setShowAuthModal(true)} 
+                    className="text-xs font-bold uppercase tracking-wider py-2.5 px-5 border-white/20 hover:border-brand-lime hover:text-brand-lime"
+                  >
+                    Sign In
+                  </Button>
+                  <button 
+                    onClick={() => setIsLightMode(!isLightMode)} 
+                    className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all backdrop-blur-md border border-white/10"
+                    title="Toggle theme"
+                  >
+                    {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
+                  </button>
+                </div>
 
                 <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                   <div className="space-y-12 text-center lg:text-left">
@@ -1345,27 +1233,12 @@ export default function App() {
                     </p>
                   </div>
 
-                  <GlassCard className="p-8 md:p-12 space-y-10 relative overflow-visible">
-                    <div className="absolute -top-6 -right-6 md:-top-10 md:-right-10 w-24 h-24 md:w-32 md:h-32 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center rotate-12 lime-glow border-4 border-brand-deep">
-                      <p className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-center leading-none">Join the <br/> Circle</p>
+                  <GlassCard className="p-8 md:p-10 space-y-6 relative overflow-visible shadow-2xl">
+                    <div className="absolute -top-6 -right-6 md:-top-8 md:-right-8 w-20 h-20 md:w-28 md:h-28 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center rotate-12 lime-glow border-4 border-brand-deep pointer-events-none z-10">
+                      <p className="text-[9px] md:text-xs font-black uppercase tracking-tighter text-center leading-none">Join the <br/> Circle</p>
                     </div>
 
-                    <div className="space-y-3 text-center">
-                      <h3 className="text-4xl font-display font-black uppercase tracking-tighter">Welcome</h3>
-                      <p className="text-white/40 font-medium text-base">
-                        Join private reading circles, track your daily progress, and reflect on the Quran together.
-                      </p>
-                    </div>
-
-                    <Button onClick={handleQFLogin} disabled={isAuthLoading} className="w-full py-8 text-xl font-bold bg-brand-lime border-none text-brand-deep hover:bg-white transition-all duration-300">
-                      {isAuthLoading ? 'Please Wait...' : 'Sign In / Sign Up'}
-                    </Button>
-                    
-                    <div className="pt-4 text-center">
-                      <button onClick={seedDemoData} className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] hover:text-brand-lime transition-colors">
-                        Try Demo Scenarios
-                      </button>
-                    </div>
+                    <AuthCard onSeedDemo={seedDemoData} />
                   </GlassCard>
                 </div>
 
@@ -2571,19 +2444,20 @@ export default function App() {
                   <h2 className="text-4xl font-display font-black uppercase tracking-tighter">Join Circle</h2>
                 </div>
                 {!user ? (
-                  <Card className="p-8 text-center space-y-6 bg-white/5 border-white/10">
-                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Card className="p-8 space-y-6 bg-white/5 border-white/10">
+                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-2">
                       <Lock className="text-brand-lime" size={32} />
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-display font-black uppercase tracking-tight">Account Required</h3>
-                      <p className="text-white/60">You need to be signed in to join a circle and track your progress.</p>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <Button onClick={handleQFLogin} disabled={isAuthLoading} className="w-full py-4 font-bold bg-brand-deep border-brand-lime/20 text-brand-lime hover:bg-brand-lime hover:text-brand-deep">
-                        {isAuthLoading ? 'Please Wait...' : 'Sign In / Sign Up'}
+                    <AuthCard 
+                      title="Account Required"
+                      subtitle="Sign in with Google or Email to join your circle and record reflections."
+                      onSeedDemo={seedDemoData}
+                      compact={true}
+                    />
+                    <div className="pt-2 text-center">
+                      <Button variant="ghost" onClick={() => setView('landing')} className="text-xs text-white/50 hover:text-white">
+                        Back to Home
                       </Button>
-                      <Button variant="outline" onClick={() => setView('landing')} className="w-full py-4">Back to Home</Button>
                     </div>
                   </Card>
                 ) : (
@@ -2645,9 +2519,11 @@ export default function App() {
                   user={user}
                   currentAudioVerseIndex={currentAudioVerseIndex}
                   onPlayVerse={(index) => {
+                    setIsAudioDockVisible(true);
                     if (currentAudioVerseIndex === index) {
                       toggleAudio();
                     } else {
+                      audio.playbackRate = playbackRate;
                       const p = audio.play();
                       if (p !== undefined) p.catch(() => {});
                       
@@ -3383,8 +3259,52 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Quran Foundation OAuth Configuration Help Modal Removed */}
+        {/* Firebase Authentication Modal */}
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)} 
+          onSeedDemo={seedDemoData} 
+        />
 
+        {/* Docked Recitation Player */}
+        <AudioPlayerDock
+          isPlaying={isPlaying}
+          isLoading={isLoadingAudio}
+          onTogglePlay={toggleAudio}
+          audioProgress={audioProgress}
+          audioDuration={audioDuration}
+          onSeek={handleSeek}
+          currentVerseKey={currentVerses[currentAudioVerseIndex]?.verse_key || currentVerses[0]?.verse_key || '1:1'}
+          surahName={chapters.find(c => c.id === parseInt((currentVerses[0]?.verse_key || '1:1').split(':')[0], 10))?.name_simple || 'Surah'}
+          reciters={reciters}
+          reciterId={reciterId}
+          onSelectReciter={(id) => setReciterId(id)}
+          playbackRate={playbackRate}
+          onChangePlaybackRate={(rate) => {
+            setPlaybackRate(rate);
+            audio.playbackRate = rate;
+          }}
+          repeatMode={repeatMode}
+          onChangeRepeatMode={(mode) => setRepeatMode(mode)}
+          isVisible={isAudioDockVisible && currentVerses.length > 0}
+          onClose={() => {
+            setIsAudioDockVisible(false);
+            if (isPlaying) {
+              audio.pause();
+              setIsPlaying(false);
+            }
+          }}
+        />
+
+        {/* Mobile Thumb Navigation */}
+        {user && view !== 'landing' && (
+          <MobileNav
+            currentView={view}
+            onNavigate={(newView) => setView(newView)}
+            hasActiveCircle={!!activeCircle}
+            onOpenCreateModal={() => setView('create-circle')}
+          />
+        )}
       </div>
     </div>
   );

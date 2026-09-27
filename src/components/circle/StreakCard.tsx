@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Flame, CheckCircle2, Circle as CircleIcon, Users, Clock, Hourglass, XCircle, Info, Plus } from 'lucide-react';
+import { Flame, CheckCircle2, Circle as CircleIcon, Users, Clock, Hourglass, XCircle, Info, Plus, Bell } from 'lucide-react';
 import { Circle, Reflection, Participant } from '../../types';
 import { getDayProgress } from '../../lib/streakUtils';
 import { format } from 'date-fns';
 import { cn } from '../../lib/utils';
 import { Badge } from '../ui/Base';
+import { DeadlineCountdown } from './DeadlineCountdown';
 
 interface StreakCardProps {
   circle: Circle;
@@ -23,9 +24,12 @@ export const StreakCard: React.FC<StreakCardProps> = ({ circle, reflections }) =
       
       {/* Hero Header */}
       <div className="text-center space-y-6 relative z-10">
-        <div className="inline-flex items-center gap-3 bg-brand-lime/10 border border-brand-lime/20 px-6 py-3 rounded-full lime-glow">
-          <Flame className="text-brand-lime" fill="currentColor" size={24} />
-          <span className="text-2xl font-black text-brand-lime uppercase tracking-widest">{circle.streak.current} Day Streak</span>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="inline-flex items-center gap-3 bg-brand-lime/10 border border-brand-lime/20 px-6 py-3 rounded-full lime-glow">
+            <Flame className="text-brand-lime" fill="currentColor" size={24} />
+            <span className="text-2xl font-black text-brand-lime uppercase tracking-widest">{circle.streak.current} Day Streak</span>
+          </div>
+          <DeadlineCountdown circle={circle} isComplete={progress.isComplete} />
         </div>
         
         <div className="space-y-2">
@@ -115,6 +119,7 @@ interface ProgressSummaryProps {
   activeParticipantId?: string | null;
   selectableIds?: string[];
   onAddLocalParticipant?: (name: string) => void;
+  onNudgeParticipant?: (p: Participant) => void;
 }
 
 export const ProgressSummary: React.FC<ProgressSummaryProps> = ({ 
@@ -124,7 +129,8 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
   onSelectParticipant,
   activeParticipantId,
   selectableIds,
-  onAddLocalParticipant
+  onAddLocalParticipant,
+  onNudgeParticipant
 }) => {
   const [newMemberName, setNewMemberName] = React.useState('');
   const progress = getDayProgress(participants, reflections, date);
@@ -196,7 +202,21 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                 </div>
               </div>
               
-              <div className="flex items-center gap-3 relative z-10 shrink-0">
+              <div className="flex items-center gap-2 relative z-10 shrink-0">
+                {!isDone && !isActive && onNudgeParticipant && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNudgeParticipant(p);
+                    }}
+                    className="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-brand-lime hover:text-brand-deep text-white/50 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 border border-white/10 active:scale-95"
+                    title={`Send encouragement nudge to ${p.name}`}
+                  >
+                    <Bell size={12} strokeWidth={2.5} className="text-brand-lime" />
+                    <span>Nudge</span>
+                  </button>
+                )}
                 {isActive ? null : isDone ? (
                   <div className="flex flex-col items-end">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center shadow-lg shadow-brand-lime/20">

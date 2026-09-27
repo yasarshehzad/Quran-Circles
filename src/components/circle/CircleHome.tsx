@@ -10,6 +10,9 @@ import { Button, Card, Badge } from '../ui/Base';
 import { cn } from '../../lib/utils';
 import { ReflectionFeed } from './ReflectionFeed';
 import { PREDEFINED_AVATARS, AVATAR_COLORS } from '../../constants/avatars';
+import { StudyDrawer } from './StudyDrawer';
+import { NudgeModal } from './NudgeModal';
+import { DeadlineCountdown } from './DeadlineCountdown';
 
 interface CircleHomeProps {
   circle: Circle;
@@ -107,6 +110,8 @@ export const CircleHome = ({
   const [currentPromptIndex, setCurrentPromptIndex] = React.useState(0);
   const [calendarMonthOffset, setCalendarMonthOffset] = React.useState(0);
   const [isInviteModalOpen, setIsInviteModalOpen] = React.useState(false);
+  const [isStudyDrawerOpen, setIsStudyDrawerOpen] = React.useState(false);
+  const [nudgingParticipant, setNudgingParticipant] = React.useState<Participant | null>(null);
 
   const versesPerDay = circle.versesPerDay || 1;
   const isPlural = versesPerDay > 1;
@@ -177,10 +182,7 @@ export const CircleHome = ({
                   <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-white/80"><Users size={14} strokeWidth={3} /></span>
                   <span>{circle.participants.length} Members</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-white/80"><Clock size={14} strokeWidth={3} /></span>
-                  <span>{circle.deadlineConfig.time} Deadline</span>
-                </div>
+                <DeadlineCountdown circle={circle} isComplete={progressPercent >= 100} />
               </div>
             </div>
           </div>
@@ -254,6 +256,7 @@ export const CircleHome = ({
             chapters={chapters}
             currentAudioVerseIndex={currentAudioVerseIndex}
             onPlayVerse={onPlayVerse}
+            onOpenStudyDrawer={() => setIsStudyDrawerOpen(true)}
           />
 
           {activeParticipantId ? (
@@ -349,6 +352,7 @@ export const CircleHome = ({
               }}
               activeParticipantId={activeParticipantId}
               onAddLocalParticipant={(circle.participationMode === 'shared' || circle.participationMode === 'hybrid') ? onAddLocalParticipant : undefined}
+              onNudgeParticipant={(p) => setNudgingParticipant(p)}
             />
           </div>
 
@@ -563,6 +567,27 @@ export const CircleHome = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Slide-Over Study Drawer (Tafsir, Translations, Insights) */}
+      <StudyDrawer 
+        isOpen={isStudyDrawerOpen}
+        onClose={() => setIsStudyDrawerOpen(false)}
+        verses={currentVerses}
+        chapters={chapters}
+        tafsirId={tafsirId}
+        setTafsirId={setTafsirId}
+        tafsirs={tafsirs}
+        translations={translations}
+        currentTranslationId={translationId}
+      />
+
+      {/* Member Encouragement & Nudge Modal */}
+      <NudgeModal 
+        isOpen={!!nudgingParticipant}
+        onClose={() => setNudgingParticipant(null)}
+        participant={nudgingParticipant}
+        circle={circle}
+      />
     </div>
   );
 };

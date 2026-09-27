@@ -31,12 +31,13 @@ import { Circle, Reflection, Bookmark, Participant, ChatMessage } from '../types
 // --- Configuration ---
 
 const CONTENT_BASE_URL = 'https://api.quran.com/api/v4';
-const USER_API_BASE_URL = import.meta.env.VITE_QF_USER_API_URL || 'https://api.quran.foundation/v1'; 
-const API_KEY = import.meta.env.VITE_QF_API_KEY || '';
+const envApiUrl = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_QF_USER_API_URL : process.env.VITE_QF_USER_API_URL;
+const USER_API_BASE_URL = '/api/qf/user-proxy';
+const API_KEY = (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_QF_API_KEY : process.env.VITE_QF_API_KEY) || '';
 
 // Toggle for Demo Mode (uses mock data/Firebase instead of real QF User API)
-// We are in demo mode if NO user API URL is provided
-const IS_DEMO_MODE = !import.meta.env.VITE_QF_USER_API_URL;
+// We are in demo mode if NO user API URL is provided and we aren't using the default
+const IS_DEMO_MODE = true;
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
@@ -79,7 +80,7 @@ export interface QuranVerse {
 
 async function qfFetch(endpoint: string, options: RequestInit & { silent?: boolean } = {}) {
   const { silent, ...fetchOptions } = options;
-  let url = endpoint.startsWith('http') ? endpoint : `${CONTENT_BASE_URL}${endpoint}`;
+  let url = endpoint.startsWith('http') || endpoint.startsWith('/api') ? endpoint : `${CONTENT_BASE_URL}${endpoint}`;
   
   // Directly call the Quran.com API - local proxy removed to support static site deployments
   // on custom domains (like GitHub pages or Vercel) where server.ts is not running.
