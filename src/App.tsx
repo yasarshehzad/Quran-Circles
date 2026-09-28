@@ -89,7 +89,7 @@ export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'stats' | 'how-it-works' | 'features' | 'help-center' | 'contact-us'>('landing');
+  const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'stats' | 'how-it-works' | 'features' | 'faq'>('landing');
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
@@ -189,40 +189,6 @@ export default function App() {
 
   // App State
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
-  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
-
-
-
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!contactForm.name || !contactForm.email || !contactForm.message) {
-      toast.error('Please fill in all fields');
-      return;
-    }
-
-    setIsSubmittingContact(true);
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactForm),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        toast.success('Message sent successfully!');
-        setContactForm({ name: '', email: '', message: '' });
-      } else {
-        toast.error(data.error || 'Failed to send message');
-      }
-    } catch (error) {
-      console.error('Contact error:', error);
-      toast.error('Failed to send message. Please try again.');
-    } finally {
-      setIsSubmittingContact(false);
-    }
-  };
 
   // Sync activeCircle with circles list to get updates
   useEffect(() => {
@@ -1612,26 +1578,25 @@ export default function App() {
                         </p>
                       </div>
                       <div className="space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Platform</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/40 dark:text-white/20">Platform</h4>
                         <ul className="space-y-4">
-                          <li><button onClick={() => setView('how-it-works')} className="text-white/40 hover:text-white font-bold transition-colors">How it Works</button></li>
-                          <li><button onClick={() => setView('features')} className="text-white/40 hover:text-white font-bold transition-colors">Features</button></li>
+                          <li><button onClick={() => setView('how-it-works')} className="text-emerald-950/70 hover:text-emerald-950 dark:text-white/40 dark:hover:text-white font-bold transition-colors">How it Works</button></li>
+                          <li><button onClick={() => setView('features')} className="text-emerald-950/70 hover:text-emerald-950 dark:text-white/40 dark:hover:text-white font-bold transition-colors">Features</button></li>
                         </ul>
                       </div>
                       <div className="space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Support</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/40 dark:text-white/20">Support</h4>
                         <ul className="space-y-4">
-                          <li><button onClick={() => setView('help-center')} className="text-white/40 hover:text-white font-bold transition-colors">Help Center</button></li>
-                          <li><button onClick={() => setView('contact-us')} className="text-white/40 hover:text-white font-bold transition-colors">Contact Us</button></li>
+                          <li><button onClick={() => setView('faq')} className="text-emerald-950/70 hover:text-emerald-950 dark:text-white/40 dark:hover:text-white font-bold transition-colors">FAQ</button></li>
                         </ul>
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-12 border-t border-white/5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10">© 2026 Quran Circles. All rights reserved.</p>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-12 border-t border-emerald-900/10 dark:border-white/5">
+                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/40 dark:text-white/10">© 2026 Quran Circles. All rights reserved.</p>
                       <div className="flex items-center gap-6">
-                        <button onClick={() => setShowAboutModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10 hover:text-white/30 transition-colors">About</button>
-                        <button onClick={() => setShowPrivacyModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10 hover:text-white/30 transition-colors">Privacy</button>
-                        <button onClick={() => setShowTermsModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10 hover:text-white/30 transition-colors">Terms</button>
+                        <button onClick={() => setShowAboutModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/50 hover:text-emerald-950 dark:text-white/10 dark:hover:text-white/30 transition-colors">About</button>
+                        <button onClick={() => setShowPrivacyModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/50 hover:text-emerald-950 dark:text-white/10 dark:hover:text-white/30 transition-colors">Privacy</button>
+                        <button onClick={() => setShowTermsModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/50 hover:text-emerald-950 dark:text-white/10 dark:hover:text-white/30 transition-colors">Terms</button>
                       </div>
                     </div>
                   </footer>
@@ -1735,14 +1700,14 @@ export default function App() {
               </motion.div>
             )}
 
-            {view === 'help-center' && (
-              <motion.div key="help-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto py-20 space-y-24">
+            {view === 'faq' && (
+              <motion.div key="faq" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto py-20 space-y-24">
                 <div className="space-y-8 text-center">
-                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
+                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-emerald-700 dark:text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
                     <ArrowLeft size={16} /> Back to Home
                   </button>
-                  <h2 className="text-6xl md:text-8xl font-display font-black uppercase tracking-tighter">Help <span className="text-brand-lime">Center</span></h2>
-                  <p className="text-xl text-white/40 font-medium">Common questions and guides.</p>
+                  <h2 className="text-6xl md:text-8xl font-display font-black uppercase tracking-tighter text-emerald-950 dark:text-white">Frequently Asked <span className="text-emerald-600 dark:text-brand-lime">Questions</span></h2>
+                  <p className="text-xl text-emerald-950/70 dark:text-white/40 font-medium">Common questions, guides, and everything you need to know about Quran Circles.</p>
                 </div>
 
                 <div className="space-y-6">
@@ -1750,92 +1715,52 @@ export default function App() {
                     { q: 'How do I invite others?', a: 'Once you create a circle, you will get a unique invite code. Share this code with your friends or family, and they can join via the "Join Circle" button on their dashboard.' },
                     { q: 'What happens if someone misses a day?', a: 'The collective streak will reset to zero. This encourages everyone to support each other and stay consistent.' },
                     { q: 'Can I change my reading plan later?', a: 'Yes, circle admins can update the reading plan, participation mode, and daily deadlines at any time from the circle settings.' },
-                    { q: 'Is my data private?', a: 'Absolutely. Reflections are only visible to members of the specific circle they were posted in. We do not share your data with third parties.' }
+                    { q: 'Is my data private?', a: 'Absolutely. Reflections are only visible to members of the specific circle they were posted in. We do not share your data with third parties.' },
+                    { q: 'Do I need an account to browse?', a: 'You can explore sample circles and daily reflections in demo mode immediately, or create a free account with email or Google to track your habits and create private circles.' }
                   ].map((faq, i) => (
-                    <GlassCard key={i} className="p-8 space-y-4 border-white/5">
-                      <h4 className="text-xl font-black uppercase tracking-tight text-brand-lime">{faq.q}</h4>
-                      <p className="text-white/60 font-medium leading-relaxed">{faq.a}</p>
+                    <GlassCard key={i} className="p-8 space-y-4 border-emerald-900/10 dark:border-white/5">
+                      <h4 className="text-xl font-black uppercase tracking-tight text-emerald-800 dark:text-brand-lime">{faq.q}</h4>
+                      <p className="text-emerald-950/80 dark:text-white/60 font-medium leading-relaxed">{faq.a}</p>
                     </GlassCard>
                   ))}
                 </div>
 
-                <div className="pt-12 border-t border-white/5 space-y-12">
-                  <h3 className="text-4xl font-display font-black uppercase tracking-tight text-center">Quick Start <span className="text-brand-lime">Guide</span></h3>
+                <div className="pt-12 border-t border-emerald-900/10 dark:border-white/5 space-y-12">
+                  <h3 className="text-4xl font-display font-black uppercase tracking-tight text-center text-emerald-950 dark:text-white">Quick Start <span className="text-emerald-600 dark:text-brand-lime">Guide</span></h3>
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center font-black">1</div>
-                        <h4 className="text-xl font-bold uppercase tracking-tight">Create your Circle</h4>
+                        <div className="w-10 h-10 rounded-full bg-emerald-600 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center font-black">1</div>
+                        <h4 className="text-xl font-bold uppercase tracking-tight text-emerald-950 dark:text-white">Create your Circle</h4>
                       </div>
-                      <p className="text-white/40 font-medium leading-relaxed pl-14">Go to your dashboard and click "New Circle". Give it a name and choose a reading plan (e.g., 1 Juz per day or custom Surahs).</p>
+                      <p className="text-emerald-950/70 dark:text-white/40 font-medium leading-relaxed pl-14">Go to your dashboard and click "New Circle". Give it a name and choose a reading plan (e.g., 1 Juz per day or custom Surahs).</p>
                     </div>
+
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center font-black">2</div>
-                        <h4 className="text-xl font-bold uppercase tracking-tight">Invite your Family</h4>
+                        <div className="w-10 h-10 rounded-full bg-emerald-600 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center font-black">2</div>
+                        <h4 className="text-xl font-bold uppercase tracking-tight text-emerald-950 dark:text-white">Invite your Family</h4>
                       </div>
-                      <p className="text-white/40 font-medium leading-relaxed pl-14">Copy the invite code from the circle settings and send it to your loved ones. They'll join and appear in your circle instantly.</p>
+                      <p className="text-emerald-950/70 dark:text-white/40 font-medium leading-relaxed pl-14">Copy the invite code from the circle settings and send it to your loved ones. They'll join and appear in your circle instantly.</p>
                     </div>
+
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center font-black">3</div>
-                        <h4 className="text-xl font-bold uppercase tracking-tight">Post your Reflection</h4>
+                        <div className="w-10 h-10 rounded-full bg-emerald-600 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center font-black">3</div>
+                        <h4 className="text-xl font-bold uppercase tracking-tight text-emerald-950 dark:text-white">Post your Reflection</h4>
                       </div>
-                      <p className="text-white/40 font-medium leading-relaxed pl-14">Read the daily verses, listen to the recitation, and share what you've learned. Your reflection keeps the circle's streak alive!</p>
+                      <p className="text-emerald-950/70 dark:text-white/40 font-medium leading-relaxed pl-14">Read the daily verses, listen to the recitation, and share what you've learned. Your reflection keeps the circle's streak alive!</p>
                     </div>
+
                     <div className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center font-black">4</div>
-                        <h4 className="text-xl font-bold uppercase tracking-tight">Maintain the Streak</h4>
+                        <div className="w-10 h-10 rounded-full bg-emerald-600 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center font-black">4</div>
+                        <h4 className="text-xl font-bold uppercase tracking-tight text-emerald-950 dark:text-white">Maintain the Streak</h4>
                       </div>
-                      <p className="text-white/40 font-medium leading-relaxed pl-14">The streak only advances if EVERYONE in the circle posts their reflection before the daily deadline. Support each other!</p>
+                      <p className="text-emerald-950/70 dark:text-white/40 font-medium leading-relaxed pl-14">The streak only advances if EVERYONE in the circle posts their reflection before the daily deadline. Support each other!</p>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            )}
-
-            {view === 'contact-us' && (
-              <motion.div key="contact-us" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto py-20 space-y-24">
-                <div className="space-y-8 text-center">
-                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
-                    <ArrowLeft size={16} /> Back to Home
-                  </button>
-                  <h2 className="text-6xl md:text-8xl font-display font-black uppercase tracking-tighter">Contact <span className="text-brand-lime">Us</span></h2>
-                  <p className="text-xl text-white/40 font-medium">We'd love to hear from you.</p>
-                </div>
-
-                <GlassCard className="p-12 space-y-12 border-white/5">
-                  <div className="space-y-8">
-                    <h4 className="text-2xl font-display font-black uppercase tracking-tight text-center">Send us a message</h4>
-                    <form onSubmit={handleContactSubmit} className="grid gap-6">
-                      <Input 
-                        label="Your Name" 
-                        placeholder="John Doe" 
-                        value={contactForm.name}
-                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                      />
-                      <Input 
-                        label="Email Address" 
-                        placeholder="john@example.com" 
-                        value={contactForm.email}
-                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      />
-                      <div className="space-y-3">
-                        <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] ml-6">Message</label>
-                        <textarea 
-                          className="w-full px-8 py-6 bg-brand-deep/50 border border-white/10 rounded-[2rem] focus:border-brand-lime focus:ring-4 focus:ring-brand-lime/10 outline-none transition-all placeholder:text-white/20 font-medium text-white min-h-[150px] resize-none" 
-                          placeholder="How can we help?" 
-                          value={contactForm.message}
-                          onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                        />
-                      </div>
-                      <Button className="w-full py-6 text-xl" disabled={isSubmittingContact}>
-                        {isSubmittingContact ? 'Sending...' : 'Send Message'}
-                      </Button>
-                    </form>
-                  </div>
-                </GlassCard>
               </motion.div>
             )}
 
