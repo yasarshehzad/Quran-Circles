@@ -151,7 +151,7 @@ export const CircleHome = ({
         <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 text-center md:text-left">
           <button 
             onClick={onBack} 
-            className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl hover:bg-brand-lime hover:text-brand-deep transition-all duration-300"
+            className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl hover:bg-emerald-700 hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep text-paper-ink dark:text-white transition-all duration-300"
           >
             <ArrowLeft size={28} strokeWidth={2.5} />
           </button>
@@ -159,13 +159,13 @@ export const CircleHome = ({
             <div className="space-y-2">
               {/* Supertitle for Plan Name */}
               {circle.planName && (
-                <div className="flex items-center justify-center md:justify-start gap-2 text-brand-lime font-black uppercase tracking-[0.2em] text-[10px] md:text-xs">
+                <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-800 dark:text-brand-lime font-black uppercase tracking-[0.2em] text-[10px] md:text-xs">
                   <BookOpen size={16} strokeWidth={3} />
                   <span>Current Plan: {circle.planName}</span>
                 </div>
               )}
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
-                <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter text-white">{circle.name}</h2>
+                <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white">{circle.name}</h2>
                 <div className="flex items-center justify-center md:justify-start gap-2">
                   <Badge variant="lime">Code: {circle.inviteCode}</Badge>
                 </div>
@@ -173,14 +173,14 @@ export const CircleHome = ({
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/50 border-t border-white/10 pt-5">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-[10px] md:text-xs font-bold uppercase tracking-widest text-paper-accent dark:text-white/50 border-t border-black/10 dark:border-white/10 pt-5">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-brand-lime/20 text-brand-lime"><Trophy size={14} strokeWidth={3} /></span>
-                  <span className="text-white">{circle.streak.current} Day Streak</span>
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 dark:bg-brand-lime/20 text-emerald-800 dark:text-brand-lime"><Trophy size={14} strokeWidth={3} /></span>
+                  <span className="text-paper-ink dark:text-white">{circle.streak.current} Day Streak</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-white/80"><Users size={14} strokeWidth={3} /></span>
-                  <span>{circle.participants.length} Members</span>
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 text-paper-ink dark:text-white/80"><Users size={14} strokeWidth={3} /></span>
+                  <span className="text-paper-ink dark:text-white/80">{circle.participants.length} Members</span>
                 </div>
                 <DeadlineCountdown circle={circle} isComplete={progressPercent >= 100} />
               </div>
@@ -208,7 +208,7 @@ export const CircleHome = ({
           </Button>
           <button 
             onClick={onSettings}
-            className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl hover:bg-brand-lime hover:text-brand-deep transition-all duration-300"
+            className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl hover:bg-emerald-700 hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep text-paper-ink dark:text-white transition-all duration-300"
           >
             <Settings size={28} strokeWidth={2.5} />
           </button>
@@ -220,10 +220,10 @@ export const CircleHome = ({
         <section className="lg:col-span-7 space-y-12">
           <div className="flex items-center justify-between px-4">
             <div className="space-y-2">
-              <p className="text-[11px] font-black text-brand-forest dark:text-brand-lime uppercase tracking-[0.4em]">Today's Focus</p>
-              <h3 className="text-3xl font-display font-black uppercase tracking-tight">The {isPlural ? 'Verses' : 'Verse'}</h3>
+              <p className="text-[11px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-[0.4em]">Today's Focus</p>
+              <h3 className="text-3xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">The {isPlural ? 'Verses' : 'Verse'}</h3>
             </div>
-            <div className="px-6 py-3 bg-brand-lime text-brand-deep rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] lime-glow">
+            <div className="px-6 py-3 bg-emerald-700 dark:bg-brand-lime text-white dark:text-brand-deep rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-md">
               Day {Math.floor((Date.now() - new Date(circle.startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1}
             </div>
           </div>
@@ -312,13 +312,13 @@ export const CircleHome = ({
               </div>
             </motion.div>
           ) : (
-            <Card className="p-10 text-center space-y-6 bg-brand-forest/20 border-white/10 backdrop-blur-xl bento-card">
-              <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto">
-                <Users className="text-brand-lime" size={32} />
+            <Card className="p-10 text-center space-y-6 bg-white dark:bg-brand-forest/20 border-black/10 dark:border-white/10 backdrop-blur-xl bento-card">
+              <div className="w-16 h-16 bg-black/5 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto">
+                <Users className="text-emerald-700 dark:text-brand-lime" size={32} />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-display font-black uppercase tracking-tight">Select a Member</h3>
-                <p className="text-white/40 font-medium">Please select your profile from the members list to post a reflection.</p>
+                <h3 className="text-2xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Select a Member</h3>
+                <p className="text-paper-accent dark:text-white/40 font-medium">Please select your profile from the members list to post a reflection.</p>
               </div>
               {user && circle.participants.some(p => p.id === user.uid) && (
                 <Button 
@@ -330,7 +330,7 @@ export const CircleHome = ({
                   Select My Profile
                 </Button>
               )}
-              <p className="text-[10px] font-black text-brand-lime uppercase tracking-[0.2em]">Click on a name in the members list →</p>
+              <p className="text-[10px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-[0.2em]">Click on a name in the members list →</p>
             </Card>
           )}
         </section>
@@ -357,12 +357,14 @@ export const CircleHome = ({
           </div>
 
           <div className="space-y-8">
-            <div className="flex items-center gap-2 p-1 bg-white/5 rounded-2xl border border-white/10">
+            <div className="flex items-center gap-2 p-1 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10">
               <button 
                 onClick={() => setActiveTab('reflections')}
                 className={cn(
                   "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                  activeTab === 'reflections' ? "bg-brand-lime text-brand-deep shadow-lg shadow-brand-lime/20" : "text-white/40 hover:text-white/60"
+                  activeTab === 'reflections' 
+                    ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep shadow-md" 
+                    : "text-paper-accent hover:text-paper-ink dark:text-white/40 dark:hover:text-white/60"
                 )}
               >
                 Reflections
@@ -371,7 +373,9 @@ export const CircleHome = ({
                 onClick={() => setActiveTab('calendar')}
                 className={cn(
                   "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                  activeTab === 'calendar' ? "bg-brand-lime text-brand-deep shadow-lg shadow-brand-lime/20" : "text-white/40 hover:text-white/60"
+                  activeTab === 'calendar' 
+                    ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep shadow-md" 
+                    : "text-paper-accent hover:text-paper-ink dark:text-white/40 dark:hover:text-white/60"
                 )}
               >
                 Calendar
@@ -382,8 +386,8 @@ export const CircleHome = ({
               <div className="space-y-8">
                 <div className="flex items-center justify-between px-4">
                   <div className="space-y-2">
-                    <p className="text-[11px] font-black text-brand-lime uppercase tracking-[0.4em]">Feed</p>
-                    <h3 className="text-3xl font-display font-black uppercase tracking-tight">Reflections</h3>
+                    <p className="text-[11px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-[0.4em]">Feed</p>
+                    <h3 className="text-3xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Reflections</h3>
                   </div>
                 </div>
                 <ReflectionFeed 
@@ -399,31 +403,31 @@ export const CircleHome = ({
               <div className="space-y-8">
                 <div className="flex items-center justify-between px-4">
                   <div className="space-y-2">
-                    <p className="text-[11px] font-black text-brand-lime uppercase tracking-[0.4em]">Timeline</p>
-                    <h3 className="text-3xl font-display font-black uppercase tracking-tight">Plan Calendar</h3>
+                    <p className="text-[11px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-[0.4em]">Timeline</p>
+                    <h3 className="text-3xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Plan Calendar</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => setCalendarMonthOffset(prev => prev - 1)}
-                      className="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all"
+                      className="w-10 h-10 flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 text-paper-ink dark:text-white transition-all"
                     >
                       <ArrowLeft size={16} />
                     </button>
                     <button 
                       onClick={() => setCalendarMonthOffset(0)}
-                      className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                      className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black/10 dark:hover:bg-white/10 text-paper-ink dark:text-white transition-all"
                     >
                       Today
                     </button>
                     <button 
                       onClick={() => setCalendarMonthOffset(prev => prev + 1)}
-                      className="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all"
+                      className="w-10 h-10 flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 text-paper-ink dark:text-white transition-all"
                     >
                       <ArrowRight size={16} />
                     </button>
                   </div>
                 </div>
-                <Card className="p-4 md:p-8 bg-brand-forest/20 border-white/10">
+                <Card className="p-4 md:p-8 bg-white dark:bg-brand-forest/20 border-black/10 dark:border-white/10">
                   <div className="grid grid-cols-7 gap-1 md:gap-3">
                     {Array.from({ length: 35 }).map((_, i) => {
                       const date = new Date();
@@ -456,44 +460,44 @@ export const CircleHome = ({
                           onClick={() => isInPlan && onDateChange(dateStr)}
                           className={cn(
                             "aspect-square rounded-xl flex flex-col items-center justify-center transition-all border relative overflow-hidden",
-                            isSelected ? "bg-brand-lime border-brand-lime text-brand-deep scale-105 z-10 shadow-xl shadow-brand-lime/20" : 
-                            isToday ? "bg-white/10 border-brand-lime/50 text-brand-lime" :
-                            isInPlan ? "bg-white/5 border-white/10 text-white/60 hover:bg-white/10" :
-                            "bg-transparent border-transparent text-white/5 cursor-default"
+                            isSelected ? "bg-emerald-700 text-white border-emerald-700 dark:bg-brand-lime dark:border-brand-lime dark:text-brand-deep scale-105 z-10 shadow-lg" : 
+                            isToday ? "bg-emerald-100 text-emerald-800 border-emerald-400 dark:bg-white/10 dark:border-brand-lime/50 dark:text-brand-lime font-bold" :
+                            isInPlan ? "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-paper-ink dark:text-white/70 hover:bg-black/10 dark:hover:bg-white/10" :
+                            "bg-transparent border-transparent text-paper-accent/20 dark:text-white/5 cursor-default"
                           )}
                         >
                           {isInPlan && (
-                            <span className="text-[8px] font-black uppercase opacity-30 absolute top-1 left-2">Day {planDayIndex + 1}</span>
+                            <span className="text-[8px] font-black uppercase opacity-60 absolute top-1 left-2">Day {planDayIndex + 1}</span>
                           )}
                           <span className="text-sm font-bold">{date.getDate()}</span>
                           {date.getMonth() !== (new Date(new Date().setMonth(new Date().getMonth() + calendarMonthOffset)).getMonth()) && (
-                            <div className="absolute inset-0 bg-brand-deep/40 pointer-events-none" />
+                            <div className="absolute inset-0 bg-paper-bg/40 dark:bg-brand-deep/40 pointer-events-none" />
                           )}
                         </button>
                       );
                     })}
                   </div>
-                  <div className="mt-8 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="mt-8 pt-8 border-t border-black/10 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-6">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-brand-lime" />
-                        <span className="text-[10px] font-black uppercase text-white/40">Selected</span>
+                        <div className="w-3 h-3 rounded-full bg-emerald-700 dark:bg-brand-lime" />
+                        <span className="text-[10px] font-black uppercase text-paper-accent dark:text-white/40">Selected</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-white/10 border border-brand-lime/50" />
-                        <span className="text-[10px] font-black uppercase text-white/40">Today</span>
+                        <div className="w-3 h-3 rounded-full bg-emerald-100 dark:bg-white/10 border border-emerald-500 dark:border-brand-lime/50" />
+                        <span className="text-[10px] font-black uppercase text-paper-accent dark:text-white/40">Today</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-white/5 border border-white/10" />
-                        <span className="text-[10px] font-black uppercase text-white/40">Plan Day</span>
+                        <div className="w-3 h-3 rounded-full bg-black/10 dark:bg-white/5 border border-black/15 dark:border-white/10" />
+                        <span className="text-[10px] font-black uppercase text-paper-accent dark:text-white/40">Plan Day</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className="text-[10px] font-black uppercase text-white/30 tracking-widest">
+                      <p className="text-[10px] font-black uppercase text-paper-accent dark:text-white/30 tracking-widest">
                         {new Date(new Date().setMonth(new Date().getMonth() + calendarMonthOffset)).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                       </p>
-                      <div className="h-4 w-px bg-white/10" />
-                      <p className="text-[10px] font-black uppercase text-brand-lime tracking-widest">
+                      <div className="h-4 w-px bg-black/10 dark:bg-white/10" />
+                      <p className="text-[10px] font-black uppercase text-emerald-800 dark:text-brand-lime tracking-widest font-bold">
                         Viewing: {new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
                     </div>
@@ -518,29 +522,29 @@ export const CircleHome = ({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-brand-deep border border-white/10 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl shadow-brand-lime/5 relative"
+              className="bg-white dark:bg-brand-deep border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative text-paper-ink dark:text-white"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-lime to-transparent opacity-50" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-600 dark:via-brand-lime to-transparent opacity-50" />
               
               <div className="p-6 md:p-8 space-y-8">
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-display font-black uppercase tracking-tight">Invite to Circle</h3>
-                    <p className="text-white/40 text-sm font-medium leading-relaxed">
-                      Share this incredibly powerful invite code with friends or family. They can enter it on their dashboard to instantly join your circle.
+                    <h3 className="text-2xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Invite to Circle</h3>
+                    <p className="text-paper-accent dark:text-white/40 text-sm font-medium leading-relaxed">
+                      Share this invite code with friends or family. They can enter it on their dashboard to instantly join your circle.
                     </p>
                   </div>
                   <button 
                     onClick={() => setIsInviteModalOpen(false)}
-                    className="p-2 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all"
+                    className="p-2 text-paper-accent hover:text-paper-ink dark:text-white/40 dark:hover:text-white bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition-all"
                   >
                     <X size={20} />
                   </button>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center gap-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-lime/80">Your Unique Code</p>
-                  <p className="font-mono text-4xl md:text-5xl font-black text-white tracking-[0.2em]">{circle.inviteCode}</p>
+                <div className="bg-emerald-50 dark:bg-white/5 border border-emerald-200 dark:border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center gap-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-800 dark:text-brand-lime/80">Your Unique Code</p>
+                  <p className="font-mono text-4xl md:text-5xl font-black text-emerald-950 dark:text-white tracking-[0.2em]">{circle.inviteCode}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -555,7 +559,7 @@ export const CircleHome = ({
                     Copy Code
                   </Button>
                   <Button 
-                    variant="outline"
+                    variant="outline" 
                     className="w-full py-4 text-sm"
                     onClick={() => setIsInviteModalOpen(false)}
                   >

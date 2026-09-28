@@ -123,15 +123,23 @@ export default function App() {
   const [juzs, setJuzs] = useState<any[]>([]);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
   const [isLightMode, setIsLightMode] = useState(() => {
-    return localStorage.getItem('theme') === 'light';
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') return false;
+    return true; // Default mode is light mode for all users
   });
 
   useEffect(() => {
     if (isLightMode) {
       document.body.classList.add('light');
+      document.body.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     } else {
       document.body.classList.remove('light');
+      document.body.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
   }, [isLightMode]);
@@ -464,9 +472,9 @@ export default function App() {
       } catch (err: any) {
         console.error("Anonymous login failed:", err);
         if (err.code === 'auth/admin-restricted-operation') {
-          alert("Demo Mode requires 'Anonymous Authentication' to be enabled in your Firebase Console (Authentication > Sign-in method). Please enable it or sign in with Google first.");
+          toast.error("Demo Mode requires 'Anonymous Authentication' to be enabled in your Firebase Console (Authentication > Sign-in method). Please enable it or sign in with Google first.");
         } else {
-          alert("Failed to start demo. Please check your internet connection.");
+          toast.error("Failed to start demo. Please check your internet connection.");
         }
         return;
       }
@@ -552,7 +560,7 @@ export default function App() {
       setView('dashboard');
     } catch (err) {
       console.error("Seeding error:", err);
-      alert("Failed to seed demo data. Please try again.");
+      toast.error("Failed to seed demo data. Please try again.");
     }
   };
 
@@ -1033,44 +1041,59 @@ export default function App() {
       await loginAnonymously();
     } catch (err: any) {
       console.error("Explore mode failed:", err);
-      alert("Failed to enter explore mode. Please try again.");
+      toast.error("Failed to enter explore mode. Please try again.");
     }
   };
 
   if (loading) return <div className="h-screen flex items-center justify-center text-emerald-600 font-black animate-pulse uppercase tracking-widest">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-brand-deep text-white font-sans selection:bg-brand-lime selection:text-brand-deep">
+    <div className="min-h-screen bg-[#F5F8F7] text-stone-900 dark:bg-brand-deep dark:text-white font-sans selection:bg-emerald-700 selection:text-white dark:selection:bg-brand-lime dark:selection:text-brand-deep transition-colors duration-300">
       <div className="min-h-screen flex flex-col md:flex-row">
         
         {/* Mobile Header */}
         {user && (
-          <header className="md:hidden flex items-center justify-between p-6 bg-brand-deep/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
-            <div className="flex items-center gap-3" onClick={() => setView('dashboard')}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-white/5 p-1">
+          <header className="md:hidden flex items-center justify-between p-6 bg-white/95 dark:bg-brand-deep/80 backdrop-blur-xl border-b border-black/10 dark:border-white/10 sticky top-0 z-50 shadow-sm dark:shadow-none">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('dashboard')}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-emerald-50 dark:bg-white/5 border border-emerald-200/50 dark:border-white/10 p-1">
                 <img src="/favicon.svg" className="w-full h-full object-contain" alt="Quran Circles Logo" />
               </div>
-              <h1 className="font-display font-black text-lg tracking-tighter uppercase">Quran</h1>
+              <h1 className="font-display font-black text-lg tracking-tighter uppercase text-emerald-950 dark:text-white">Quran</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <button 
                 onClick={() => setIsLightMode(!isLightMode)} 
-                className="text-white/40 p-2"
+                className="text-stone-700 dark:text-white/60 hover:text-emerald-800 dark:hover:text-white p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
               >
                 {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
               </button>
-              <button onClick={() => setShowQFInfo(true)} className="text-white/40 p-2"><Info size={20} /></button>
+              <button 
+                onClick={() => setShowQFInfo(true)} 
+                className="text-stone-700 dark:text-white/60 hover:text-emerald-800 dark:hover:text-white p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                title="How it works"
+              >
+                <Info size={20} />
+              </button>
               {view === 'circle' && activeCircle && (
-                <button onClick={() => setView('circle-settings')} className="text-white/40 p-2"><Settings size={20} /></button>
+                <button 
+                  onClick={() => setView('circle-settings')} 
+                  className="text-stone-700 dark:text-white/60 hover:text-emerald-800 dark:hover:text-white p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  title="Settings"
+                >
+                  <Settings size={20} />
+                </button>
               )}
               <div 
                 className={cn(
-                  "w-10 h-10 rounded-xl border flex items-center justify-center overflow-hidden transition-all",
-                  view === 'profile' ? "bg-brand-lime border-brand-lime" : "bg-brand-forest border-white/10"
+                  "w-10 h-10 rounded-xl border flex items-center justify-center overflow-hidden transition-all cursor-pointer",
+                  view === 'profile' 
+                    ? "bg-emerald-700 border-emerald-700 text-white dark:bg-brand-lime dark:border-brand-lime dark:text-brand-deep" 
+                    : "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-brand-forest dark:border-white/10 dark:text-brand-lime"
                 )} 
                 onClick={() => setView('profile')}
               >
-                {user.photoURL ? <img src={user.photoURL} alt="" referrerPolicy="no-referrer" /> : <UserIcon size={20} className={view === 'profile' ? "text-brand-deep" : "text-brand-lime"} />}
+                {user.photoURL ? <img src={user.photoURL} alt="" referrerPolicy="no-referrer" /> : <UserIcon size={20} />}
               </div>
             </div>
           </header>
@@ -1080,22 +1103,22 @@ export default function App() {
         {user && (
           <aside 
             className={cn(
-              "hidden md:flex md:h-screen md:sticky md:top-0 flex-col justify-between border-r border-white/5 bg-brand-deep/50 backdrop-blur-xl z-50 transition-all duration-500",
+              "hidden md:flex md:h-screen md:sticky md:top-0 flex-col justify-between border-r border-black/10 dark:border-white/10 bg-white/95 dark:bg-brand-deep/80 backdrop-blur-xl z-50 transition-all duration-500",
               isSidebarOpen ? "lg:w-80 md:w-64 p-8" : "md:w-24 p-4"
             )}
           >
             <div className="space-y-12">
               <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setView('dashboard')}>
                 <div className={cn(
-                  "rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-105 shrink-0 bg-white/5 p-1",
+                  "rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-105 shrink-0 bg-emerald-50 dark:bg-white/5 border border-emerald-200/50 dark:border-white/10 p-1",
                   isSidebarOpen ? "w-14 h-14" : "w-12 h-12"
                 )}>
                   <img src="/favicon.svg" className="w-full h-full object-contain" alt="Quran Circles Logo" />
                 </div>
                 {isSidebarOpen && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-                    <h1 className="font-display font-black text-2xl tracking-tighter leading-none">QURAN</h1>
-                    <p className="text-[10px] font-black text-brand-lime uppercase tracking-[0.3em] mt-1">Circles</p>
+                    <h1 className="font-display font-black text-2xl tracking-tighter leading-none text-emerald-950 dark:text-white">QURAN</h1>
+                    <p className="text-[10px] font-black text-emerald-700 dark:text-brand-lime uppercase tracking-[0.3em] mt-1">Circles</p>
                   </motion.div>
                 )}
               </div>
@@ -1104,9 +1127,11 @@ export default function App() {
                 <button 
                   onClick={() => setView('dashboard')}
                   className={cn(
-                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300",
+                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300 cursor-pointer",
                     isSidebarOpen ? "px-6 py-4" : "p-4 justify-center",
-                    view === 'dashboard' ? "bg-brand-lime text-brand-deep lime-glow" : "text-white/40 hover:text-white hover:bg-white/5"
+                    view === 'dashboard' 
+                      ? "bg-emerald-700 text-white shadow-md dark:bg-brand-lime dark:text-brand-deep dark:lime-glow" 
+                      : "text-stone-700 dark:text-white/60 hover:text-emerald-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
                   )}
                   title="Dashboard"
                 >
@@ -1115,9 +1140,11 @@ export default function App() {
                 <button 
                   onClick={() => setView('bookmarks')}
                   className={cn(
-                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300",
+                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300 cursor-pointer",
                     isSidebarOpen ? "px-6 py-4" : "p-4 justify-center",
-                    view === 'bookmarks' ? "bg-brand-lime text-brand-deep lime-glow" : "text-white/40 hover:text-white hover:bg-white/5"
+                    view === 'bookmarks' 
+                      ? "bg-emerald-700 text-white shadow-md dark:bg-brand-lime dark:text-brand-deep dark:lime-glow" 
+                      : "text-stone-700 dark:text-white/60 hover:text-emerald-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
                   )}
                   title="Bookmarks"
                 >
@@ -1126,9 +1153,11 @@ export default function App() {
                 <button 
                   onClick={() => setView('stats')}
                   className={cn(
-                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300",
+                    "w-full flex items-center gap-4 rounded-2xl font-bold transition-all duration-300 cursor-pointer",
                     isSidebarOpen ? "px-6 py-4" : "p-4 justify-center",
-                    view === 'stats' ? "bg-brand-lime text-brand-deep lime-glow" : "text-white/40 hover:text-white hover:bg-white/5"
+                    view === 'stats' 
+                      ? "bg-emerald-700 text-white shadow-md dark:bg-brand-lime dark:text-brand-deep dark:lime-glow" 
+                      : "text-stone-700 dark:text-white/60 hover:text-emerald-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
                   )}
                   title="Analytics"
                 >
@@ -1137,7 +1166,7 @@ export default function App() {
                 <button 
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                   className={cn(
-                    "w-full flex items-center gap-4 rounded-2xl font-bold text-white/20 hover:text-white hover:bg-white/5 transition-all duration-300",
+                    "w-full flex items-center gap-4 rounded-2xl font-bold text-stone-500 dark:text-white/40 hover:text-stone-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 cursor-pointer",
                     isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
                   )}
                   title={isSidebarOpen ? "Collapse" : "Expand"}
@@ -1146,8 +1175,8 @@ export default function App() {
                 </button>
 
                 {isSidebarOpen && circles.length > 0 && (
-                  <div className="pt-4 border-t border-white/5 space-y-2">
-                    <p className="px-4 text-[9px] font-black uppercase tracking-[0.25em] text-brand-lime">Your Circles</p>
+                  <div className="pt-4 border-t border-black/10 dark:border-white/5 space-y-2">
+                    <p className="px-4 text-[9px] font-black uppercase tracking-[0.25em] text-emerald-800 dark:text-brand-lime">Your Circles</p>
                     <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
                       {circles.map(c => (
                         <button
@@ -1157,14 +1186,14 @@ export default function App() {
                             setView('circle');
                           }}
                           className={cn(
-                            "w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold truncate flex items-center justify-between transition-colors",
+                            "w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold truncate flex items-center justify-between transition-colors cursor-pointer",
                             activeCircle?.id === c.id 
-                              ? "bg-brand-lime/20 text-brand-lime font-black border border-brand-lime/30" 
-                              : "text-white/60 hover:text-white hover:bg-white/5"
+                              ? "bg-emerald-100 text-emerald-900 font-black border border-emerald-300 dark:bg-brand-lime/20 dark:text-brand-lime dark:border-brand-lime/30" 
+                              : "text-stone-700 dark:text-white/60 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
                           )}
                         >
                           <span className="truncate">{c.name}</span>
-                          <span className="text-[10px] opacity-60 ml-1 shrink-0">🔥{c.streak.current}d</span>
+                          <span className="text-[10px] font-bold opacity-75 ml-1 shrink-0">🔥{c.streak.current}d</span>
                         </button>
                       ))}
                     </div>
@@ -1173,12 +1202,12 @@ export default function App() {
               </nav>
             </div>
 
-            <div className={cn("pt-8 border-t border-white/5", !isSidebarOpen && "flex flex-col items-center gap-4")}>
-              <div className="space-y-2 mb-4">
+            <div className={cn("pt-8 border-t border-black/10 dark:border-white/5", !isSidebarOpen && "flex flex-col items-center gap-4")}>
+              <div className="space-y-2 mb-4 w-full">
                 <button 
-                  onClick={() => setShowQFInfo(true)}
+                  onClick={() => setShowQFInfo(true)} 
                   className={cn(
-                    "w-full flex items-center gap-3 rounded-2xl font-bold text-white/40 hover:text-white hover:bg-white/5 transition-all duration-300",
+                    "w-full flex items-center gap-3 rounded-2xl font-bold text-stone-700 dark:text-white/50 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 cursor-pointer",
                     isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
                   )}
                   title="How it works"
@@ -1188,10 +1217,10 @@ export default function App() {
                 <button 
                   onClick={() => setIsLightMode(!isLightMode)} 
                   className={cn(
-                    "w-full flex items-center gap-3 rounded-2xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300",
+                    "w-full flex items-center gap-3 rounded-2xl font-bold text-stone-700 dark:text-white/50 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 cursor-pointer",
                     isSidebarOpen ? "px-6 py-4" : "p-4 justify-center"
                   )} 
-                  title={isLightMode ? "Dark Mode" : "Light Mode"}
+                  title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
                 >
                   {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
                   {isSidebarOpen && (isLightMode ? "Dark Mode" : "Light Mode")}
@@ -1200,18 +1229,18 @@ export default function App() {
 
               <div 
                 className={cn(
-                  "flex items-center gap-4 px-2 cursor-pointer group hover:bg-white/5 p-2 rounded-2xl transition-all border border-transparent", 
-                  view === 'profile' && "bg-white/5 border-white/10"
+                  "flex items-center gap-4 px-2 cursor-pointer group hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded-2xl transition-all border border-transparent", 
+                  view === 'profile' && "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10"
                 )}
                 onClick={() => setView('profile')}
               >
-                <div className="w-12 h-12 bg-brand-forest rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
-                  {user.photoURL ? <img src={user.photoURL} alt="" referrerPolicy="no-referrer" /> : <UserIcon size={24} className="text-brand-lime" />}
+                <div className="w-12 h-12 bg-emerald-100 text-emerald-800 dark:bg-brand-forest dark:text-brand-lime rounded-2xl border border-emerald-200 dark:border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                  {user.photoURL ? <img src={user.photoURL} alt="" referrerPolicy="no-referrer" /> : <UserIcon size={24} />}
                 </div>
                 {isSidebarOpen && (
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black truncate">{user.displayName || user.email?.split('@')[0]}</p>
-                    <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Active Member</p>
+                    <p className="text-sm font-black truncate text-stone-900 dark:text-white">{user.displayName || user.email?.split('@')[0]}</p>
+                    <p className="text-[10px] text-stone-500 dark:text-white/40 font-bold uppercase tracking-widest">Active Member</p>
                   </div>
                 )}
               </div>
@@ -1223,22 +1252,22 @@ export default function App() {
           {/* Big Constant Banner for Demo Mode */}
           {user && user.isAnonymous && view !== 'landing' && (
             <div className="sticky top-0 z-40 mb-8 -mt-2 md:-mt-6">
-              <div className="bg-gradient-to-r from-brand-forest via-emerald-950 to-brand-deep border-2 border-brand-lime/30 rounded-3xl p-5 md:p-6 shadow-2xl text-white flex flex-col lg:flex-row items-center justify-between gap-6 backdrop-blur-xl">
+              <div className="bg-white dark:bg-gradient-to-r dark:from-brand-forest dark:via-emerald-950 dark:to-brand-deep border-2 border-emerald-600/25 dark:border-brand-lime/30 rounded-3xl p-5 md:p-6 shadow-xl text-paper-ink dark:text-white flex flex-col lg:flex-row items-center justify-between gap-6 backdrop-blur-xl">
                 <div className="flex items-center gap-4 text-center lg:text-left">
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-brand-lime text-brand-deep flex items-center justify-center shrink-0 shadow-lg lime-glow">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center shrink-0 shadow-lg lime-glow">
                     <Sparkles size={26} strokeWidth={2.5} />
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 justify-center lg:justify-start">
-                      <span className="px-3 py-1 rounded-full bg-brand-lime text-brand-deep text-[10px] font-black uppercase tracking-wider">
+                      <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-brand-lime text-emerald-800 dark:text-brand-deep text-[10px] font-black uppercase tracking-wider border border-emerald-200 dark:border-transparent">
                         Demo Mode Active
                       </span>
-                      <span className="text-white/60 text-xs hidden sm:inline">• Previewing Experience</span>
+                      <span className="text-paper-accent dark:text-white/60 text-xs hidden sm:inline">• Previewing Experience</span>
                     </div>
-                    <p className="text-base md:text-lg font-bold text-white leading-snug">
+                    <p className="text-base md:text-lg font-bold text-paper-ink dark:text-white leading-snug">
                       Create an account or sign in to begin your Quran Circles journey and save your daily habit!
                     </p>
-                    <p className="text-xs text-white/50 hidden md:block">
+                    <p className="text-xs text-paper-accent dark:text-white/50 hidden md:block">
                       Your demo data and reflections will not be preserved permanently unless you connect an account.
                     </p>
                   </div>
@@ -1246,13 +1275,13 @@ export default function App() {
                 <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-center">
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="flex-1 sm:flex-none px-7 py-3.5 rounded-full bg-brand-lime text-brand-deep font-black text-xs uppercase tracking-wider hover:bg-white transition-all shadow-xl active:scale-95 cursor-pointer"
+                    className="flex-1 sm:flex-none px-7 py-3.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-brand-lime dark:text-brand-deep font-black text-xs uppercase tracking-wider dark:hover:bg-white transition-all shadow-xl active:scale-95 cursor-pointer"
                   >
                     Create Account
                   </button>
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="flex-1 sm:flex-none px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all border border-white/20 active:scale-95 cursor-pointer"
+                    className="flex-1 sm:flex-none px-6 py-3.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white font-bold text-xs uppercase tracking-wider transition-all dark:border-white/20 active:scale-95 cursor-pointer"
                   >
                     Sign In
                   </button>
@@ -1271,14 +1300,14 @@ export default function App() {
                     size="sm" 
                     variant="outline" 
                     onClick={() => setShowAuthModal(true)} 
-                    className="text-xs font-bold uppercase tracking-wider py-2.5 px-5 border-white/20 hover:border-brand-lime hover:text-brand-lime"
+                    className="text-xs font-bold uppercase tracking-wider py-2.5 px-5 border-black/20 hover:border-emerald-700 hover:text-emerald-800 dark:border-white/20 dark:hover:border-brand-lime dark:hover:text-brand-lime text-stone-900 dark:text-white"
                   >
                     Sign In
                   </Button>
                   <button 
                     onClick={() => setIsLightMode(!isLightMode)} 
-                    className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all backdrop-blur-md border border-white/10"
-                    title="Toggle theme"
+                    className="p-3 rounded-full bg-black/5 hover:bg-black/10 text-stone-800 border border-black/15 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white dark:border-white/10 transition-all backdrop-blur-md cursor-pointer"
+                    title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
                   >
                     {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
                   </button>
@@ -1287,13 +1316,13 @@ export default function App() {
                 <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                   <div className="space-y-12 text-center lg:text-left">
                     <div className="space-y-6">
-                      <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black tracking-tighter leading-[0.85] uppercase">
+                      <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black tracking-tighter leading-[0.85] uppercase text-emerald-950 dark:text-white">
                         Quran <br />
-                        <span className="text-brand-lime">Circles</span>
+                        <span className="text-emerald-700 dark:text-brand-lime">Circles</span>
                       </h2>
                     </div>
                     
-                    <p className="text-xl md:text-3xl text-white/40 font-medium max-w-xl leading-relaxed">
+                    <p className="text-xl md:text-3xl text-stone-700 dark:text-white/60 font-medium max-w-xl leading-relaxed">
                       Private Quran habit circles for families and friends.
                     </p>
                   </div>
@@ -1809,10 +1838,10 @@ export default function App() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                   <div className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <p className="text-[11px] font-black text-brand-lime uppercase tracking-[0.4em]">Overview</p>
+                      <p className="text-[11px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-[0.4em]">Overview</p>
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter">Your Circles</h2>
-                    <p className="text-white/30 text-sm font-medium italic">"Building a shared Quran habit, one verse at a time."</p>
+                    <h2 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter text-emerald-950 dark:text-white">Your Circles</h2>
+                    <p className="text-stone-600 dark:text-white/40 text-sm font-medium italic">"Building a shared Quran habit, one verse at a time."</p>
                   </div>
                   <div className="flex gap-4 md:gap-6">
                     <Button variant="outline" size="lg" className="flex-1 md:flex-none" onClick={() => setView('join-circle')} icon={UserPlus}>Join</Button>
@@ -2917,19 +2946,19 @@ export default function App() {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-2xl max-h-[95vh] sm:max-h-[85vh] bg-brand-forest border border-white/10 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[3rem] shadow-2xl flex flex-col overflow-hidden"
+                className="relative w-full max-w-2xl max-h-[95vh] sm:max-h-[85vh] bg-white dark:bg-brand-forest border border-black/10 dark:border-white/10 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[3rem] shadow-2xl flex flex-col overflow-hidden text-paper-ink dark:text-white"
               >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-lime/5 rounded-full -mr-32 -mt-32 blur-[80px] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 dark:bg-brand-lime/5 rounded-full -mr-32 -mt-32 blur-[80px] pointer-events-none" />
                 
                 {/* Header - Fixed */}
-                <div className="p-4 sm:p-6 md:p-10 border-b border-white/5 flex items-center justify-between relative z-10 bg-brand-forest/50 backdrop-blur-md">
+                <div className="p-4 sm:p-6 md:p-10 border-b border-black/10 dark:border-white/5 flex items-center justify-between relative z-10 bg-white/80 dark:bg-brand-forest/50 backdrop-blur-md">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black text-brand-lime uppercase tracking-[0.4em]">Personalize</p>
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white">Your Profile</h3>
+                    <p className="text-[10px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-[0.4em]">Personalize</p>
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white">Your Profile</h3>
                   </div>
                   <button 
                     onClick={() => setShowProfileModal(false)}
-                    className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl md:rounded-2xl hover:bg-white/10 transition-all"
+                    className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl md:rounded-2xl hover:bg-black/10 dark:hover:bg-white/10 text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white transition-all"
                   >
                     <ArrowLeft size={20} strokeWidth={2.5} className="rotate-90" />
                   </button>
@@ -2944,21 +2973,21 @@ export default function App() {
                       <div className="space-y-8 sm:space-y-12">
                         <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start text-center sm:text-left">
                           <div 
-                            className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center text-3xl sm:text-4xl md:text-6xl shadow-2xl border-4 border-white/10 shrink-0"
+                            className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center text-3xl sm:text-4xl md:text-6xl shadow-2xl border-4 border-black/10 dark:border-white/10 shrink-0 text-paper-ink dark:text-white"
                             style={{ backgroundColor: p.color || '#A3E635' }}
                           >
                             {p.avatar || p.name[0]}
                           </div>
                           <div className="space-y-2 sm:space-y-3 pt-1 sm:pt-2">
-                            <p className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-widest leading-tight text-white">{p.label || p.name}</p>
-                            <Badge variant="outline" className="bg-white/5 border-white/10">{p.type === 'auth' ? 'Member' : 'Local Member'}</Badge>
-                            <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">Joined {format(new Date(activeCircle.startDate), 'MMM yyyy')}</p>
+                            <p className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-widest leading-tight text-paper-ink dark:text-white">{p.label || p.name}</p>
+                            <Badge variant="outline" className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-paper-accent dark:text-white/80">{p.type === 'auth' ? 'Member' : 'Local Member'}</Badge>
+                            <p className="text-[10px] text-paper-accent dark:text-white/40 font-black uppercase tracking-widest">Joined {format(new Date(activeCircle.startDate), 'MMM yyyy')}</p>
                           </div>
                         </div>
 
                         <div className="grid gap-8 sm:gap-10">
                           <div className="space-y-3 sm:space-y-4">
-                            <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <p className="text-[11px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
                               <UserCircle size={14} /> Nickname / Label
                             </p>
                             <input 
@@ -2969,18 +2998,18 @@ export default function App() {
                                 label: e.target.value 
                               })}
                               placeholder="e.g. Dad, Sister, Study Buddy"
-                              className="w-full p-3 sm:p-4 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl outline-none font-medium focus:border-brand-lime text-white transition-all"
+                              className="w-full p-3 sm:p-4 bg-paper-bg/40 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl sm:rounded-2xl outline-none font-medium focus:border-emerald-700 dark:focus:border-brand-lime text-paper-ink dark:text-white transition-all placeholder:text-paper-accent/40"
                             />
                           </div>
 
                           <div className="space-y-3 sm:space-y-4">
-                            <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <p className="text-[11px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
                               <Clock size={14} /> Daily Reminders
                             </p>
-                            <div className="flex items-center justify-between p-3 sm:p-4 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl">
+                            <div className="flex items-center justify-between p-3 sm:p-4 bg-paper-bg/40 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl sm:rounded-2xl">
                               <div className="space-y-1">
-                                <p className="text-xs sm:text-sm font-bold">Enable Notifications</p>
-                                <p className="text-[9px] sm:text-[10px] text-white/40 font-medium">Get reminded before the circle deadline</p>
+                                <p className="text-xs sm:text-sm font-bold text-paper-ink dark:text-white">Enable Notifications</p>
+                                <p className="text-[9px] sm:text-[10px] text-paper-accent dark:text-white/40 font-medium">Get reminded before the circle deadline</p>
                               </div>
                               <button 
                                 onClick={() => {
@@ -2998,11 +3027,11 @@ export default function App() {
                                 }}
                                 className={cn(
                                   "w-10 h-5 sm:w-12 sm:h-6 rounded-full transition-all relative",
-                                  p.reminderSettings?.enabled ? "bg-brand-lime" : "bg-white/10"
+                                  p.reminderSettings?.enabled ? "bg-emerald-700 dark:bg-brand-lime" : "bg-black/10 dark:bg-white/10"
                                 )}
                               >
                                 <div className={cn(
-                                  "absolute top-0.5 sm:top-1 w-4 h-4 rounded-full bg-white transition-all",
+                                  "absolute top-0.5 sm:top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
                                   p.reminderSettings?.enabled ? "right-0.5 sm:right-1" : "left-0.5 sm:left-1"
                                 )} />
                               </button>
@@ -3010,7 +3039,7 @@ export default function App() {
                           </div>
 
                           <div className="space-y-3 sm:space-y-4">
-                            <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <p className="text-[11px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
                               <UserCircle size={14} /> Choose Avatar
                             </p>
                             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3">
@@ -3020,7 +3049,7 @@ export default function App() {
                                   onClick={() => handleUpdateParticipant(p.id, { avatar })}
                                   className={cn(
                                     "aspect-square rounded-lg sm:rounded-xl flex items-center justify-center text-xl sm:text-2xl transition-all border-2",
-                                    p.avatar === avatar ? "bg-brand-lime border-brand-lime shadow-lg" : "bg-white/5 border-white/5 hover:border-white/20"
+                                    p.avatar === avatar ? "bg-emerald-100 border-emerald-700 dark:bg-brand-lime dark:border-brand-lime shadow-md scale-105" : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20"
                                   )}
                                 >
                                   {avatar}
@@ -3030,7 +3059,7 @@ export default function App() {
                           </div>
 
                           <div className="space-y-3 sm:space-y-4">
-                            <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <p className="text-[11px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
                               <Palette size={14} /> Choose Color
                             </p>
                             <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -3040,11 +3069,11 @@ export default function App() {
                                   onClick={() => handleUpdateParticipant(p.id, { color })}
                                   className={cn(
                                     "w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all border-2 sm:border-4 flex items-center justify-center",
-                                    p.color === color ? "border-white scale-110 shadow-lg" : "border-transparent hover:scale-105"
+                                    p.color === color ? "border-emerald-800 dark:border-white scale-110 shadow-lg" : "border-transparent hover:scale-105"
                                   )}
                                   style={{ backgroundColor: color }}
                                 >
-                                  {p.color === color && <Check size={14} className="text-white" />}
+                                  {p.color === color && <Check size={14} className="text-white drop-shadow" />}
                                 </button>
                               ))}
                             </div>
@@ -3056,7 +3085,7 @@ export default function App() {
                 </div>
 
                 {/* Footer - Fixed */}
-                <div className="p-4 sm:p-6 md:p-10 border-t border-white/5 bg-brand-forest/50 backdrop-blur-md relative z-10">
+                <div className="p-4 sm:p-6 md:p-10 border-t border-black/10 dark:border-white/5 bg-white/80 dark:bg-brand-forest/50 backdrop-blur-md relative z-10">
                   <Button 
                     size="lg" 
                     className="w-full py-4 sm:py-6 text-lg sm:text-xl" 
@@ -3071,31 +3100,7 @@ export default function App() {
         </AnimatePresence>
 
         <QFInfoPanel isOpen={showQFInfo} onClose={() => setShowQFInfo(false)} />
-        <Toaster position="bottom-right" theme="dark" richColors />
-
-
-        {user && (view === 'dashboard' || view === 'bookmarks') && (
-          <div className="md:hidden p-6 bg-brand-deep/80 backdrop-blur-xl border-t border-white/5 flex items-center justify-around sticky bottom-0 z-50">
-            <button 
-              onClick={() => setView('dashboard')}
-              className={cn(
-                "p-4 rounded-2xl transition-all duration-300",
-                view === 'dashboard' ? "bg-brand-lime text-brand-deep lime-glow" : "text-white/30 hover:text-white hover:bg-white/5"
-              )}
-            >
-              <BookOpen size={28} strokeWidth={2.5} />
-            </button>
-            <button 
-              onClick={() => setView('bookmarks')}
-              className={cn(
-                "p-4 rounded-2xl transition-all duration-300",
-                view === 'bookmarks' ? "bg-brand-lime text-brand-deep lime-glow" : "text-white/30 hover:text-white hover:bg-white/5"
-              )}
-            >
-              <BookmarkIcon size={28} strokeWidth={2.5} />
-            </button>
-          </div>
-        )}
+        <Toaster position="bottom-right" theme={isLightMode ? 'light' : 'dark'} richColors />
 
         {/* About Modal */}
         <AnimatePresence>
@@ -3112,23 +3117,23 @@ export default function App() {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-2xl bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden"
+                className="relative w-full max-w-2xl bg-white dark:bg-brand-forest border border-black/10 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden text-paper-ink dark:text-white"
               >
                 <div className="p-8 md:p-12 space-y-8">
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
-                      <h2 className="text-3xl font-display font-black uppercase tracking-tight">About This <span className="text-brand-lime">Project</span></h2>
-                      <p className="text-brand-lime font-bold uppercase tracking-widest text-xs">Consistency through gentle accountability</p>
+                      <h2 className="text-3xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">About This <span className="text-emerald-700 dark:text-brand-lime">Project</span></h2>
+                      <p className="text-emerald-800 dark:text-brand-lime font-bold uppercase tracking-widest text-xs">Consistency through gentle accountability</p>
                     </div>
-                    <button onClick={() => setShowAboutModal(false)} className="w-10 h-10 shrink-0 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors">
+                    <button onClick={() => setShowAboutModal(false)} className="w-10 h-10 shrink-0 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white transition-colors">
                       <X size={20} />
                     </button>
                   </div>
-                  <div className="prose prose-invert max-w-none space-y-8 text-white/60 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
+                  <div className="prose prose-invert max-w-none space-y-8 text-paper-ink/85 dark:text-white/70 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
                     
                     <div className="space-y-4">
-                      <h4 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-rose-400"></div>
+                      <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-rose-500"></div>
                         The Problem
                       </h4>
                       <p>Many people want to stay consistent with the Qur'an beyond Ramadan, but maintaining that habit alone can be difficult.</p>
@@ -3136,54 +3141,54 @@ export default function App() {
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2 mt-8">
-                        <div className="w-2 h-2 rounded-full bg-brand-lime"></div>
+                      <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm flex items-center gap-2 mt-8">
+                        <div className="w-2 h-2 rounded-full bg-emerald-700 dark:bg-brand-lime"></div>
                         The Solution
                       </h4>
-                      <p className="text-white"><strong>Quran Reflection Circles is a private small-group Quran habit app for families, friends, spouses, and halaqah groups.</strong></p>
+                      <p className="text-paper-ink dark:text-white"><strong>Quran Reflection Circles is a private small-group Quran habit app for families, friends, spouses, and halaqah groups.</strong></p>
                       <p>Each circle can:</p>
-                      <ul className="list-disc pl-5 space-y-2 text-white/80">
+                      <ul className="list-disc pl-5 space-y-2 text-paper-ink/90 dark:text-white/80">
                         <li>Follow one shared ayah each day</li>
                         <li>Reflect independently, in their own time</li>
                         <li>Share takeaways privately</li>
                         <li>Build a shared streak together</li>
                       </ul>
-                      <p className="border-l-2 border-brand-lime pl-4 italic text-white/80 py-2">The core idea is simple: Consistency through gentle group accountability.</p>
+                      <p className="border-l-2 border-emerald-600 dark:border-brand-lime pl-4 italic text-paper-ink/90 dark:text-white/80 py-2">The core idea is simple: Consistency through gentle group accountability.</p>
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="text-white font-black uppercase tracking-widest text-sm mt-8">Participation Modes</h4>
+                      <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm mt-8">Participation Modes</h4>
                       <p>Designed for real-life use:</p>
-                      <div className="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
+                      <div className="space-y-4 bg-paper-bg/40 dark:bg-white/5 p-6 rounded-2xl border border-black/10 dark:border-white/5">
                         <div>
-                          <strong className="text-white block mb-1">Shared-Device Mode</strong>
+                          <strong className="text-paper-ink dark:text-white block mb-1">Shared-Device Mode</strong>
                           <p className="text-sm">For families using one phone or tablet together.</p>
                         </div>
-                        <div className="pt-4 border-t border-white/5">
-                          <strong className="text-white block mb-1">Individual Mode</strong>
+                        <div className="pt-4 border-t border-black/10 dark:border-white/5">
+                          <strong className="text-paper-ink dark:text-white block mb-1">Individual Mode</strong>
                           <p className="text-sm">Each member participates from their own device.</p>
                         </div>
-                        <div className="pt-4 border-t border-white/5">
-                          <strong className="text-white block mb-1">Hybrid Mode</strong>
+                        <div className="pt-4 border-t border-black/10 dark:border-white/5">
+                          <strong className="text-paper-ink dark:text-white block mb-1">Hybrid Mode</strong>
                           <p className="text-sm">Supports both in-person and remote participation.</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="text-white font-black uppercase tracking-widest text-sm flex items-center gap-2 mt-8">
-                        <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                      <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm flex items-center gap-2 mt-8">
+                        <div className="w-2 h-2 rounded-full bg-amber-500"></div>
                         Core Mechanic
                       </h4>
-                      <div className="bg-brand-deep/30 p-6 rounded-2xl border border-brand-lime/20 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-5"><Flame size={100} /></div>
-                        <p className="text-white font-bold text-lg relative z-10">A circle's streak only continues when all members complete the day.</p>
-                        <p className="relative z-10 mt-2">This makes the group habit collaborative, not individual.</p>
+                      <div className="bg-emerald-50 dark:bg-brand-deep/30 p-6 rounded-2xl border border-emerald-200 dark:border-brand-lime/20 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10"><Flame size={100} /></div>
+                        <p className="text-paper-ink dark:text-white font-bold text-lg relative z-10">A circle's streak only continues when all members complete the day.</p>
+                        <p className="relative z-10 mt-2 text-paper-accent dark:text-white/70">This makes the group habit collaborative, not individual.</p>
                       </div>
                     </div>
 
                   </div>
-                  <Button className="w-full py-4 text-brand-deep font-black" onClick={() => setShowAboutModal(false)}>Close</Button>
+                  <Button className="w-full py-4 text-white dark:text-brand-deep font-black" onClick={() => setShowAboutModal(false)}>Close</Button>
                 </div>
               </motion.div>
             </div>
@@ -3205,23 +3210,23 @@ export default function App() {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-2xl bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden"
+                className="relative w-full max-w-2xl bg-white dark:bg-brand-forest border border-black/10 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden text-paper-ink dark:text-white"
               >
                 <div className="p-8 md:p-12 space-y-8">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-3xl font-display font-black uppercase tracking-tight">Privacy <span className="text-brand-lime">Policy</span></h2>
-                    <button onClick={() => setShowPrivacyModal(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors">
+                    <h2 className="text-3xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Privacy <span className="text-emerald-700 dark:text-brand-lime">Policy</span></h2>
+                    <button onClick={() => setShowPrivacyModal(false)} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white transition-colors">
                       <X size={20} />
                     </button>
                   </div>
-                  <div className="prose prose-invert max-w-none space-y-6 text-white/60 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
-                    <p>Last updated: April 16, 2026</p>
+                  <div className="prose prose-invert max-w-none space-y-6 text-paper-ink/85 dark:text-white/70 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
+                    <p className="text-paper-accent dark:text-white/50">Last updated: April 16, 2026</p>
                     <p>At Quran Circles, we take your privacy seriously. Our platform is built on the principle of private, sacred spaces.</p>
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm">1. Data Collection</h4>
+                    <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm">1. Data Collection</h4>
                     <p>We collect only the information necessary to provide our service: your email for authentication, and the reflections you choose to share within your private circles.</p>
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm">2. Data Usage</h4>
+                    <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm">2. Data Usage</h4>
                     <p>Your reflections are only visible to members of the specific circle they were posted in. We do not use your personal reflections for advertising or any third-party services.</p>
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm">3. Security</h4>
+                    <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm">3. Security</h4>
                     <p>We use industry-standard encryption to protect your data both in transit and at rest. Our authentication is handled securely via Firebase.</p>
                   </div>
                   <Button className="w-full py-4" onClick={() => setShowPrivacyModal(false)}>Close</Button>
@@ -3246,23 +3251,23 @@ export default function App() {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-2xl bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden"
+                className="relative w-full max-w-2xl bg-white dark:bg-brand-forest border border-black/10 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden text-paper-ink dark:text-white"
               >
                 <div className="p-8 md:p-12 space-y-8">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-3xl font-display font-black uppercase tracking-tight">Terms of <span className="text-brand-lime">Service</span></h2>
-                    <button onClick={() => setShowTermsModal(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-colors">
+                    <h2 className="text-3xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Terms of <span className="text-emerald-700 dark:text-brand-lime">Service</span></h2>
+                    <button onClick={() => setShowTermsModal(false)} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white transition-colors">
                       <X size={20} />
                     </button>
                   </div>
-                  <div className="prose prose-invert max-w-none space-y-6 text-white/60 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
-                    <p>Last updated: April 16, 2026</p>
+                  <div className="prose prose-invert max-w-none space-y-6 text-paper-ink/85 dark:text-white/70 font-medium leading-relaxed max-h-[60vh] overflow-y-auto custom-scrollbar pr-4">
+                    <p className="text-paper-accent dark:text-white/50">Last updated: April 16, 2026</p>
                     <p>By using Quran Circles, you agree to the following terms:</p>
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm">1. Respectful Conduct</h4>
+                    <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm">1. Respectful Conduct</h4>
                     <p>This is a sacred space for reflection. Users are expected to maintain a respectful and supportive environment within their circles.</p>
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm">2. Account Responsibility</h4>
+                    <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm">2. Account Responsibility</h4>
                     <p>You are responsible for maintaining the security of your account and for all activities that occur under your account.</p>
-                    <h4 className="text-white font-black uppercase tracking-widest text-sm">3. Service Availability</h4>
+                    <h4 className="text-paper-ink dark:text-white font-black uppercase tracking-widest text-sm">3. Service Availability</h4>
                     <p>We strive to provide a reliable service but do not guarantee uninterrupted access. We reserve the right to modify or discontinue features as needed to improve the platform.</p>
                   </div>
                   <Button className="w-full py-4" onClick={() => setShowTermsModal(false)}>Close</Button>

@@ -44,7 +44,7 @@ export const DeadlineCountdown: React.FC<DeadlineCountdownProps> = ({ circle, is
 
   if (isComplete) {
     return (
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-lime/10 border border-brand-lime/30 text-brand-lime text-xs font-black uppercase tracking-wider lime-glow">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-brand-lime/10 dark:border-brand-lime/30 dark:text-brand-lime text-xs font-black uppercase tracking-wider lime-glow">
         <CheckCircle2 size={14} strokeWidth={3} />
         <span>Today's Goal Met</span>
       </div>
@@ -58,14 +58,14 @@ export const DeadlineCountdown: React.FC<DeadlineCountdownProps> = ({ circle, is
     <div
       className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full border text-xs font-black uppercase tracking-wider transition-all ${
         isUrgent
-          ? 'bg-rose-500/10 border-rose-500/40 text-rose-400 animate-pulse'
+          ? 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-500/10 dark:border-rose-500/40 dark:text-rose-400 animate-pulse'
           : isWarning
-          ? 'bg-amber-500/10 border-amber-500/40 text-amber-300'
-          : 'bg-white/5 border-white/10 text-white/70'
+          ? 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-500/10 dark:border-amber-500/40 dark:text-amber-300'
+          : 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-white/5 dark:border-white/10 dark:text-white/70'
       }`}
       title={`Circle deadline is ${circle.deadlineConfig?.time || '23:59'} (${circle.deadlineConfig?.timezone || 'Local'})`}
     >
-      <Clock size={14} strokeWidth={2.5} className={isUrgent ? 'text-rose-400' : isWarning ? 'text-amber-300' : 'text-brand-lime'} />
+      <Clock size={14} strokeWidth={2.5} className={isUrgent ? 'text-rose-700 dark:text-rose-400' : isWarning ? 'text-amber-800 dark:text-amber-300' : 'text-emerald-700 dark:text-brand-lime'} />
       <span>
         {timeLeft.hours}h {timeLeft.minutes}m until deadline
       </span>

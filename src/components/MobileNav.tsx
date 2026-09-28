@@ -33,7 +33,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   return (
     <nav 
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-3 pt-2 bg-brand-deep/90 backdrop-blur-xl border-t border-white/10"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-3 pt-2 bg-white/95 dark:bg-brand-deep/90 backdrop-blur-xl border-t border-black/10 dark:border-white/10 shadow-lg text-paper-ink dark:text-white"
     >
       <div className="flex items-center justify-around max-w-md mx-auto relative">
         {tabs.map(tab => {
@@ -44,14 +44,16 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               key={tab.id}
               onClick={() => onNavigate(tab.id)}
               className={cn(
-                "flex flex-col items-center gap-1 py-1.5 px-3 rounded-2xl transition-all relative",
-                isActive ? "text-brand-lime font-black" : "text-white/40 hover:text-white"
+                "flex flex-col items-center gap-1 py-1.5 px-3 rounded-2xl transition-all relative cursor-pointer",
+                isActive 
+                  ? "text-emerald-700 dark:text-brand-lime font-black" 
+                  : "text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white"
               )}
             >
               <Icon size={20} strokeWidth={isActive ? 2.8 : 2} />
               <span className="text-[10px] tracking-tight">{tab.label}</span>
               {isActive && (
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-lime absolute -bottom-1" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-700 dark:bg-brand-lime absolute -bottom-1" />
               )}
             </button>
           );
@@ -60,7 +62,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         {/* Floating Quick Action */}
         <button
           onClick={onOpenCreateModal}
-          className="w-10 h-10 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center shadow-lg active:scale-90 transition-transform lime-glow -mt-4 border-2 border-brand-deep"
+          className="w-10 h-10 rounded-full bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center shadow-lg active:scale-90 transition-transform lime-glow -mt-4 border-2 border-white dark:border-brand-deep cursor-pointer"
           title="Create or Join Circle"
         >
           <Plus size={20} strokeWidth={3} />

@@ -67,7 +67,11 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
 
   const handleWhatsAppShare = () => {
     const encoded = encodeURIComponent(currentMessage);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    const link = document.createElement('a');
+    link.href = `https://api.whatsapp.com/send?text=${encoded}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.click();
     handleSendNudge();
   };
 
@@ -88,43 +92,43 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: 'spring', duration: 0.4 }}
-            className="relative w-full max-w-lg bg-brand-forest border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden bento-card z-10 text-white"
+            className="relative w-full max-w-lg bg-white dark:bg-brand-forest border border-black/10 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden bento-card z-10 text-paper-ink dark:text-white"
           >
             <div className="p-6 sm:p-8 space-y-6">
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-brand-lime/20 text-brand-lime flex items-center justify-center lime-glow">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-forest/10 dark:bg-brand-lime/20 text-brand-forest dark:text-brand-lime flex items-center justify-center">
                     <Bell size={20} strokeWidth={2.5} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-display font-black uppercase tracking-tight">
+                    <h3 className="text-xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">
                       Send Encouragement
                     </h3>
-                    <p className="text-xs text-white/40 font-bold uppercase tracking-wider">
+                    <p className="text-xs text-paper-accent dark:text-white/40 font-bold uppercase tracking-wider">
                       Friendly nudge for {participant.name}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                  className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-paper-accent dark:text-white/50 hover:text-paper-ink dark:hover:text-white transition-colors"
                 >
                   <X size={18} strokeWidth={2.5} />
                 </button>
               </div>
 
               {/* Recipient preview */}
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center gap-4">
+              <div className="p-4 bg-paper-bg/40 dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4">
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold shadow-md"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold shadow-md shrink-0 text-paper-ink dark:text-white"
                   style={{ backgroundColor: participant.color || '#A3E635' }}
                 >
                   {participant.avatar || participant.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-white text-base truncate">{participant.name}</h4>
-                  <p className="text-[11px] text-white/40 font-medium">
+                  <h4 className="font-bold text-paper-ink dark:text-white text-base truncate">{participant.name}</h4>
+                  <p className="text-[11px] text-paper-accent dark:text-white/40 font-medium">
                     Waiting for today's reflection • Circle: {circle.name}
                   </p>
                 </div>
@@ -132,7 +136,7 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
 
               {/* Template Choices */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-forest dark:text-brand-lime">
                   Choose a Polite Message
                 </label>
                 <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
@@ -145,8 +149,8 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
                       }}
                       className={`p-3.5 rounded-xl border text-xs leading-relaxed font-medium transition-all cursor-pointer ${
                         selectedTemplateIndex === i && !customNote
-                          ? 'bg-brand-lime/10 border-brand-lime text-white'
-                          : 'bg-white/5 border-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                          ? 'bg-emerald-50 dark:bg-brand-lime/10 border-emerald-600 dark:border-brand-lime text-emerald-950 dark:text-white font-bold'
+                          : 'bg-paper-bg/30 dark:bg-white/5 border-black/5 dark:border-white/5 text-paper-ink/80 dark:text-white/70 hover:text-paper-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'
                       }`}
                     >
                       {tpl}
@@ -157,7 +161,7 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
 
               {/* Custom Note input */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-paper-accent dark:text-white/40">
                   Or write a personal message
                 </label>
                 <input
@@ -165,7 +169,7 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
                   value={customNote}
                   onChange={(e) => setCustomNote(e.target.value)}
                   placeholder="e.g. Can't wait to read your reflections today!"
-                  className="w-full px-5 py-3.5 bg-brand-deep/60 border border-white/10 rounded-xl focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 outline-none text-xs text-white placeholder:text-white/20 font-medium transition-all"
+                  className="w-full px-5 py-3.5 bg-white dark:bg-brand-deep/60 border border-black/15 dark:border-white/10 rounded-xl focus:border-brand-forest dark:focus:border-brand-lime focus:ring-2 focus:ring-brand-forest/20 dark:focus:ring-brand-lime/20 outline-none text-xs text-paper-ink dark:text-white placeholder:text-paper-accent/40 dark:placeholder:text-white/20 font-medium transition-all"
                 />
               </div>
 
@@ -174,7 +178,7 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
                 <Button
                   onClick={handleSendNudge}
                   disabled={isSent}
-                  className="w-full sm:flex-1 py-4 text-sm font-black uppercase tracking-tight bg-brand-lime text-brand-deep hover:bg-white"
+                  className="w-full sm:flex-1 py-4 text-sm font-black uppercase tracking-tight bg-brand-forest dark:bg-brand-lime text-white dark:text-brand-deep hover:bg-emerald-800 dark:hover:bg-white"
                 >
                   {isSent ? (
                     <span className="flex items-center gap-2">
@@ -201,10 +205,10 @@ export const NudgeModal: React.FC<NudgeModalProps> = ({
 
                 <button
                   onClick={handleCopy}
-                  className="p-3.5 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 transition-colors"
+                  className="p-3.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-paper-accent dark:text-white/60 hover:text-paper-ink dark:hover:text-white border border-black/10 dark:border-white/10 transition-colors"
                   title="Copy Message"
                 >
-                  {isCopied ? <Check size={18} className="text-brand-lime" /> : <Copy size={18} />}
+                  {isCopied ? <Check size={18} className="text-emerald-700 dark:text-brand-lime" /> : <Copy size={18} />}
                 </button>
               </div>
             </div>

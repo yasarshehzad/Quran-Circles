@@ -33,9 +33,9 @@ export const StreakCard: React.FC<StreakCardProps> = ({ circle, reflections }) =
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter text-white">Today's Progress</h2>
-          <div className="inline-block mt-4 px-6 py-3 bg-brand-accent/20 border-2 border-brand-accent/30 rounded-2xl">
-            <p className="text-brand-accent font-black uppercase tracking-[0.2em] text-sm md:text-base">
+          <h2 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white">Today's Progress</h2>
+          <div className="inline-block mt-4 px-6 py-3 bg-emerald-50 dark:bg-brand-accent/20 border-2 border-emerald-200 dark:border-brand-accent/30 rounded-2xl">
+            <p className="text-emerald-800 dark:text-brand-lime font-black uppercase tracking-[0.2em] text-sm md:text-base">
               Your streak depends on everyone completing today
             </p>
           </div>
@@ -53,30 +53,30 @@ export const StreakCard: React.FC<StreakCardProps> = ({ circle, reflections }) =
               className={cn(
                 "p-6 rounded-[2rem] border-2 flex flex-col items-center justify-center gap-4 text-center transition-all duration-500",
                 isDone 
-                  ? "bg-brand-lime/10 border-brand-lime/30 shadow-[0_0_30px_rgba(163,230,53,0.1)]" 
-                  : "bg-white/5 border-white/10"
+                  ? "bg-emerald-50 dark:bg-brand-lime/10 border-emerald-300 dark:border-brand-lime/30 shadow-sm" 
+                  : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10"
               )}
             >
               <div 
-                className="w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-xl border-4 border-white/10 relative"
+                className="w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-xl border-4 border-white/20 dark:border-white/10 relative text-brand-deep font-black"
                 style={{ backgroundColor: p.color || '#A3E635' }}
               >
                 {p.avatar || p.name[0]}
                 <div className={cn(
-                  "absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center border-2 border-brand-deep",
-                  isDone ? "bg-brand-lime text-brand-deep" : "bg-white/10 text-white/40"
+                  "absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center border-2 border-white dark:border-brand-deep",
+                  isDone ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep" : "bg-black/10 dark:bg-white/10 text-paper-accent dark:text-white/40"
                 )}>
                   {isDone ? <CheckCircle2 size={16} strokeWidth={4} /> : <Hourglass size={14} strokeWidth={3} />}
                 </div>
               </div>
               <div className="space-y-1 w-full px-1">
                 <p 
-                  className={cn("font-black tracking-wide text-sm sm:text-base break-words w-full line-clamp-2 leading-tight", isDone ? "text-white" : "text-white/60")}
+                  className={cn("font-black tracking-wide text-sm sm:text-base break-words w-full line-clamp-2 leading-tight", isDone ? "text-paper-ink dark:text-white" : "text-paper-ink/80 dark:text-white/60")}
                   title={p.name}
                 >
                   {p.name}
                 </p>
-                <Badge variant="outline" className={cn("text-[9px] border-white/10 mt-1 inline-block", isDone ? "text-brand-lime" : "text-white/40")}>
+                <Badge variant="outline" className={cn("text-[9px] border-black/10 dark:border-white/10 mt-1 inline-block", isDone ? "text-emerald-700 dark:text-brand-lime" : "text-paper-accent dark:text-white/40")}>
                   {p.type === 'auth' ? 'Member' : 'Local'}
                 </Badge>
               </div>
@@ -87,20 +87,20 @@ export const StreakCard: React.FC<StreakCardProps> = ({ circle, reflections }) =
 
       {/* Progress Bar & Status */}
       <div className="space-y-6 relative z-10 max-w-2xl mx-auto text-center">
-        <div className="w-full h-4 bg-white/5 border border-white/10 rounded-full overflow-hidden p-0.5">
+        <div className="w-full h-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full overflow-hidden p-0.5">
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: `${progress.percentage}%` }}
             transition={{ type: "spring", stiffness: 40, damping: 12 }}
-            className="h-full bg-brand-lime rounded-full shadow-[0_0_20px_rgba(163,230,53,0.5)]"
+            className="h-full bg-emerald-600 dark:bg-brand-lime rounded-full shadow-sm"
           />
         </div>
         
         <div className={cn(
           "inline-block px-8 py-4 rounded-2xl border-2 font-black uppercase tracking-[0.2em] text-sm md:text-base transition-all duration-500",
           progress.isComplete 
-            ? "bg-brand-lime text-brand-deep border-brand-lime shadow-[0_0_30px_rgba(163,230,53,0.3)]" 
-            : "bg-white/5 text-white/60 border-white/10"
+            ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep border-emerald-700 dark:border-brand-lime shadow-lg" 
+            : "bg-black/5 dark:bg-white/5 text-paper-ink dark:text-white/70 border-black/10 dark:border-white/10 font-bold"
         )}>
           {progress.isComplete 
             ? "🔥 Everyone showed up! Streak Extended!" 
@@ -164,10 +164,10 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                 "flex items-center justify-between px-5 py-4 rounded-2xl border-2 transition-all duration-300 group relative overflow-hidden",
                 isSelectable ? "cursor-pointer hover:border-brand-lime/40 hover:bg-white/[0.07] active:scale-[0.99]" : "",
                 isActive 
-                  ? "bg-brand-lime/15 border-brand-lime shadow-[0_0_20px_rgba(163,230,53,0.15)]" 
+                  ? "bg-emerald-50 dark:bg-brand-lime/15 border-emerald-600 dark:border-brand-lime shadow-sm" 
                   : isDone 
-                    ? "bg-brand-lime/5 border-brand-lime/25" 
-                    : "bg-white/5 border-white/10"
+                    ? "bg-emerald-50/50 dark:bg-brand-lime/5 border-emerald-300 dark:border-brand-lime/25" 
+                    : "bg-white dark:bg-white/5 border-black/10 dark:border-white/10"
               )}
             >
               {(isDone || isActive) && (
@@ -177,10 +177,10 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
               <div className="flex items-center gap-3.5 relative z-10 flex-1 min-w-0 pr-3">
                 <div 
                   className={cn(
-                    "w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center font-black text-base border-2 shadow-md transition-all",
-                    isActive ? "border-brand-lime text-brand-deep bg-brand-lime" : isDone ? "border-brand-lime text-brand-deep" : "border-white/10 text-white/70"
+                    "w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center font-black text-base border-2 shadow-md transition-all text-brand-deep",
+                    isActive ? "border-brand-lime bg-brand-lime" : isDone ? "border-brand-lime" : "border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/10 text-paper-ink dark:text-white/70"
                   )}
-                  style={{ backgroundColor: (isActive || isDone) ? (p.color || '#A3E635') : 'rgba(255,255,255,0.06)' }}
+                  style={{ backgroundColor: (isActive || isDone) ? (p.color || '#A3E635') : undefined }}
                 >
                   {p.avatar || p.name[0]}
                 </div>
@@ -196,7 +196,7 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                       {p.name}
                     </span>
                     {isActive && (
-                      <span className="px-2 py-0.5 rounded-full bg-brand-forest/10 dark:bg-brand-lime/20 border border-brand-forest/20 dark:border-brand-lime/30 text-brand-forest dark:text-brand-lime text-[9px] font-black uppercase tracking-wider shrink-0">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-brand-lime/20 dark:border-brand-lime/30 dark:text-brand-lime text-[9px] font-black uppercase tracking-wider shrink-0">
                         You
                       </span>
                     )}
@@ -215,7 +215,7 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                       e.stopPropagation();
                       onNudgeParticipant(p);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-forest/10 dark:bg-brand-lime/10 hover:bg-brand-forest hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep text-brand-forest dark:text-brand-lime text-xs font-black uppercase tracking-wider transition-all duration-200 border border-brand-forest/20 dark:border-brand-lime/30 active:scale-95 shadow-sm cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-700 hover:text-white dark:bg-brand-lime/10 dark:hover:bg-brand-lime dark:hover:text-brand-deep dark:text-brand-lime text-xs font-black uppercase tracking-wider transition-all duration-200 dark:border-brand-lime/30 active:scale-95 shadow-sm cursor-pointer"
                     title={`Send encouragement nudge to ${p.name}`}
                   >
                     <Bell size={13} strokeWidth={2.5} className="shrink-0" />
@@ -223,7 +223,7 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                   </button>
                 )}
                 {isDone && (
-                  <div className="w-8 h-8 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center shadow-md shadow-brand-lime/20">
+                  <div className="w-8 h-8 rounded-full bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center shadow-md">
                     <CheckCircle2 size={18} strokeWidth={3} />
                   </div>
                 )}
@@ -241,7 +241,7 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                 setNewMemberName('');
               }
             }}
-            className="flex items-center gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/10 focus-within:border-brand-lime/50 focus-within:bg-white/[0.08] transition-all duration-300 mt-2"
+            className="flex items-center gap-2 p-1.5 bg-white dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 focus-within:border-emerald-700 dark:focus-within:border-brand-lime/50 transition-all duration-300 mt-2 shadow-sm"
           >
             <div className="flex-1 min-w-0 pl-3">
               <input 
@@ -249,13 +249,13 @@ export const ProgressSummary: React.FC<ProgressSummaryProps> = ({
                 value={newMemberName}
                 onChange={(e) => setNewMemberName(e.target.value)}
                 placeholder="Add member name..." 
-                className="w-full bg-transparent outline-none py-1.5 text-sm font-bold text-white placeholder:text-white/30"
+                className="w-full bg-transparent outline-none py-1.5 text-sm font-bold text-paper-ink dark:text-white placeholder:text-paper-accent/40 dark:placeholder:text-white/30"
               />
             </div>
             <button 
               type="submit"
               disabled={!newMemberName.trim()}
-              className="h-9 px-4 bg-brand-lime text-brand-deep rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30 disabled:bg-white/10 disabled:text-white font-black text-xs uppercase tracking-wider hover:bg-white active:scale-95"
+              className="h-9 px-4 bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30 disabled:bg-black/10 dark:disabled:bg-white/10 disabled:text-paper-accent font-black text-xs uppercase tracking-wider hover:bg-emerald-800 dark:hover:bg-white active:scale-95 cursor-pointer shadow-sm"
             >
               Add
             </button>

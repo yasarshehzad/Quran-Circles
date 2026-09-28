@@ -156,71 +156,71 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ user, reflection
     <div className="space-y-12 pb-32 max-w-7xl mx-auto">
       <div className="px-4 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-4">
-          <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter">Your Analytics</h1>
-          <p className="opacity-50 text-lg md:text-xl font-medium max-w-2xl">Track your personal progress and consistency across all your circles.</p>
+          <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white">Your Analytics</h1>
+          <p className="text-paper-accent dark:text-white/60 text-lg md:text-xl font-medium max-w-2xl">Track your personal progress and consistency across all your circles.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
         <GlassCard className="p-8 space-y-6">
-          <div className="w-14 h-14 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime">
+          <div className="w-14 h-14 bg-emerald-100 dark:bg-brand-lime/10 rounded-2xl flex items-center justify-center text-emerald-800 dark:text-brand-lime">
             <Flame size={28} />
           </div>
           <div>
-            <p className="text-5xl font-display font-black tracking-tighter">{stats.currentStreak}</p>
-            <p className="text-xs font-black opacity-50 uppercase tracking-widest mt-2">Day Streak</p>
+            <p className="text-5xl font-display font-black tracking-tighter text-paper-ink dark:text-white">{stats.currentStreak}</p>
+            <p className="text-xs font-black text-paper-accent dark:text-white/50 uppercase tracking-widest mt-2">Day Streak</p>
           </div>
         </GlassCard>
 
         <GlassCard className="p-8 space-y-6">
-          <div className="w-14 h-14 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime">
+          <div className="w-14 h-14 bg-emerald-100 dark:bg-brand-lime/10 rounded-2xl flex items-center justify-center text-emerald-800 dark:text-brand-lime">
             <Activity size={28} />
           </div>
           <div>
-            <p className="text-5xl font-display font-black tracking-tighter">{stats.totalReflections}</p>
-            <p className="text-xs font-black opacity-50 uppercase tracking-widest mt-2">Total Reflections</p>
+            <p className="text-5xl font-display font-black tracking-tighter text-paper-ink dark:text-white">{stats.totalReflections}</p>
+            <p className="text-xs font-black text-paper-accent dark:text-white/50 uppercase tracking-widest mt-2">Total Reflections</p>
           </div>
         </GlassCard>
 
         <GlassCard className="p-8 space-y-6">
-          <div className="w-14 h-14 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime">
+          <div className="w-14 h-14 bg-emerald-100 dark:bg-brand-lime/10 rounded-2xl flex items-center justify-center text-emerald-800 dark:text-brand-lime">
             <Trophy size={28} />
           </div>
           <div>
-            <p className="text-5xl font-display font-black tracking-tighter">{stats.longestStreak}</p>
-            <p className="text-xs font-black opacity-50 uppercase tracking-widest mt-2">Longest Streak</p>
+            <p className="text-5xl font-display font-black tracking-tighter text-paper-ink dark:text-white">{stats.longestStreak}</p>
+            <p className="text-xs font-black text-paper-accent dark:text-white/50 uppercase tracking-widest mt-2">Longest Streak</p>
           </div>
         </GlassCard>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
         <GlassCard className="p-8 space-y-4 col-span-1 md:col-span-1 border-current/5">
-          <div className="text-brand-lime opacity-80 mb-2"><BookOpen size={24}/></div>
-          <p className="text-sm font-bold opacity-60 uppercase tracking-widest">Most Reflected</p>
-          <p className="text-3xl font-display font-black tracking-tighter">{stats.favoriteSurah}</p>
+          <div className="text-emerald-800 dark:text-brand-lime mb-2"><BookOpen size={24}/></div>
+          <p className="text-sm font-bold text-paper-accent dark:text-white/60 uppercase tracking-widest">Most Reflected</p>
+          <p className="text-3xl font-display font-black tracking-tighter text-paper-ink dark:text-white">{stats.favoriteSurah}</p>
         </GlassCard>
 
         <GlassCard className="p-8 space-y-4 col-span-1 md:col-span-1 border-current/5">
-          <div className="text-brand-lime opacity-80 mb-2"><Flame size={24}/></div>
-          <p className="text-sm font-bold opacity-60 uppercase tracking-widest">Community Love</p>
-          <p className="text-3xl font-display font-black tracking-tighter">{stats.totalReactions} <span className="text-lg opacity-50 font-sans font-medium mix-blend-luminosity">reactions</span></p>
+          <div className="text-emerald-800 dark:text-brand-lime mb-2"><Flame size={24}/></div>
+          <p className="text-sm font-bold text-paper-accent dark:text-white/60 uppercase tracking-widest">Community Love</p>
+          <p className="text-3xl font-display font-black tracking-tighter text-paper-ink dark:text-white">{stats.totalReactions} <span className="text-lg text-paper-accent dark:text-white/50 font-sans font-medium">reactions</span></p>
         </GlassCard>
 
         <GlassCard className="p-8 space-y-4 col-span-1 md:col-span-1 border-current/5">
-          <div className="text-brand-lime opacity-80 mb-2"><Clock size={24}/></div>
-          <p className="text-sm font-bold opacity-60 uppercase tracking-widest">Prime Time</p>
-          <p className="text-3xl font-display font-black tracking-tighter">{stats.timeLabel}</p>
+          <div className="text-emerald-800 dark:text-brand-lime mb-2"><Clock size={24}/></div>
+          <p className="text-sm font-bold text-paper-accent dark:text-white/60 uppercase tracking-widest">Prime Time</p>
+          <p className="text-3xl font-display font-black tracking-tighter text-paper-ink dark:text-white">{stats.timeLabel}</p>
         </GlassCard>
       </div>
 
       <div className="px-4">
         <GlassCard className="p-8 md:p-12 space-y-8 border-current/5">
           <div className="space-y-2">
-            <h3 className="text-2xl font-display font-black uppercase tracking-tight">14-Day Activity</h3>
-            <p className="text-sm font-medium opacity-50">Number of reflections you've made over the last two weeks.</p>
+            <h3 className="text-2xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">14-Day Activity</h3>
+            <p className="text-sm font-medium text-paper-accent dark:text-white/50">Number of reflections you've made over the last two weeks.</p>
           </div>
           
-          <div className="h-64 md:h-80 w-full mt-8 opacity-80 mix-blend-luminosity">
+          <div className="h-64 md:h-80 w-full mt-8">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} vertical={false} />
@@ -228,25 +228,25 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ user, reflection
                   dataKey="name" 
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 12, fontWeight: 700 }}
+                  tick={{ fill: 'currentColor', opacity: 0.8, fontSize: 12, fontWeight: 700 }}
                   dy={10}
                 />
                 <YAxis 
                   allowDecimals={false}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 12, fontWeight: 700 }}
+                  tick={{ fill: 'currentColor', opacity: 0.8, fontSize: 12, fontWeight: 700 }}
                   dx={-10}
                 />
                 <Tooltip 
                   cursor={{ fill: 'currentColor', opacity: 0.05 }}
-                  contentStyle={{ backgroundColor: 'var(--color-brand-deep)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', fontWeight: 'bold' }}
-                  itemStyle={{ color: '#A3E635' }}
-                  labelStyle={{ color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}
+                  contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(10,61,49,0.15)', borderRadius: '16px', fontWeight: 'bold', color: '#1B2B26' }}
+                  itemStyle={{ color: '#047857' }}
+                  labelStyle={{ color: '#1B2B26', marginBottom: '4px' }}
                 />
                 <Bar 
                   dataKey="reflections" 
-                  fill="#A3E635" 
+                  fill="#047857" 
                   radius={[6, 6, 0, 0]} 
                   animationDuration={1500}
                 />
@@ -257,21 +257,21 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ user, reflection
       </div>
 
       <div className="px-4">
-        <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-6">Activity by Circle</h3>
+        <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-6 text-paper-ink dark:text-white">Activity by Circle</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {stats.circleStats.map(circle => (
-            <Card key={circle.id} className="p-6 border-current/10 flex flex-col justify-between items-start gap-6">
+            <Card key={circle.id} className="p-6 border-black/10 dark:border-white/10 flex flex-col justify-between items-start gap-6 bg-white dark:bg-brand-forest/20">
               <div className="space-y-2">
-                <h4 className="text-xl font-black">{circle.name}</h4>
-                <p className="text-xs font-bold opacity-50 uppercase tracking-widest">{circle.planName || 'Custom Plan'}</p>
+                <h4 className="text-xl font-black text-paper-ink dark:text-white">{circle.name}</h4>
+                <p className="text-xs font-bold text-paper-accent dark:text-white/50 uppercase tracking-widest">{circle.planName || 'Custom Plan'}</p>
               </div>
-              <div className="bg-brand-lime/10 px-4 py-2 rounded-xl text-brand-lime mix-blend-luminosity font-black">
-                {circle.myReflectionsCount} <span className="opacity-60 text-xs ml-1 uppercase tracking-widest">Reflections</span>
+              <div className="bg-emerald-100 dark:bg-brand-lime/10 px-4 py-2 rounded-xl text-emerald-900 dark:text-brand-lime font-black border border-emerald-300 dark:border-transparent">
+                {circle.myReflectionsCount} <span className="opacity-70 text-xs ml-1 uppercase tracking-widest">Reflections</span>
               </div>
             </Card>
           ))}
           {stats.circleStats.length === 0 && (
-            <div className="col-span-full py-12 text-center opacity-50 font-bold border border-dashed border-current/20 rounded-3xl">
+            <div className="col-span-full py-12 text-center text-paper-accent dark:text-white/50 font-bold border border-dashed border-black/15 dark:border-white/20 rounded-3xl">
               No circles joined yet.
             </div>
           )}

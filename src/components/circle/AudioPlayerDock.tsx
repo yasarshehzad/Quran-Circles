@@ -89,11 +89,11 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
       transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-      className="fixed bottom-4 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:w-[480px] z-[105] bg-brand-forest/95 backdrop-blur-2xl border border-white/15 rounded-[2rem] shadow-2xl overflow-hidden bento-card text-white"
+      className="fixed bottom-4 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:w-[480px] z-[105] bg-white dark:bg-brand-forest/95 backdrop-blur-2xl border border-black/10 dark:border-white/15 rounded-[2rem] shadow-2xl overflow-hidden bento-card text-paper-ink dark:text-white"
     >
       {/* Progress Track */}
       <div 
-        className="w-full h-1.5 bg-white/10 cursor-pointer relative group"
+        className="w-full h-1.5 bg-black/10 dark:bg-white/10 cursor-pointer relative group"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const clickPos = (e.clientX - rect.left) / rect.width;
@@ -101,7 +101,7 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
         }}
       >
         <div 
-          className="h-full bg-brand-lime transition-all duration-150 lime-glow"
+          className="h-full bg-emerald-700 dark:bg-brand-lime transition-all duration-150 lime-glow"
           style={{ width: `${Math.min(100, Math.max(0, progressPercent))}%` }}
         />
       </div>
@@ -111,17 +111,17 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
         <div className="flex items-center justify-between gap-3">
           {/* Track Info */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="w-10 h-10 rounded-2xl bg-brand-lime/10 border border-brand-lime/20 text-brand-lime flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-brand-lime/10 dark:border-brand-lime/20 dark:text-brand-lime flex items-center justify-center shrink-0">
               <Volume2 size={18} strokeWidth={2.5} className={isPlaying ? 'animate-pulse' : ''} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <p className="text-xs sm:text-sm font-black truncate">{surahName} {currentVerseKey}</p>
-                <span className="text-[9px] px-2 py-0.5 rounded-full bg-white/10 font-bold uppercase tracking-wider text-white/60">
+                <span className="text-[9px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-bold uppercase tracking-wider text-paper-accent dark:text-white/60">
                   Ayah
                 </span>
               </div>
-              <p className="text-[10px] text-white/50 truncate font-medium">
+              <p className="text-[10px] text-paper-accent dark:text-white/50 truncate font-medium">
                 {reciterName}
               </p>
             </div>
@@ -132,7 +132,7 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
             {/* Speed Toggle */}
             <button
               onClick={cycleSpeed}
-              className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase text-white/70 hover:text-white transition-colors"
+              className="px-2 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[10px] font-black uppercase text-paper-ink dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
               title="Playback Speed"
             >
               {playbackRate}x
@@ -142,10 +142,10 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
             <button
               onClick={nextRepeatMode}
               className={cn(
-                "p-2 rounded-xl text-xs font-black transition-all",
+                "p-2 rounded-xl text-xs font-black transition-all cursor-pointer",
                 repeatMode !== 'off' 
-                  ? "bg-brand-lime/20 text-brand-lime border border-brand-lime/30" 
-                  : "bg-white/5 text-white/40 hover:text-white"
+                  ? "bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-brand-lime/20 dark:text-brand-lime dark:border-brand-lime/30" 
+                  : "bg-black/5 dark:bg-white/5 text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white"
               )}
               title={`Repeat: ${repeatMode === 'off' ? 'Normal' : repeatMode === '3x' ? 'Repeat 3 Times' : 'Continuous Loop'}`}
             >
@@ -159,10 +159,10 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
             <button
               onClick={onTogglePlay}
               disabled={isLoading}
-              className="w-11 h-11 rounded-full bg-brand-lime text-brand-deep hover:bg-white flex items-center justify-center shadow-lg active:scale-95 transition-all lime-glow"
+              className="w-11 h-11 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-brand-lime dark:text-brand-deep dark:hover:bg-white flex items-center justify-center shadow-lg active:scale-95 transition-all lime-glow cursor-pointer"
             >
               {isLoading ? (
-                <div className="w-4 h-4 border-2 border-brand-deep/30 border-t-brand-deep rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/30 dark:border-brand-deep/30 border-t-white dark:border-t-brand-deep rounded-full animate-spin" />
               ) : isPlaying ? (
                 <Pause size={18} strokeWidth={3} fill="currentColor" />
               ) : (
@@ -173,7 +173,7 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
             {/* Close Dock */}
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-white/40 hover:text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               title="Close player"
             >
               <X size={14} strokeWidth={2.5} />
@@ -182,11 +182,11 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
         </div>
 
         {/* Time and expanded reciter picker */}
-        <div className="flex items-center justify-between text-[10px] text-white/40 font-mono pt-1 border-t border-white/5">
+        <div className="flex items-center justify-between text-[10px] text-paper-accent dark:text-white/40 font-mono pt-1 border-t border-black/5 dark:border-white/5">
           <span>{formatTime(audioProgress)} / {formatTime(audioDuration)}</span>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-1 text-[10px] font-bold text-brand-lime hover:underline uppercase tracking-wider font-sans"
+            className="flex items-center gap-1 text-[10px] font-bold text-emerald-800 dark:text-brand-lime hover:underline uppercase tracking-wider font-sans cursor-pointer"
           >
             <Mic2 size={12} />
             <span>Change Reciter</span>
@@ -203,7 +203,7 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden pt-2"
             >
-              <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto custom-scrollbar p-1 bg-brand-deep/50 rounded-xl border border-white/5">
+              <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto custom-scrollbar p-1.5 bg-black/5 dark:bg-brand-deep/50 rounded-xl border border-black/10 dark:border-white/5">
                 {reciters.slice(0, 10).map((r) => (
                   <button
                     key={r.id}
@@ -212,10 +212,10 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
                       setIsExpanded(false);
                     }}
                     className={cn(
-                      "px-2.5 py-1.5 rounded-lg text-left text-[11px] truncate transition-colors",
+                      "px-2.5 py-1.5 rounded-lg text-left text-[11px] truncate transition-colors cursor-pointer",
                       reciterId === r.id
-                        ? "bg-brand-lime text-brand-deep font-black"
-                        : "text-white/60 hover:text-white hover:bg-white/5"
+                        ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep font-black"
+                        : "text-paper-ink/80 dark:text-white/60 hover:text-paper-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
                     )}
                   >
                     {r.name}

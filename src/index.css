@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
@@ -22,6 +24,13 @@
 
 @layer base {
   body {
+    @apply bg-paper-bg text-paper-ink transition-colors duration-300;
+    background-image: none;
+  }
+
+  body.dark,
+  .dark body,
+  html.dark body {
     @apply bg-brand-deep text-white selection:bg-brand-lime selection:text-brand-deep transition-colors duration-500;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
@@ -30,30 +39,25 @@
     opacity: 0.98;
   }
 
-  body.light {
-    @apply bg-paper-bg text-paper-ink;
-    background-image: none;
-  }
-
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
   }
 }
 
 .bento-card {
-  @apply bg-brand-forest/40 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden;
-}
-
-.light .bento-card {
-  @apply bg-white border-paper-accent/10 shadow-sm text-paper-ink;
+  @apply bg-white border border-paper-accent/10 shadow-sm text-paper-ink rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden;
 }
 
 .bento-card:hover {
-  @apply bg-brand-forest/60 border-white/10;
+  @apply bg-white border-paper-accent/20 shadow-md;
 }
 
-.light .bento-card:hover {
-  @apply bg-white border-paper-accent/20 shadow-md;
+.dark .bento-card {
+  @apply bg-brand-forest/40 backdrop-blur-md border-white/5 text-white shadow-none;
+}
+
+.dark .bento-card:hover {
+  @apply bg-brand-forest/60 border-white/10;
 }
 
 .lime-glow {
@@ -95,48 +99,148 @@
   --color-brand-accent: #047857;
 }
 
-/* Base Text & Contrast */
-.light .text-white { color: var(--color-paper-ink) !important; }
-.light .text-white\/5 { color: rgba(27, 43, 38, 0.25) !important; }
-.light .text-white\/10 { color: rgba(27, 43, 38, 0.45) !important; }
-.light .text-white\/20 { color: rgba(27, 43, 38, 0.55) !important; }
-.light .text-white\/30 { color: rgba(27, 43, 38, 0.65) !important; }
-.light .text-white\/40,
-.light .text-white\/45,
-.light .text-white\/50 { color: rgba(27, 43, 38, 0.75) !important; }
-.light .text-white\/60,
-.light .text-white\/70,
-.light .text-white\/80,
+/* Base Text & Contrast - Strict WCAG AAA compliant hierarchy */
+.light .text-white { color: #14221D !important; }
+.light .text-white\/95,
 .light .text-white\/90,
-.light .text-white\/95 { color: var(--color-paper-accent) !important; }
-.light [class*="text-white/"] { color: var(--color-paper-accent) !important; }
+.light .text-white\/85,
+.light .text-white\/80 { color: #14221D !important; }
+.light .text-white\/70,
+.light .text-white\/60 { color: #1E342B !important; }
+.light .text-white\/50,
+.light .text-white\/45,
+.light .text-white\/40 { color: #2B463B !important; }
+.light .text-white\/30,
+.light .text-white\/20 { color: #3A5B4E !important; }
+.light .text-white\/10,
+.light .text-white\/5 { color: #4A6E60 !important; }
 
-.light .placeholder\:text-white\/20::placeholder,
-.light .placeholder\:text-white\/30::placeholder,
-.light .placeholder\:text-white\/40::placeholder { color: rgba(27, 43, 38, 0.45) !important; }
+/* Keep white text inside solid colored/dark buttons and badges in light mode */
+.light .bg-emerald-600,
+.light .bg-emerald-600 *,
+.light .bg-emerald-700,
+.light .bg-emerald-700 *,
+.light .bg-emerald-800,
+.light .bg-emerald-800 *,
+.light .bg-emerald-900,
+.light .bg-emerald-900 *,
+.light .bg-rose-500,
+.light .bg-rose-500 *,
+.light .bg-rose-600,
+.light .bg-rose-600 *,
+.light .bg-rose-700,
+.light .bg-rose-700 *,
+.light button.bg-brand-lime,
+.light button.bg-brand-lime *,
+.light button.bg-emerald-700,
+.light button.bg-emerald-700 * {
+  color: #FFFFFF !important;
+}
+
+/* In light mode, ensure opacity utility classes never wash out text to illegible levels */
+.light [class*="text-"].opacity-10,
+.light [class*="text-"].opacity-20,
+.light [class*="text-"].opacity-30,
+.light [class*="text-"].opacity-40,
+.light p.opacity-10,
+.light p.opacity-20,
+.light p.opacity-30,
+.light p.opacity-40,
+.light span.opacity-10,
+.light span.opacity-20,
+.light span.opacity-30,
+.light span.opacity-40 {
+  opacity: 0.75 !important;
+}
+
+.light [class*="text-"].opacity-50,
+.light [class*="text-"].opacity-60,
+.light p.opacity-50,
+.light p.opacity-60,
+.light span.opacity-50,
+.light span.opacity-60 {
+  opacity: 0.88 !important;
+}
+
+/* Solid Brand Lime background -> High-contrast Deep Emerald */
+.light .bg-brand-lime {
+  background-color: #047857 !important;
+  color: #FFFFFF !important;
+}
+.light .bg-brand-lime *,
+.light .bg-brand-lime *[class*="text-brand-deep"],
+.light .bg-brand-lime.text-brand-deep,
+.light .bg-emerald-700 *[class*="text-brand-deep"],
+.light .bg-emerald-700.text-brand-deep {
+  color: #FFFFFF !important;
+}
 
 /* Backgrounds - Brand Deep mappings */
-.light .bg-brand-deep,
-.light .bg-brand-deep\/90,
-.light .bg-brand-deep\/80 { background-color: var(--color-paper-bg) !important; }
+.light .bg-brand-deep { background-color: var(--color-paper-bg) !important; }
 
-.light .bg-brand-deep\/50,
-.light .bg-brand-deep\/40,
+.light .bg-brand-deep\/10,
+.light .bg-brand-deep\/20,
 .light .bg-brand-deep\/30,
-.light .bg-brand-deep\/20 { background-color: rgba(255, 255, 255, 0.8) !important; }
+.light .bg-brand-deep\/40,
+.light .bg-brand-deep\/50,
+.light .bg-brand-deep\/60,
+.light .bg-brand-deep\/70 { background-color: #FFFFFF !important; }
+
+/* Modal and Drawer Backdrop overlays */
+.light .bg-brand-deep\/80,
+.light .bg-brand-deep\/90,
+.light .bg-brand-deep\/95 { background-color: rgba(6, 44, 34, 0.70) !important; }
+
+/* Mobile Navigation Bar */
+.light nav.bg-brand-deep\/90,
+.light .mobile-nav {
+  background-color: #FFFFFF !important;
+  border-top-color: rgba(10, 61, 49, 0.12) !important;
+  box-shadow: 0 -4px 20px -2px rgba(0, 0, 0, 0.08) !important;
+}
 
 /* Backgrounds - Brand Forest mappings */
 .light .bg-brand-forest,
 .light .bg-brand-forest\/20,
 .light .bg-brand-forest\/30,
 .light .bg-brand-forest\/40,
-.light .bg-brand-forest\/60 { background-color: #FFFFFF !important; }
+.light .bg-brand-forest\/50,
+.light .bg-brand-forest\/60,
+.light .bg-brand-forest\/70,
+.light .bg-brand-forest\/80,
+.light .bg-brand-forest\/90,
+.light .bg-brand-forest\/95 { background-color: #FFFFFF !important; }
+
+/* Form inputs, textareas, selects */
+.light input:not([type="checkbox"]):not([type="radio"]),
+.light textarea,
+.light select {
+  background-color: #FFFFFF !important;
+  color: var(--color-paper-ink) !important;
+  border-color: rgba(10, 61, 49, 0.18) !important;
+}
+.light input[type="text"].bg-transparent {
+  background-color: transparent !important;
+}
+.light select option {
+  background-color: #FFFFFF !important;
+  color: var(--color-paper-ink) !important;
+}
+.light input::placeholder,
+.light textarea::placeholder,
+.light .placeholder\:text-white\/20::placeholder,
+.light .placeholder\:text-white\/30::placeholder,
+.light .placeholder\:text-white\/40::placeholder {
+  color: #3A5B4E !important;
+}
 
 /* Transparency Overlays */
 .light .bg-white\/5 { background-color: rgba(10, 61, 49, 0.04) !important; }
 .light .bg-white\/10 { background-color: rgba(10, 61, 49, 0.07) !important; }
 .light .bg-white\/15 { background-color: rgba(10, 61, 49, 0.10) !important; }
 .light .bg-white\/20 { background-color: rgba(10, 61, 49, 0.12) !important; }
+.light .bg-black\/5 { background-color: rgba(10, 61, 49, 0.04) !important; }
+.light .bg-black\/10 { background-color: rgba(10, 61, 49, 0.08) !important; }
 .light .bg-black\/20 { background-color: rgba(10, 61, 49, 0.05) !important; }
 .light .bg-black\/40 { background-color: rgba(10, 61, 49, 0.08) !important; }
 
@@ -148,32 +252,33 @@
 .light .border-white\/10 { border-color: rgba(10, 61, 49, 0.14) !important; }
 .light .border-white\/15 { border-color: rgba(10, 61, 49, 0.18) !important; }
 .light .border-white\/20 { border-color: rgba(10, 61, 49, 0.22) !important; }
+.light .border-black\/5 { border-color: rgba(10, 61, 49, 0.08) !important; }
+.light .border-black\/10 { border-color: rgba(10, 61, 49, 0.14) !important; }
 
-/* All Lime Text Variants -> Deep Emerald for 100% WCAG contrast */
+/* All Lime Text Variants -> Deep Emerald for 100% WCAG AAA contrast */
 .light .text-brand-lime,
-.light [class*="text-brand-lime"] { color: #047857 !important; }
-.light .text-brand-lime\/60,
+.light .text-brand-lime\/90,
+.light .text-brand-lime\/80,
 .light .text-brand-lime\/70,
-.light .text-brand-lime\/80 { color: #047857 !important; }
+.light .text-brand-lime\/60,
+.light .text-brand-lime\/50,
+.light .text-brand-lime\/40,
+.light .text-brand-lime\/30,
+.light .text-brand-lime\/20,
+.light .text-brand-lime\/10 { 
+  color: #047857 !important; 
+}
 
 .light .hover\:text-brand-lime:hover,
-.light .group:hover .group-hover\:text-brand-lime { color: #065F46 !important; }
-
-/* Solid Brand Lime background */
-.light .bg-brand-lime {
-  background-color: #047857 !important;
-  color: #FFFFFF !important;
-}
-.light .bg-brand-lime .text-brand-deep,
-.light .bg-brand-lime.text-brand-deep {
-  color: #FFFFFF !important;
+.light .group:hover .group-hover\:text-brand-lime { 
+  color: #065F46 !important; 
 }
 
 /* Translucent brand-lime backgrounds (Badges, Pills, Buttons) */
-.light .bg-brand-lime\/5 { background-color: rgba(4, 120, 87, 0.05) !important; }
-.light .bg-brand-lime\/10 { background-color: rgba(4, 120, 87, 0.09) !important; }
-.light .bg-brand-lime\/15 { background-color: rgba(4, 120, 87, 0.13) !important; }
-.light .bg-brand-lime\/20 { background-color: rgba(4, 120, 87, 0.18) !important; }
+.light .bg-brand-lime\/5 { background-color: rgba(4, 120, 87, 0.07) !important; }
+.light .bg-brand-lime\/10 { background-color: rgba(4, 120, 87, 0.11) !important; }
+.light .bg-brand-lime\/15 { background-color: rgba(4, 120, 87, 0.15) !important; }
+.light .bg-brand-lime\/20 { background-color: rgba(4, 120, 87, 0.20) !important; }
 
 /* Hover Brand Lime */
 .light .hover\:bg-brand-lime:hover,
@@ -184,9 +289,9 @@
 
 /* Borders Lime */
 .light .border-brand-lime { border-color: #047857 !important; }
-.light .border-brand-lime\/10 { border-color: rgba(4, 120, 87, 0.15) !important; }
-.light .border-brand-lime\/20 { border-color: rgba(4, 120, 87, 0.25) !important; }
-.light .border-brand-lime\/30 { border-color: rgba(4, 120, 87, 0.35) !important; }
+.light .border-brand-lime\/10 { border-color: rgba(4, 120, 87, 0.20) !important; }
+.light .border-brand-lime\/20 { border-color: rgba(4, 120, 87, 0.30) !important; }
+.light .border-brand-lime\/30 { border-color: rgba(4, 120, 87, 0.40) !important; }
 .light .border-t-brand-lime { border-top-color: #047857 !important; }
 
 /* Focus Ring */
@@ -195,10 +300,48 @@
 .light .focus\:ring-brand-lime\/20:focus,
 .light .focus-within\:ring-brand-lime\/20:focus-within { --tw-ring-color: rgba(4, 120, 87, 0.2) !important; }
 
-/* Text mappings */
-.light .text-brand-deep { color: #FFFFFF !important; }
+/* Status Text Colors in Light Mode */
+.light .text-amber-300,
+.light .text-amber-400 { 
+  color: #92400E !important; 
+}
+.light .text-rose-400 { 
+  color: #9F1239 !important; 
+}
+
+/* Text brand deep */
+.light .text-brand-deep { color: #062C22 !important; }
+
+/* Prose Invert fixes in light mode */
+.light .prose,
+.light .prose-invert,
+.light .prose-invert * {
+  color: #14221D !important;
+}
+.light .prose-invert p,
+.light .prose-invert li,
+.light .prose-invert div,
+.light .prose-invert span {
+  color: #233830 !important;
+}
+.light .prose-invert h1,
+.light .prose-invert h2,
+.light .prose-invert h3,
+.light .prose-invert h4,
+.light .prose-invert strong {
+  color: #14221D !important;
+  font-weight: 700 !important;
+}
+
+/* Modal and dialog card surfaces in light mode */
+.light .modal-card,
+.light [role="dialog"] > div {
+  background-color: #FFFFFF !important;
+  color: #14221D !important;
+}
 
 /* Filter modifications for light mode clarity */
 .light .drop-shadow-2xl { filter: drop-shadow(0px 10px 15px rgba(10, 61, 49, 0.05)) !important; }
 .light .drop-shadow-lg { filter: drop-shadow(0px 4px 6px rgba(10, 61, 49, 0.05)) !important; }
+
 

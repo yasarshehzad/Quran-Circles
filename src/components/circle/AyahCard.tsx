@@ -184,9 +184,9 @@ export const AyahCard = ({
   const selectedTafsir = tafsirs.find(t => t.id === tafsirId);
 
   return (
-    <Card className="bg-brand-deep text-white border-white/5 space-y-12 relative bento-card p-8 md:p-16">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-lime/5 rounded-full -mr-64 -mt-64 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-forest/20 rounded-full -ml-48 -mb-48 blur-[100px] pointer-events-none" />
+    <Card className="bg-white dark:bg-brand-deep text-stone-900 dark:text-white border-black/10 dark:border-white/5 space-y-12 relative bento-card p-8 md:p-16 shadow-sm dark:shadow-none">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 dark:bg-brand-lime/5 rounded-full -mr-64 -mt-64 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-600/5 dark:bg-brand-forest/20 rounded-full -ml-48 -mb-48 blur-[100px] pointer-events-none" />
       
       <div className="space-y-12 relative">
         <div className="flex justify-between items-start">
@@ -194,8 +194,10 @@ export const AyahCard = ({
             <button 
               onClick={onToggleBookmark}
               className={cn(
-                "w-12 h-12 md:w-14 md:h-14 rounded-2xl border flex items-center justify-center transition-all duration-300", 
-                isBookmarked ? "bg-brand-lime text-brand-deep border-brand-lime lime-glow" : "bg-white/5 text-white border-white/10 hover:bg-white/10"
+                "w-12 h-12 md:w-14 md:h-14 rounded-2xl border flex items-center justify-center transition-all duration-300 cursor-pointer", 
+                isBookmarked 
+                  ? "bg-emerald-700 text-white border-emerald-700 shadow-md dark:bg-brand-lime dark:text-brand-deep dark:border-brand-lime lime-glow" 
+                  : "bg-black/5 text-stone-800 border-black/10 hover:bg-black/10 dark:bg-white/5 dark:text-white dark:border-white/10 dark:hover:bg-white/10"
               )}
               title={isBookmarked ? "Remove Bookmark" : "Bookmark Ayah"}
             >
@@ -204,8 +206,10 @@ export const AyahCard = ({
             <button 
               onClick={() => setShowSettings(!showSettings)}
               className={cn(
-                "w-12 h-12 md:w-14 md:h-14 rounded-2xl border flex items-center justify-center transition-all duration-300", 
-                showSettings ? "bg-brand-lime text-brand-deep border-brand-lime lime-glow" : "bg-white/5 text-white border-white/10 hover:bg-white/10"
+                "w-12 h-12 md:w-14 md:h-14 rounded-2xl border flex items-center justify-center transition-all duration-300 cursor-pointer", 
+                showSettings 
+                  ? "bg-emerald-700 text-white border-emerald-700 shadow-md dark:bg-brand-lime dark:text-brand-deep dark:border-brand-lime lime-glow" 
+                  : "bg-black/5 text-stone-800 border-black/10 hover:bg-black/10 dark:bg-white/5 dark:text-white dark:border-white/10 dark:hover:bg-white/10"
               )}
               title="Settings"
             >
@@ -214,17 +218,17 @@ export const AyahCard = ({
             {onOpenStudyDrawer && (
               <button 
                 onClick={onOpenStudyDrawer}
-                className="h-12 md:h-14 px-4 sm:px-5 rounded-2xl border border-white/10 bg-white/5 hover:bg-brand-forest hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep flex items-center gap-2.5 transition-all duration-300 text-xs font-black uppercase tracking-wider group"
+                className="h-12 md:h-14 px-4 sm:px-5 rounded-2xl border border-black/10 dark:border-white/10 bg-emerald-50 dark:bg-white/5 hover:bg-emerald-700 hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep flex items-center gap-2.5 transition-all duration-300 text-xs font-black uppercase tracking-wider group text-emerald-900 dark:text-white cursor-pointer shadow-sm"
                 title="Open Study Drawer (Tafsir, Comparison, Insights)"
               >
-                <BookOpen size={18} strokeWidth={2.5} className="text-brand-forest dark:text-brand-lime group-hover:text-white dark:group-hover:text-brand-deep transition-colors" />
+                <BookOpen size={18} strokeWidth={2.5} className="text-emerald-700 dark:text-brand-lime group-hover:text-white dark:group-hover:text-brand-deep transition-colors" />
                 <span className="hidden sm:inline">Study & Tafsir</span>
               </button>
             )}
           </div>
           <div className="text-right">
-            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-brand-forest dark:text-brand-lime font-black mb-1.5">Today's Focus</p>
-            <p className="text-sm md:text-base font-bold text-paper-accent dark:text-white/50 uppercase tracking-widest">{format(new Date(), 'MMMM do, yyyy')}</p>
+            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-emerald-800 dark:text-brand-lime font-black mb-1.5">Today's Focus</p>
+            <p className="text-sm md:text-base font-bold text-stone-600 dark:text-white/50 uppercase tracking-widest">{format(new Date(), 'MMMM do, yyyy')}</p>
           </div>
         </div>
 
@@ -443,20 +447,20 @@ export const AyahCard = ({
                     <button
                       onClick={() => onPlayVerse(idx)}
                       className={cn(
-                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-xl",
-                        isVersePlaying ? "bg-brand-lime text-brand-deep lime-glow" : "bg-white/10 text-white/40 hover:bg-brand-lime hover:text-brand-deep"
+                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-md",
+                        isVersePlaying ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep lime-glow" : "bg-black/5 dark:bg-white/10 text-paper-accent dark:text-white/40 hover:bg-emerald-700 hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep"
                       )}
                       title="Play Quran Recitation"
                     >
                       {isVersePlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
                     </button>
-                    <span className="text-[7px] font-black uppercase tracking-tighter text-white/20 whitespace-nowrap">Recitation</span>
+                    <span className="text-[7px] font-black uppercase tracking-tighter text-paper-accent dark:text-white/40 whitespace-nowrap">Recitation</span>
                   </div>
 
                   <div className="space-y-6">
                     <p 
                       className={cn(
-                        "text-right leading-[2.2] tracking-wide text-white pl-12 sm:pl-16",
+                        "text-right leading-[2.2] tracking-wide text-paper-ink dark:text-white pl-12 sm:pl-16 font-bold",
                         arabicScript === 'indopak' ? "font-indopak" : "font-arabic"
                       )}
                       dir="rtl"
@@ -468,7 +472,7 @@ export const AyahCard = ({
                     <div className="flex items-start gap-4">
                       <div className="flex-1 space-y-2">
                         <p 
-                          className="text-white/80 leading-relaxed font-medium italic tracking-tight"
+                          className="text-paper-ink/90 dark:text-white/80 leading-relaxed font-medium italic tracking-tight"
                           style={{ fontSize: `${translationFontSize}px` }}
                         >
                           "{
@@ -503,8 +507,8 @@ export const AyahCard = ({
                   className={cn(
                     "text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer shadow-sm active:scale-95",
                     showTafsir 
-                      ? "bg-brand-forest text-white dark:bg-brand-lime dark:text-brand-deep" 
-                      : "text-brand-forest dark:text-brand-lime bg-brand-forest/10 dark:bg-brand-lime/10 hover:bg-brand-forest/20 dark:hover:bg-brand-lime/20 border border-brand-forest/20 dark:border-brand-lime/30"
+                      ? "bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep shadow-md" 
+                      : "text-emerald-800 dark:text-brand-lime bg-emerald-50 dark:bg-brand-lime/10 hover:bg-emerald-100 dark:hover:bg-brand-lime/20 border border-emerald-200 dark:border-brand-lime/30"
                   )}
                 >
                   <BookOpen size={15} strokeWidth={2.5} />

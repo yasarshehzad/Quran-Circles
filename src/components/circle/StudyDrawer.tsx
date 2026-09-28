@@ -137,20 +137,20 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-            className="relative w-full max-w-2xl h-full bg-brand-forest/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl flex flex-col z-20 text-white"
+            className="relative w-full max-w-2xl h-full bg-paper-bg dark:bg-brand-forest/95 backdrop-blur-2xl border-l border-black/10 dark:border-white/10 shadow-2xl flex flex-col z-20 text-paper-ink dark:text-white"
           >
             {/* Header */}
-            <div className="p-6 md:p-8 border-b border-white/10 flex items-center justify-between shrink-0 bg-brand-deep/40">
+            <div className="p-6 md:p-8 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0 bg-white dark:bg-brand-deep/40">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-brand-lime text-brand-deep text-[10px] font-black rounded-lg uppercase tracking-widest lime-glow">
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-900 border border-emerald-200 dark:bg-brand-lime dark:text-brand-deep text-[10px] font-black rounded-lg uppercase tracking-widest lime-glow">
                     Study Center
                   </span>
-                  <span className="text-white/40 text-xs font-bold uppercase tracking-wider">
+                  <span className="text-paper-accent dark:text-white/40 text-xs font-bold uppercase tracking-wider">
                     Ayah {verseKey}
                   </span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black uppercase tracking-tight">
+                <h3 className="text-xl md:text-2xl font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">
                   {currentChapter ? `Surah ${currentChapter.name_simple}` : `Ayah ${verseKey}`}
                 </h3>
               </div>
@@ -158,14 +158,14 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopyAyah}
-                  className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-brand-lime transition-all border border-white/5"
+                  className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-paper-accent dark:text-white/60 hover:text-emerald-800 dark:hover:text-brand-lime transition-all border border-black/5 dark:border-white/5 cursor-pointer"
                   title="Copy Ayah"
                 >
-                  {isCopied ? <Check size={18} className="text-brand-lime" /> : <Copy size={18} />}
+                  {isCopied ? <Check size={18} className="text-emerald-700 dark:text-brand-lime" /> : <Copy size={18} />}
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all border border-white/5"
+                  className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-paper-accent dark:text-white/60 hover:text-paper-ink dark:hover:text-white transition-all border border-black/5 dark:border-white/5 cursor-pointer"
                 >
                   <X size={20} strokeWidth={2.5} />
                 </button>
@@ -173,7 +173,7 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-white/10 px-6 bg-white/[0.02] overflow-x-auto no-scrollbar shrink-0">
+            <div className="flex border-b border-black/10 dark:border-white/10 px-6 bg-black/[0.02] dark:bg-white/[0.02] overflow-x-auto no-scrollbar shrink-0">
               {[
                 { id: 'tafsir', label: 'Tafsir & Meaning', icon: BookOpen },
                 { id: 'compare', label: 'Compare Translations', icon: Languages },
@@ -188,8 +188,8 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`py-4 px-4 flex items-center gap-2 text-xs font-black uppercase tracking-wider border-b-2 transition-all whitespace-nowrap cursor-pointer ${
                       isActive
-                        ? 'border-brand-lime text-brand-lime'
-                        : 'border-transparent text-white/40 hover:text-white hover:border-white/20'
+                        ? 'border-emerald-700 text-emerald-800 dark:border-brand-lime dark:text-brand-lime'
+                        : 'border-transparent text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white hover:border-black/20 dark:hover:border-white/20'
                     }`}
                   >
                     <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
@@ -200,13 +200,13 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
             </div>
 
             {/* Drawer Body Content */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar text-paper-ink dark:text-white">
               {/* TAB 1: TAFSIR */}
               {activeTab === 'tafsir' && (
                 <div className="space-y-6">
                   {/* Tafsir Source Selector */}
-                  <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime">
+                  <div className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-800 dark:text-brand-lime">
                       Tafsir Scholarly Commentary
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -222,8 +222,8 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
                           onClick={() => setTafsirId(src.id)}
                           className={`py-2 px-3 rounded-xl text-xs font-bold transition-all text-center border truncate cursor-pointer ${
                             tafsirId === src.id
-                              ? 'bg-brand-lime text-brand-deep border-brand-lime font-black shadow-sm'
-                              : 'bg-white/5 text-white/60 border-white/5 hover:border-white/20'
+                              ? 'bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep border-emerald-700 dark:border-brand-lime font-black shadow-sm'
+                              : 'bg-black/5 dark:bg-white/5 text-paper-accent dark:text-white/60 border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20'
                           }`}
                         >
                           {src.name}
@@ -234,18 +234,18 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
 
                   {/* Active Ayah Arabic & Translation summary */}
                   {firstVerse && (
-                    <div className="p-5 bg-brand-deep/50 rounded-2xl border border-white/10 space-y-3">
-                      <p className="text-right font-arabic text-xl leading-loose text-white/90" dir="rtl">
+                    <div className="p-5 bg-white dark:bg-brand-deep/50 rounded-2xl border border-black/10 dark:border-white/10 space-y-3">
+                      <p className="text-right font-arabic text-xl leading-loose text-paper-ink dark:text-white/90" dir="rtl">
                         {firstVerse.text_uthmani || firstVerse.text_imlaei}
                       </p>
-                      <p className="text-sm text-white/70 italic leading-relaxed border-t border-white/5 pt-3">
+                      <p className="text-sm text-paper-accent dark:text-white/70 italic leading-relaxed border-t border-black/5 dark:border-white/5 pt-3">
                         "{firstVerse.translations?.[0]?.text?.replace(/<[^>]*>?/gm, '')}"
                       </p>
                     </div>
                   )}
 
                   {/* Tafsir Body */}
-                  <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
+                  <div className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-black/10 dark:border-white/10 space-y-4">
                     {isLoadingTafsir ? (
                       <div className="py-16 flex flex-col items-center justify-center gap-4">
                         <div className="w-10 h-10 border-3 border-brand-lime/20 border-t-brand-lime rounded-full animate-spin" />
@@ -269,30 +269,30 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
               {activeTab === 'compare' && (
                 <div className="space-y-6">
                   <div className="space-y-1">
-                    <h4 className="text-lg font-display font-black uppercase tracking-tight">Translation Comparisons</h4>
-                    <p className="text-xs text-white/40 font-medium">
+                    <h4 className="text-lg font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Translation Comparisons</h4>
+                    <p className="text-xs text-paper-accent dark:text-white/40 font-medium">
                       Examine nuanced translations across renowned scholars and translators.
                     </p>
                   </div>
 
                   {isLoadingTranslations ? (
                     <div className="py-16 flex flex-col items-center justify-center gap-4">
-                      <div className="w-10 h-10 border-3 border-brand-lime/20 border-t-brand-lime rounded-full animate-spin" />
-                      <span className="text-xs font-bold uppercase tracking-widest text-brand-lime">Gathering translations...</span>
+                      <div className="w-10 h-10 border-3 border-emerald-700/20 dark:border-brand-lime/20 border-t-emerald-700 dark:border-t-brand-lime rounded-full animate-spin" />
+                      <span className="text-xs font-bold uppercase tracking-widest text-emerald-800 dark:text-brand-lime">Gathering translations...</span>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       {multiTranslations.map((item, idx) => (
-                        <div key={idx} className="p-5 bg-white/5 rounded-2xl border border-white/10 space-y-2 hover:border-brand-lime/30 transition-colors">
+                        <div key={idx} className="p-5 bg-white dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 space-y-2 hover:border-emerald-700/30 dark:hover:border-brand-lime/30 transition-colors shadow-sm">
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-black uppercase tracking-widest text-brand-lime">
+                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-800 dark:text-brand-lime">
                               {item.meta?.name || item.meta?.author_name}
                             </span>
-                            <span className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                            <span className="text-[10px] text-paper-accent dark:text-white/40 uppercase tracking-widest font-bold">
                               {item.meta?.author_name}
                             </span>
                           </div>
-                          <p className="text-sm sm:text-base text-white/90 leading-relaxed font-serif italic pt-1">
+                          <p className="text-sm sm:text-base text-paper-ink dark:text-white/90 leading-relaxed font-serif italic pt-1">
                             "{item.text}"
                           </p>
                         </div>
@@ -305,44 +305,44 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
               {/* TAB 3: SURAH INSIGHTS */}
               {activeTab === 'surah' && currentChapter && (
                 <div className="space-y-6">
-                  <div className="p-6 bg-gradient-to-br from-brand-lime/10 to-transparent rounded-3xl border border-brand-lime/20 space-y-4">
+                  <div className="p-6 bg-white dark:bg-gradient-to-br dark:from-brand-lime/10 dark:to-transparent rounded-3xl border border-black/10 dark:border-brand-lime/20 space-y-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                      <span className="px-3 py-1 rounded-full bg-brand-lime text-brand-deep text-[10px] font-black uppercase tracking-widest">
+                      <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200 dark:bg-brand-lime dark:text-brand-deep text-[10px] font-black uppercase tracking-widest">
                         Surah #{currentChapter.id}
                       </span>
-                      <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+                      <span className="text-xs font-bold uppercase tracking-widest text-paper-accent dark:text-white/60">
                         {currentChapter.revelation_place === 'makkah' ? '🕋 Meccan' : '🕌 Medinan'}
                       </span>
                     </div>
 
                     <div className="space-y-1">
-                      <h4 className="text-2xl font-display font-black text-white">
+                      <h4 className="text-2xl font-display font-black text-paper-ink dark:text-white">
                         {currentChapter.name_simple} ({currentChapter.name_arabic})
                       </h4>
-                      <p className="text-brand-lime font-bold text-sm">
+                      <p className="text-emerald-800 dark:text-brand-lime font-bold text-sm">
                         "{currentChapter.translated_name?.name || 'The Chapter'}"
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                      <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                        <span className="text-[9px] uppercase tracking-wider text-white/40 block font-black">Verses</span>
-                        <span className="text-lg font-black text-white">{currentChapter.verses_count} Ayahs</span>
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5">
+                        <span className="text-[9px] uppercase tracking-wider text-paper-accent dark:text-white/40 block font-black">Verses</span>
+                        <span className="text-lg font-black text-paper-ink dark:text-white">{currentChapter.verses_count} Ayahs</span>
                       </div>
-                      <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                        <span className="text-[9px] uppercase tracking-wider text-white/40 block font-black">Revelation Order</span>
-                        <span className="text-lg font-black text-white">#{currentChapter.revelation_order}</span>
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5">
+                        <span className="text-[9px] uppercase tracking-wider text-paper-accent dark:text-white/40 block font-black">Revelation Order</span>
+                        <span className="text-lg font-black text-paper-ink dark:text-white">#{currentChapter.revelation_order}</span>
                       </div>
-                      <div className="p-3 bg-white/5 rounded-xl border border-white/5 col-span-2 sm:col-span-1">
-                        <span className="text-[9px] uppercase tracking-wider text-white/40 block font-black">Bismillah</span>
-                        <span className="text-sm font-bold text-white/80">{currentChapter.bismillah_pre ? 'Preceded' : 'No pre-bismillah'}</span>
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 col-span-2 sm:col-span-1">
+                        <span className="text-[9px] uppercase tracking-wider text-paper-accent dark:text-white/40 block font-black">Bismillah</span>
+                        <span className="text-sm font-bold text-paper-ink/80 dark:text-white/80">{currentChapter.bismillah_pre ? 'Preceded' : 'No pre-bismillah'}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-3">
-                    <h5 className="text-xs font-black uppercase tracking-[0.2em] text-brand-lime">Core Themes & Context</h5>
-                    <p className="text-sm text-white/70 leading-relaxed font-medium">
+                  <div className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-black/10 dark:border-white/10 space-y-3 shadow-sm">
+                    <h5 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-800 dark:text-brand-lime">Core Themes & Context</h5>
+                    <p className="text-sm text-paper-ink/80 dark:text-white/70 leading-relaxed font-medium">
                       {currentChapter.id === 1 && "Al-Fatihah ('The Opening') encapsulates the essence of the entire Quran: divine praise, acknowledgement of the Day of Judgment, sincere worship, and supplication for guidance upon the straight path."}
                       {currentChapter.id === 2 && "Al-Baqarah ('The Cow') provides foundational guidance across creed, legal ordinances, family ethics, worship, financial conduct, and trust in divine sovereignty."}
                       {currentChapter.id > 2 && `Revealed in ${currentChapter.revelation_place === 'makkah' ? 'Mecca focusing primarily on creed, the afterlife, and spiritual steadfastness' : 'Medina focusing on community building, societal laws, and righteous brotherhood'}.`}
@@ -355,8 +355,8 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
               {activeTab === 'notes' && (
                 <div className="space-y-4 flex flex-col h-full">
                   <div className="space-y-1">
-                    <h4 className="text-lg font-display font-black uppercase tracking-tight">Study Scratchpad</h4>
-                    <p className="text-xs text-white/40 font-medium">
+                    <h4 className="text-lg font-display font-black uppercase tracking-tight text-paper-ink dark:text-white">Study Scratchpad</h4>
+                    <p className="text-xs text-paper-accent dark:text-white/40 font-medium">
                       Jot down insights, vocabulary notes, and reflections as you read. Saved automatically.
                     </p>
                   </div>
@@ -365,16 +365,16 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
                     value={scratchNotes}
                     onChange={(e) => handleSaveNotes(e.target.value)}
                     placeholder="Write your study notes, reflections, or questions here..."
-                    className="w-full h-64 p-5 bg-brand-deep/70 border border-white/10 rounded-2xl outline-none focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 text-white placeholder:text-white/20 font-medium text-sm leading-relaxed resize-none"
+                    className="w-full h-64 p-5 bg-white dark:bg-brand-deep/70 border border-black/10 dark:border-white/10 rounded-2xl outline-none focus:border-emerald-700 dark:focus:border-brand-lime focus:ring-2 focus:ring-emerald-700/20 dark:focus:ring-brand-lime/20 text-paper-ink dark:text-white placeholder:text-paper-accent/40 dark:placeholder:text-white/20 font-medium text-sm leading-relaxed resize-none shadow-sm"
                   />
 
                   <div className="flex items-center justify-between pt-2">
-                    <span className="text-[10px] uppercase tracking-widest text-brand-lime font-black">
+                    <span className="text-[10px] uppercase tracking-widest text-emerald-800 dark:text-brand-lime font-black">
                       ✓ Auto-saved locally
                     </span>
                     <button
                       onClick={() => handleSaveNotes('')}
-                      className="text-[10px] text-white/30 hover:text-rose-400 uppercase tracking-widest font-black transition-colors"
+                      className="text-[10px] text-paper-accent dark:text-white/30 hover:text-rose-600 dark:hover:text-rose-400 uppercase tracking-widest font-black transition-colors cursor-pointer"
                     >
                       Clear Notes
                     </button>
@@ -384,8 +384,8 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-brand-deep/50 shrink-0 flex items-center justify-between">
-              <span className="text-xs text-white/40 font-medium">
+            <div className="p-6 border-t border-black/10 dark:border-white/10 bg-white dark:bg-brand-deep/50 shrink-0 flex items-center justify-between">
+              <span className="text-xs text-paper-accent dark:text-white/40 font-medium">
                 Quran Circles Study Companion
               </span>
               <Button size="sm" onClick={onClose} className="px-6">

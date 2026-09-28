@@ -102,10 +102,10 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       {/* Header */}
       {!compact && (
         <div className="space-y-2 text-center">
-          <h3 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tighter text-white">
+          <h3 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white">
             {title}
           </h3>
-          <p className="text-white/40 font-medium text-sm sm:text-base max-w-md mx-auto">
+          <p className="text-paper-accent dark:text-white/40 font-medium text-sm sm:text-base max-w-md mx-auto">
             {subtitle}
           </p>
         </div>
@@ -113,7 +113,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
 
       {/* Error Alert */}
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs sm:text-sm font-semibold flex items-center gap-3">
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs sm:text-sm font-semibold flex items-center gap-3">
           <AlertCircle size={18} className="shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -125,7 +125,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full py-4 px-6 rounded-full bg-white hover:bg-white/95 text-slate-900 font-black text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer"
+          className="w-full py-4 px-6 rounded-full bg-white hover:bg-white/95 text-slate-900 border border-black/10 font-black text-base flex items-center justify-center gap-3 shadow-md hover:shadow-lg active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer"
         >
           {isLoading && authMethod === 'google' ? (
             <div className="w-5 h-5 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />
@@ -154,23 +154,23 @@ export const AuthCard: React.FC<AuthCardProps> = ({
 
         {/* Divider */}
         <div className="flex items-center gap-4 py-2">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30">or with email</span>
-          <div className="flex-1 h-px bg-white/10" />
+          <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
+          <span className="text-[11px] font-black uppercase tracking-[0.2em] text-paper-accent dark:text-white/30">or with email</span>
+          <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
         </div>
       </div>
 
       {/* 2. Email Auth Form */}
       <form onSubmit={handleEmailAuth} className="space-y-4">
         {/* Sign In vs Register Tabs */}
-        <div className="grid grid-cols-2 p-1 bg-white/5 rounded-full border border-white/10">
+        <div className="grid grid-cols-2 p-1 bg-black/5 dark:bg-white/5 rounded-full border border-black/10 dark:border-white/10">
           <button
             type="button"
             onClick={() => { setMode('signin'); setErrorMessage(null); }}
-            className={`py-2 text-xs font-black uppercase tracking-wider rounded-full transition-all ${
+            className={`py-2 text-xs font-black uppercase tracking-wider rounded-full transition-all cursor-pointer ${
               mode === 'signin'
-                ? 'bg-brand-lime text-brand-deep shadow-sm'
-                : 'text-white/50 hover:text-white'
+                ? 'bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep shadow-sm'
+                : 'text-paper-accent dark:text-white/50 hover:text-paper-ink dark:hover:text-white'
             }`}
           >
             Sign In
@@ -178,10 +178,10 @@ export const AuthCard: React.FC<AuthCardProps> = ({
           <button
             type="button"
             onClick={() => { setMode('register'); setErrorMessage(null); }}
-            className={`py-2 text-xs font-black uppercase tracking-wider rounded-full transition-all ${
+            className={`py-2 text-xs font-black uppercase tracking-wider rounded-full transition-all cursor-pointer ${
               mode === 'register'
-                ? 'bg-brand-lime text-brand-deep shadow-sm'
-                : 'text-white/50 hover:text-white'
+                ? 'bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep shadow-sm'
+                : 'text-paper-accent dark:text-white/50 hover:text-paper-ink dark:hover:text-white'
             }`}
           >
             Create Account
@@ -190,7 +190,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
 
         {mode === 'register' && (
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-4">
+            <label className="text-[10px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] ml-4">
               Your Name
             </label>
             <div className="relative">
@@ -199,15 +199,15 @@ export const AuthCard: React.FC<AuthCardProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Zaid"
-                className="w-full pl-11 pr-5 py-3.5 bg-brand-deep/60 border border-white/10 rounded-full focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 outline-none text-sm text-white placeholder:text-white/20 transition-all font-medium"
+                className="w-full pl-11 pr-5 py-3.5 bg-white dark:bg-brand-deep/60 border border-black/10 dark:border-white/10 rounded-full focus:border-emerald-700 dark:focus:border-brand-lime focus:ring-2 focus:ring-emerald-700/20 dark:focus:ring-brand-lime/20 outline-none text-sm text-paper-ink dark:text-white placeholder:text-paper-accent/40 dark:placeholder:text-white/20 transition-all font-medium shadow-sm"
               />
-              <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+              <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-paper-accent dark:text-white/30" />
             </div>
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-4">
+          <label className="text-[10px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] ml-4">
             Email Address
           </label>
           <div className="relative">
@@ -217,14 +217,14 @@ export const AuthCard: React.FC<AuthCardProps> = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full pl-11 pr-5 py-3.5 bg-brand-deep/60 border border-white/10 rounded-full focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 outline-none text-sm text-white placeholder:text-white/20 transition-all font-medium"
+              className="w-full pl-11 pr-5 py-3.5 bg-white dark:bg-brand-deep/60 border border-black/10 dark:border-white/10 rounded-full focus:border-emerald-700 dark:focus:border-brand-lime focus:ring-2 focus:ring-emerald-700/20 dark:focus:ring-brand-lime/20 outline-none text-sm text-paper-ink dark:text-white placeholder:text-paper-accent/40 dark:placeholder:text-white/20 transition-all font-medium shadow-sm"
             />
-            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-paper-accent dark:text-white/30" />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-4">
+          <label className="text-[10px] font-black text-paper-accent dark:text-white/40 uppercase tracking-[0.2em] ml-4">
             Password
           </label>
           <div className="relative">
@@ -234,13 +234,13 @@ export const AuthCard: React.FC<AuthCardProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={mode === 'register' ? 'At least 6 characters' : 'Enter your password'}
-              className="w-full pl-11 pr-12 py-3.5 bg-brand-deep/60 border border-white/10 rounded-full focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/20 outline-none text-sm text-white placeholder:text-white/20 transition-all font-medium"
+              className="w-full pl-11 pr-12 py-3.5 bg-white dark:bg-brand-deep/60 border border-black/10 dark:border-white/10 rounded-full focus:border-emerald-700 dark:focus:border-brand-lime focus:ring-2 focus:ring-emerald-700/20 dark:focus:ring-brand-lime/20 outline-none text-sm text-paper-ink dark:text-white placeholder:text-paper-accent/40 dark:placeholder:text-white/20 transition-all font-medium shadow-sm"
             />
-            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-paper-accent dark:text-white/30" />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-paper-accent dark:text-white/40 hover:text-paper-ink dark:hover:text-white transition-colors cursor-pointer"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -250,10 +250,10 @@ export const AuthCard: React.FC<AuthCardProps> = ({
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full py-4 text-base font-black uppercase tracking-tight bg-brand-lime text-brand-deep hover:bg-white transition-all shadow-md active:scale-[0.98]"
+          className="w-full py-4 text-base font-black uppercase tracking-tight"
         >
           {isLoading && authMethod === 'email' ? (
-            <div className="w-5 h-5 border-2 border-brand-deep/30 border-t-brand-deep rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : mode === 'signin' ? (
             'Sign In'
           ) : (
@@ -269,7 +269,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
             type="button"
             onClick={onSeedDemo}
             disabled={isLoading}
-            className="w-full py-4 px-6 rounded-full bg-brand-forest/10 dark:bg-white/10 hover:bg-brand-forest hover:text-white dark:hover:bg-brand-lime dark:hover:text-brand-deep text-brand-forest dark:text-brand-lime border border-brand-forest/20 dark:border-white/15 transition-all font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 group cursor-pointer active:scale-98 shadow-sm"
+            className="w-full py-4 px-6 rounded-full bg-emerald-50 dark:bg-white/10 hover:bg-emerald-100 dark:hover:bg-brand-lime dark:hover:text-brand-deep text-emerald-800 dark:text-brand-lime border border-emerald-200 dark:border-white/15 transition-all font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 group cursor-pointer active:scale-98 shadow-sm"
           >
             <Sparkles size={16} className="shrink-0 group-hover:scale-110 transition-transform" />
             <span>Try Demo Scenarios (Instant Preview)</span>
