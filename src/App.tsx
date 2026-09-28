@@ -83,6 +83,7 @@ import { AuthModal } from './components/AuthModal';
 import { AudioPlayerDock } from './components/circle/AudioPlayerDock';
 import { MobileNav } from './components/MobileNav';
 import { Lock, LogIn, PieChart } from 'lucide-react';
+import { trackPageView, trackEvent } from './lib/analytics';
 
 export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -143,6 +144,11 @@ export default function App() {
       localStorage.setItem('theme', 'dark');
     }
   }, [isLightMode]);
+
+  // Track page views in Google Analytics
+  useEffect(() => {
+    trackPageView(`/${view}`, `Quran Circles - ${view.charAt(0).toUpperCase() + view.slice(1)}`);
+  }, [view]);
 
   // Quran Settings State
   const [translationId, setTranslationId] = useState(131); // Default: Clear Quran
