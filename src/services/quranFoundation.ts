@@ -366,17 +366,57 @@ export const contentApi = {
   /**
    * Fetch available reciters
    */
-  getReciters: async (): Promise<{ id: number; name: string; style: string }[]> => {
-    const data = await qfFetch('/resources/recitations');
-    return data.recitations || [];
+  getReciters: async (): Promise<{ id: number; name: string; style: string; reciter_name?: string }[]> => {
+    try {
+      const data = await qfFetch('/resources/recitations');
+      if (data && Array.isArray(data.recitations)) {
+        return data.recitations.map((r: any) => ({
+          id: r.id,
+          name: r.reciter_name || r.translated_name?.name || r.name || `Reciter ${r.id}`,
+          reciter_name: r.reciter_name || r.translated_name?.name || r.name,
+          style: r.style || ''
+        }));
+      }
+    } catch (e) {
+      console.error('Failed to fetch recitations from QF:', e);
+    }
+    return [
+      { id: 7, name: 'Mishari Rashid al-`Afasy', style: 'Murattal' },
+      { id: 2, name: 'AbdulBaset AbdulSamad', style: 'Murattal' },
+      { id: 1, name: 'AbdulBaset AbdulSamad', style: 'Mujawwad' },
+      { id: 3, name: 'Abdur-Rahman as-Sudais', style: 'Murattal' },
+      { id: 4, name: 'Abu Bakr al-Shatri', style: 'Murattal' },
+      { id: 5, name: 'Hani ar-Rifai', style: 'Murattal' },
+      { id: 6, name: 'Mahmoud Khalil Al-Husary', style: 'Murattal' },
+      { id: 12, name: 'Saad Al-Ghamdi', style: 'Murattal' },
+      { id: 10, name: 'Sa`ud ash-Shuraym', style: 'Murattal' }
+    ];
   },
 
   /**
    * Fetch available Tafsirs
    */
-  getTafsirs: async (): Promise<{ id: number; name: string; language_name: string }[]> => {
-    const data = await qfFetch('/resources/tafsirs');
-    return data.tafsirs || [];
+  getTafsirs: async (): Promise<{ id: number; name: string; language_name: string; author_name?: string }[]> => {
+    try {
+      const data = await qfFetch('/resources/tafsirs');
+      if (data && Array.isArray(data.tafsirs)) {
+        return data.tafsirs.map((t: any) => ({
+          id: t.id,
+          name: t.translated_name?.name || t.name,
+          language_name: t.language_name || 'english',
+          author_name: t.author_name || ''
+        }));
+      }
+    } catch (e) {
+      console.error('Failed to fetch tafsirs from QF:', e);
+    }
+    return [
+      { id: 169, name: 'Ibn Kathir (Abridged)', language_name: 'english' },
+      { id: 168, name: "Ma'arif al-Qur'an", language_name: 'english' },
+      { id: 817, name: 'Tazkirul Quran', language_name: 'english' },
+      { id: 16, name: 'Tafsir Muyassar', language_name: 'arabic' },
+      { id: 91, name: "Al-Sa'di", language_name: 'arabic' }
+    ];
   },
 
   /**
@@ -398,14 +438,13 @@ export const contentApi = {
   /**
    * Fetch Tafsir for a verse
    * @param verseKey e.g., "1:1"
-   * @param tafsirId e.g., 169 for Tafsir Ibn Kathir (English)
+   * @param tafsirId e.g., 169 for Tafsir Ibn Kathir, 168 for Maariful Quran, 817 for Tazkirul Quran
    */
   getTafsir: async (verseKey: string, tafsirId: number = 169): Promise<string> => {
     const [surah, ayah] = verseKey.split(':');
     const id = tafsirId || 169;
     
-    // List of endpoints to try in order of preference
-    // v4 standard is /tafsirs/{id}/by_ayah/{verse_key}
+    // List of endpoints to try in order of preference for the requested tafsir
     const endpoints = [
       `/tafsirs/${id}/by_ayah/${verseKey}`,
       `/quran/tafsirs/${id}?verse_key=${verseKey}`,
@@ -443,32 +482,7 @@ export const contentApi = {
       }
     }
 
-    // If the requested one failed, try specifically for common English Tafsirs
-    // 169: Ibn Kathir (English), 171: Ibn Kathir (English), 158: Jalalayn (English), 91: Maariful Quran (English)
-    const fallbacks = [169, 171, 158, 91, 16, 131]; 
-    for (const fallbackId of fallbacks) {
-      if (fallbackId === id) continue; // Already tried
-      try {
-        const fallbackData = await qfFetch(`/tafsirs/${fallbackId}/by_ayah/${verseKey}`, { silent: true });
-        const text = fallbackData.tafsir?.text || 
-                     fallbackData.tafsir?.text_html ||
-                     fallbackData.tafsir?.content ||
-                     fallbackData.tafsirs?.[0]?.text || 
-                     fallbackData.tafsirs?.[0]?.text_html ||
-                     fallbackData.tafsirs?.[0]?.content ||
-                     fallbackData.verse?.tafsirs?.[0]?.text ||
-                     fallbackData.verse?.tafsirs?.[0]?.text_html ||
-                     (fallbackData.tafsirs && Array.isArray(fallbackData.tafsirs) && fallbackData.tafsirs[0]?.text) ||
-                     (typeof fallbackData.text === 'string' ? fallbackData.text : null) ||
-                     (typeof fallbackData.content === 'string' ? fallbackData.content : null);
-                     
-        if (text && text.trim().length > 0) return text;
-      } catch (e) {
-        // Ignore fallback error
-      }
-    }
-
-    return 'Tafsir content currently unavailable for this verse. Please try another tafsir source in settings.';
+    return 'Tafsir commentary is not currently available for this verse from the selected commentary source. Please select another commentary source above.';
   }
 };
 

@@ -20,6 +20,7 @@ import {
   Flame, 
   Plus, 
   ChevronRight, 
+  ChevronUp,
   LogOut, 
   MessageSquare, 
   UserPlus, 
@@ -89,6 +90,7 @@ export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'register'>('signin');
   const [view, setView] = useState<'landing' | 'dashboard' | 'circle' | 'reflections' | 'create-circle' | 'join-circle' | 'bookmarks' | 'circle-settings' | 'profile' | 'stats' | 'how-it-works' | 'features' | 'faq'>('landing');
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -115,6 +117,7 @@ export default function App() {
   const [repeatMode, setRepeatMode] = useState<'off' | '3x' | 'infinite'>('off');
   const [repeatCount, setRepeatCount] = useState(0);
   const [isAudioDockVisible, setIsAudioDockVisible] = useState(false);
+  const [isAudioMinimized, setIsAudioMinimized] = useState(false);
   const [activeParticipantId, setActiveParticipantId] = useState<string | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [newReflection, setNewReflection] = useState('');
@@ -1006,7 +1009,10 @@ export default function App() {
     }
   };
 
-  const openAuthModal = () => setShowAuthModal(true);
+  const openAuthModal = (mode: 'signin' | 'register' = 'signin') => {
+    setAuthModalMode(mode);
+    setShowAuthModal(true);
+  };
 
   const handleExplore = async () => {
     try {
@@ -1246,13 +1252,19 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-center">
                   <button
-                    onClick={() => setShowAuthModal(true)}
+                    onClick={() => {
+                      setAuthModalMode('register');
+                      setShowAuthModal(true);
+                    }}
                     className="flex-1 sm:flex-none px-7 py-3.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-brand-lime dark:text-brand-deep font-black text-xs uppercase tracking-wider dark:hover:bg-white transition-all shadow-xl active:scale-95 cursor-pointer"
                   >
                     Create Account
                   </button>
                   <button
-                    onClick={() => setShowAuthModal(true)}
+                    onClick={() => {
+                      setAuthModalMode('signin');
+                      setShowAuthModal(true);
+                    }}
                     className="flex-1 sm:flex-none px-6 py-3.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white font-bold text-xs uppercase tracking-wider transition-all dark:border-white/20 active:scale-95 cursor-pointer"
                   >
                     Sign In
@@ -1271,7 +1283,10 @@ export default function App() {
                   <Button 
                     size="sm" 
                     variant="outline" 
-                    onClick={() => setShowAuthModal(true)} 
+                    onClick={() => {
+                      setAuthModalMode('signin');
+                      setShowAuthModal(true);
+                    }} 
                     className="text-xs font-bold uppercase tracking-wider py-2.5 px-5 border-black/20 hover:border-emerald-700 hover:text-emerald-800 dark:border-white/20 dark:hover:border-brand-lime dark:hover:text-brand-lime text-stone-900 dark:text-white"
                   >
                     Sign In
@@ -1299,13 +1314,18 @@ export default function App() {
                     </p>
                   </div>
 
-                  <GlassCard className="p-8 md:p-10 space-y-6 relative overflow-visible shadow-2xl">
-                    <div className="absolute -top-6 -right-6 md:-top-8 md:-right-8 w-20 h-20 md:w-28 md:h-28 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center rotate-12 lime-glow border-4 border-brand-deep pointer-events-none z-10">
-                      <p className="text-[9px] md:text-xs font-black uppercase tracking-tighter text-center leading-none">Join the <br/> Circle</p>
-                    </div>
+                  <div className="relative pt-6 pr-4 sm:pr-6 md:pr-8 w-full max-w-lg mx-auto lg:max-w-none">
+                    <GlassCard className="p-8 md:p-10 space-y-6 relative overflow-visible shadow-2xl">
+                      <div className="absolute -top-3 right-1 sm:-top-5 sm:right-3 md:-top-6 md:right-4 w-20 h-20 sm:w-24 sm:h-24 md:w-26 md:h-26 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center rotate-12 lime-glow border-4 border-white dark:border-brand-deep pointer-events-none z-20 shadow-xl">
+                        <div className="text-center select-none">
+                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-tight leading-tight">Join the</span>
+                          <span className="block text-[11px] sm:text-sm font-black uppercase tracking-tighter text-emerald-950 dark:text-brand-deep leading-none">Circle</span>
+                        </div>
+                      </div>
 
-                    <AuthCard onSeedDemo={seedDemoData} />
-                  </GlassCard>
+                      <AuthCard onSeedDemo={seedDemoData} showDemoOption={true} />
+                    </GlassCard>
+                  </div>
                 </div>
 
                 {/* Additional Landing Content */}
@@ -2476,7 +2496,8 @@ export default function App() {
                     <AuthCard 
                       title="Account Required"
                       subtitle="Sign in with Google or Email to join your circle and record reflections."
-                      onSeedDemo={seedDemoData}
+                      onSeedDemo={user && user.isAnonymous ? undefined : seedDemoData}
+                      showDemoOption={!user || !user.isAnonymous}
                       compact={true}
                     />
                     <div className="pt-2 text-center">
@@ -3212,7 +3233,9 @@ export default function App() {
         <AuthModal 
           isOpen={showAuthModal} 
           onClose={() => setShowAuthModal(false)} 
-          onSeedDemo={seedDemoData} 
+          onSeedDemo={user && user.isAnonymous ? undefined : seedDemoData} 
+          showDemoOption={!user || !user.isAnonymous}
+          initialMode={authModalMode}
         />
 
         {/* Docked Recitation Player */}
@@ -3236,6 +3259,8 @@ export default function App() {
           repeatMode={repeatMode}
           onChangeRepeatMode={(mode) => setRepeatMode(mode)}
           isVisible={isAudioDockVisible && currentVerses.length > 0}
+          isMinimized={isAudioMinimized}
+          onToggleMinimize={(min) => setIsAudioMinimized(min)}
           onClose={() => {
             setIsAudioDockVisible(false);
             if (isPlaying) {
@@ -3244,6 +3269,27 @@ export default function App() {
             }
           }}
         />
+
+        {/* Floating Re-appear Audio Player button when hidden or closed */}
+        {!isAudioDockVisible && currentVerses.length > 0 && view !== 'landing' && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            onClick={() => {
+              setIsAudioDockVisible(true);
+              setIsAudioMinimized(false);
+            }}
+            className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-[95] flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-white/95 dark:bg-brand-forest/95 backdrop-blur-xl border border-black/10 dark:border-white/15 text-paper-ink dark:text-white shadow-xl hover:border-emerald-600/40 dark:hover:border-brand-lime/40 transition-all font-bold text-xs uppercase tracking-wider cursor-pointer group"
+            title="Re-appear audio player"
+          >
+            <div className="w-6 h-6 rounded-full bg-emerald-700 dark:bg-brand-lime text-white dark:text-brand-deep flex items-center justify-center shrink-0">
+              <Volume2 size={13} strokeWidth={2.5} />
+            </div>
+            <span className="hidden sm:inline">Audio Player</span>
+            <ChevronUp size={14} className="group-hover:-translate-y-0.5 transition-transform" />
+          </motion.button>
+        )}
 
         {/* Mobile Thumb Navigation */}
         {user && view !== 'landing' && (

@@ -7,6 +7,8 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSeedDemo?: () => void;
+  showDemoOption?: boolean;
+  initialMode?: 'signin' | 'register';
   title?: string;
   subtitle?: string;
 }
@@ -15,6 +17,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   onSeedDemo,
+  showDemoOption = true,
+  initialMode = 'signin',
   title,
   subtitle
 }) => {
@@ -47,12 +51,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <AuthCard 
                 onSuccess={onClose}
-                onSeedDemo={() => {
+                initialMode={initialMode}
+                showDemoOption={showDemoOption}
+                onSeedDemo={onSeedDemo ? () => {
                   onClose();
                   onSeedDemo?.();
-                }}
-                title={title || "Sign in to Quran Circles"}
-                subtitle={subtitle || "Choose your preferred sign-in method to continue."}
+                } : undefined}
+                title={title || (initialMode === 'register' ? "Create an Account" : "Sign in to Quran Circles")}
+                subtitle={subtitle || (initialMode === 'register' ? "Register to save your daily Quran streaks and private circles." : "Choose your preferred sign-in method to continue.")}
               />
             </div>
           </motion.div>

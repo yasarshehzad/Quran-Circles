@@ -205,28 +205,43 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
               {activeTab === 'tafsir' && (
                 <div className="space-y-6">
                   {/* Tafsir Source Selector */}
-                  <div className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-800 dark:text-brand-lime">
-                      Tafsir Scholarly Commentary
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div className="p-4 bg-white dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-800 dark:text-brand-lime">
+                        Tafsir Scholarly Commentary
+                      </label>
+                      <span className="text-[10px] text-paper-accent dark:text-white/50 font-bold">
+                        3 English • 2 Arabic Sources
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                       {[
-                        { id: 169, name: 'Ibn Kathir (Eng)' },
-                        { id: 171, name: 'Tafsir Al-Azhar' },
-                        { id: 158, name: 'Jalalayn (Eng)' },
-                        { id: 16, name: 'Tafsir Muyassar' },
-                        { id: 91, name: 'Maariful Quran' }
+                        { id: 169, name: 'Ibn Kathir', author: 'Hafiz Ibn Kathir', lang: 'English' },
+                        { id: 168, name: "Ma'arif al-Qur'an", author: 'Mufti Muhammad Shafi', lang: 'English' },
+                        { id: 817, name: 'Tazkirul Quran', author: 'Maulana Wahiduddin Khan', lang: 'English' },
+                        { id: 16, name: 'Tafsir Muyassar', author: 'المیسر', lang: 'Arabic' },
+                        { id: 91, name: "Al-Sa'di", author: 'السعدي', lang: 'Arabic' }
                       ].map(src => (
                         <button
                           key={src.id}
                           onClick={() => setTafsirId(src.id)}
-                          className={`py-2 px-3 rounded-xl text-xs font-bold transition-all text-center border truncate cursor-pointer ${
+                          className={`py-2.5 px-3 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between gap-1 ${
                             tafsirId === src.id
-                              ? 'bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep border-emerald-700 dark:border-brand-lime font-black shadow-sm'
-                              : 'bg-black/5 dark:bg-white/5 text-paper-accent dark:text-white/60 border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20'
+                              ? 'bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep border-emerald-700 dark:border-brand-lime font-black shadow-md'
+                              : 'bg-black/5 dark:bg-white/5 text-paper-accent dark:text-white/70 border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 hover:text-paper-ink dark:hover:text-white'
                           }`}
                         >
-                          {src.name}
+                          <div className="flex items-center justify-between gap-1 w-full">
+                            <span className="text-xs font-bold truncate">{src.name}</span>
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded font-black tracking-wider shrink-0 uppercase ${
+                              tafsirId === src.id
+                                ? 'bg-white/20 text-white dark:bg-brand-deep/20 dark:text-brand-deep'
+                                : 'bg-black/10 dark:bg-white/10 text-paper-accent dark:text-white/60'
+                            }`}>{src.lang === 'English' ? 'EN' : 'AR'}</span>
+                          </div>
+                          <span className={`text-[10px] truncate ${
+                            tafsirId === src.id ? 'opacity-80' : 'opacity-50'
+                          }`}>{src.author}</span>
                         </button>
                       ))}
                     </div>
@@ -248,16 +263,16 @@ export const StudyDrawer: React.FC<StudyDrawerProps> = ({
                   <div className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-black/10 dark:border-white/10 space-y-4">
                     {isLoadingTafsir ? (
                       <div className="py-16 flex flex-col items-center justify-center gap-4">
-                        <div className="w-10 h-10 border-3 border-brand-lime/20 border-t-brand-lime rounded-full animate-spin" />
-                        <span className="text-xs font-bold uppercase tracking-widest text-brand-lime">Loading commentary...</span>
+                        <div className="w-10 h-10 border-3 border-emerald-700/20 dark:border-brand-lime/20 border-t-emerald-700 dark:border-t-brand-lime rounded-full animate-spin" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-800 dark:text-brand-lime">Loading commentary...</span>
                       </div>
                     ) : tafsirText ? (
                       <div 
-                        className="prose prose-invert max-w-none text-white/80 leading-relaxed font-medium text-sm sm:text-base space-y-4"
+                        className="prose dark:prose-invert max-w-none text-stone-900 dark:text-white/90 leading-relaxed font-medium text-sm sm:text-base space-y-4 break-words"
                         dangerouslySetInnerHTML={{ __html: tafsirText }}
                       />
                     ) : (
-                      <p className="text-white/40 italic text-center py-8">
+                      <p className="text-stone-500 dark:text-white/40 italic text-center py-8">
                         No tafsir found for this selection. Try choosing another commentary source above.
                       </p>
                     )}

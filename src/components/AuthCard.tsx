@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 interface AuthCardProps {
   onSuccess?: () => void;
   onSeedDemo?: () => void;
+  showDemoOption?: boolean;
+  initialMode?: 'signin' | 'register';
   title?: string;
   subtitle?: string;
   compact?: boolean;
@@ -21,11 +23,19 @@ interface AuthCardProps {
 export const AuthCard: React.FC<AuthCardProps> = ({
   onSuccess,
   onSeedDemo,
+  showDemoOption = true,
+  initialMode = 'signin',
   title = "Welcome to Quran Circles",
   subtitle = "Sign in to join private reading circles, reflect together, and maintain daily Quran habits.",
   compact = false
 }) => {
-  const [mode, setMode] = useState<'signin' | 'register'>('signin');
+  const [mode, setMode] = useState<'signin' | 'register'>(initialMode);
+
+  React.useEffect(() => {
+    if (initialMode) {
+      setMode(initialMode);
+    }
+  }, [initialMode]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -263,7 +273,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       </form>
 
       {/* 3. Try Demo Scenarios (Main preview option) */}
-      {onSeedDemo && (
+      {showDemoOption && onSeedDemo && (
         <div className="pt-4 border-t border-black/10 dark:border-white/10 space-y-2 text-center">
           <button
             type="button"
