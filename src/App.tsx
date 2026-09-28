@@ -1301,22 +1301,22 @@ export default function App() {
                 </div>
 
                 <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-                  <div className="space-y-12 text-center lg:text-left">
-                    <div className="space-y-6">
-                      <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black tracking-tighter leading-[0.85] uppercase text-emerald-950 dark:text-white">
+                  <div className="space-y-8 sm:space-y-12 text-center lg:text-left flex flex-col items-center lg:items-start w-full">
+                    <div className="space-y-6 w-full flex flex-col items-center lg:items-start">
+                      <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black tracking-tighter leading-[0.85] uppercase text-emerald-950 dark:text-white text-center lg:text-left">
                         Quran <br />
                         <span className="text-emerald-700 dark:text-brand-lime">Circles</span>
                       </h2>
                     </div>
                     
-                    <p className="text-xl md:text-3xl text-stone-700 dark:text-white/60 font-medium max-w-xl leading-relaxed">
+                    <p className="text-xl sm:text-2xl md:text-3xl text-stone-700 dark:text-white/60 font-medium max-w-xl leading-relaxed mx-auto lg:mx-0 text-center lg:text-left">
                       Private Quran habit circles for families and friends.
                     </p>
                   </div>
 
-                  <div className="relative pt-6 pr-4 sm:pr-6 md:pr-8 w-full max-w-lg mx-auto lg:max-w-none">
+                  <div className="relative pt-8 sm:pt-10 pr-2 sm:pr-4 md:pr-6 w-full max-w-lg mx-auto lg:max-w-none">
                     <GlassCard className="p-8 md:p-10 space-y-6 relative overflow-visible shadow-2xl">
-                      <div className="absolute -top-3 right-1 sm:-top-5 sm:right-3 md:-top-6 md:right-4 w-20 h-20 sm:w-24 sm:h-24 md:w-26 md:h-26 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center rotate-12 lime-glow border-4 border-white dark:border-brand-deep pointer-events-none z-20 shadow-xl">
+                      <div className="absolute -top-7 right-2 sm:-top-8 sm:-right-3 md:-top-9 md:-right-4 w-20 h-20 sm:w-22 sm:h-22 bg-brand-lime text-brand-deep rounded-full flex items-center justify-center rotate-12 lime-glow border-4 border-white dark:border-brand-deep pointer-events-none z-20 shadow-xl">
                         <div className="text-center select-none">
                           <span className="block text-[10px] sm:text-xs font-black uppercase tracking-tight leading-tight">Join the</span>
                           <span className="block text-[11px] sm:text-sm font-black uppercase tracking-tighter text-emerald-950 dark:text-brand-deep leading-none">Circle</span>

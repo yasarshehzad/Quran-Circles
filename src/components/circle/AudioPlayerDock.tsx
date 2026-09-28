@@ -62,6 +62,18 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
   const [showReciterModal, setShowReciterModal] = useState(false);
   const [reciterSearch, setReciterSearch] = useState('');
 
+  // Filter reciters (MUST be declared before any conditional return)
+  const filteredReciters = useMemo(() => {
+    if (!reciters || !Array.isArray(reciters)) return [];
+    if (!reciterSearch.trim()) return reciters;
+    const q = reciterSearch.toLowerCase();
+    return reciters.filter(r => {
+      const name = (r.reciter_name || r.name || r.translated_name?.name || '').toLowerCase();
+      const style = (r.style || '').toLowerCase();
+      return name.includes(q) || style.includes(q);
+    });
+  }, [reciters, reciterSearch]);
+
   const isMinimized = controlledMinimized !== undefined ? controlledMinimized : internalMinimized;
 
   const setMinimized = (val: boolean) => {
@@ -99,18 +111,6 @@ export const AudioPlayerDock: React.FC<AudioPlayerDockProps> = ({
     else if (playbackRate === 1.5) onChangePlaybackRate(0.75);
     else onChangePlaybackRate(1);
   };
-
-  // Filter reciters
-  const filteredReciters = useMemo(() => {
-    if (!reciters || !Array.isArray(reciters)) return [];
-    if (!reciterSearch.trim()) return reciters;
-    const q = reciterSearch.toLowerCase();
-    return reciters.filter(r => {
-      const name = (r.reciter_name || r.name || r.translated_name?.name || '').toLowerCase();
-      const style = (r.style || '').toLowerCase();
-      return name.includes(q) || style.includes(q);
-    });
-  }, [reciters, reciterSearch]);
 
   // Mini Floating Pill when minimized/hidden
   if (isMinimized) {

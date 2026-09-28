@@ -111,11 +111,11 @@ export const AuthCard: React.FC<AuthCardProps> = ({
     <div className={`w-full ${compact ? 'space-y-4' : 'space-y-6'}`}>
       {/* Header */}
       {!compact && (
-        <div className="space-y-2 text-center">
-          <h3 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white">
+        <div className="space-y-2 text-center max-w-[85%] sm:max-w-md mx-auto pt-1 sm:pt-0">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-paper-ink dark:text-white px-2">
             {title}
           </h3>
-          <p className="text-paper-accent dark:text-white/40 font-medium text-sm sm:text-base max-w-md mx-auto">
+          <p className="text-paper-accent dark:text-white/40 font-medium text-xs sm:text-sm max-w-sm mx-auto px-2">
             {subtitle}
           </p>
         </div>
