@@ -185,9 +185,13 @@ export default function App() {
     selectedSurah: [1],
   });
 
-  // Scroll to top on view or circle change
+  // Scroll to top on view or circle change and pause audio if leaving circle view
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (view !== 'circle' && isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    }
   }, [view, activeCircle?.id]);
 
   // App State
@@ -1226,7 +1230,7 @@ export default function App() {
           </aside>
         )}
 
-        <main className="flex-1 p-4 sm:p-6 md:p-12 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 md:p-12 pb-32 sm:pb-12 md:pb-12 overflow-y-auto overflow-x-hidden">
           {/* Big Constant Banner for Demo Mode */}
           {user && user.isAnonymous && view !== 'landing' && (
             <div className="sticky top-0 z-40 mb-8 -mt-2 md:-mt-6">
@@ -1333,62 +1337,62 @@ export default function App() {
                   {/* Live Preview Section */}
                   <div className="space-y-24">
                     <div className="text-center space-y-6">
-                      <h3 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter">The Experience</h3>
-                      <p className="text-white/40 text-xl md:text-3xl font-medium">Beautiful, focused, and distraction-free.</p>
+                      <h3 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter text-emerald-950 dark:text-white">The Experience</h3>
+                      <p className="text-stone-600 dark:text-white/60 text-xl md:text-3xl font-medium">Beautiful, focused, and distraction-free.</p>
                     </div>
                     
                     <div className="relative group">
                       <div className="absolute -inset-4 bg-brand-lime/10 rounded-[4rem] blur-3xl group-hover:bg-brand-lime/20 transition-all duration-700" />
-                      <GlassCard className="relative p-0 overflow-hidden border-white/10 shadow-2xl">
+                      <GlassCard className="relative p-0 overflow-hidden border-black/10 dark:border-white/10 shadow-2xl">
                         <div className="grid lg:grid-cols-5 min-h-[600px]">
-                          <div className="lg:col-span-2 p-12 bg-brand-forest/40 border-r border-white/5 space-y-12">
+                          <div className="lg:col-span-2 p-8 sm:p-12 bg-emerald-50/50 dark:bg-brand-forest/40 border-b lg:border-b-0 lg:border-r border-black/10 dark:border-white/5 space-y-12">
                             <div className="space-y-4">
                               <Badge variant="lime">Daily Verse</Badge>
-                              <h4 className="text-4xl font-display font-black uppercase tracking-tight">Surah Al-Baqarah</h4>
-                              <p className="text-white/40 font-medium">Verse 255 • Ayat al-Kursi</p>
+                              <h4 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Surah Al-Baqarah</h4>
+                              <p className="text-stone-600 dark:text-white/50 font-medium">Verse 255 • Ayat al-Kursi</p>
                             </div>
                             
                             <div className="space-y-8">
-                              <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
+                              <div className="p-6 bg-white dark:bg-white/5 rounded-3xl border border-black/10 dark:border-white/10 space-y-4 shadow-sm">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-brand-lime/20 flex items-center justify-center text-brand-lime">
+                                  <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 dark:bg-brand-lime/20 dark:text-brand-lime flex items-center justify-center">
                                     <MessageSquare size={14} />
                                   </div>
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Circle Reflection</span>
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-stone-600 dark:text-white/60">Circle Reflection</span>
                                 </div>
-                                <p className="text-white/80 italic font-medium">"This verse reminds me of the absolute sovereignty of Allah. It brings such peace to the heart..."</p>
+                                <p className="text-stone-800 dark:text-white/90 italic font-medium">"This verse reminds me of the absolute sovereignty of Allah. It brings such peace to the heart..."</p>
                               </div>
                               
                               <div className="flex items-center gap-4">
                                 <div className="flex -space-x-3">
                                   {[1,2,3].map(i => (
-                                    <div key={i} className="w-10 h-10 rounded-xl bg-brand-forest border-2 border-brand-deep flex items-center justify-center text-xs font-black">
+                                    <div key={i} className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-900 dark:bg-brand-forest dark:text-white border-2 border-white dark:border-brand-deep flex items-center justify-center text-xs font-black shadow-sm">
                                       {String.fromCharCode(64 + i)}
                                     </div>
                                   ))}
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white/20">+ 5 others reflecting</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-stone-500 dark:text-white/40">+ 5 others reflecting</span>
                               </div>
                             </div>
                           </div>
                           
-                          <div className="lg:col-span-3 p-12 flex flex-col justify-center items-center space-y-12 bg-brand-deep/50">
-                            <p className="text-5xl md:text-7xl font-arabic text-right leading-[1.8] text-white/90 drop-shadow-2xl" dir="rtl">
+                          <div className="lg:col-span-3 p-8 sm:p-12 flex flex-col justify-center items-center space-y-12 bg-white/40 dark:bg-brand-deep/50">
+                            <p className="text-4xl sm:text-5xl md:text-7xl font-arabic text-right leading-[1.8] text-stone-900 dark:text-white drop-shadow-sm dark:drop-shadow-2xl" dir="rtl">
                               اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ
                             </p>
-                            <div className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                            <p className="text-xl md:text-2xl text-center text-white/60 font-medium italic max-w-xl leading-relaxed">
+                            <div className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent" />
+                            <p className="text-lg sm:text-xl md:text-2xl text-center text-stone-700 dark:text-white/70 font-medium italic max-w-xl leading-relaxed">
                               "Allah - there is no deity except Him, the Ever-Living, the Sustainer of [all] existence."
                             </p>
-                            <div className="flex items-center gap-8">
-                              <button className="w-16 h-16 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center shadow-2xl lime-glow hover:scale-110 transition-transform">
+                            <div className="flex items-center gap-6 sm:gap-8">
+                              <button className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-transform cursor-pointer">
                                 <Play size={24} fill="currentColor" />
                               </button>
-                              <div className="flex items-center gap-4">
-                                <button className="p-4 rounded-2xl bg-white/5 text-white/40 hover:text-white transition-colors border border-white/10">
+                              <div className="flex items-center gap-3 sm:gap-4">
+                                <button className="p-3.5 sm:p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-stone-700 dark:text-white/60 hover:text-stone-950 dark:hover:text-white transition-colors border border-black/10 dark:border-white/10 cursor-pointer">
                                   <BookOpen size={20} />
                                 </button>
-                                <button className="p-4 rounded-2xl bg-white/5 text-white/40 hover:text-white transition-colors border border-white/10">
+                                <button className="p-3.5 sm:p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-stone-700 dark:text-white/60 hover:text-stone-950 dark:hover:text-white transition-colors border border-black/10 dark:border-white/10 cursor-pointer">
                                   <BookmarkIcon size={20} />
                                 </button>
                               </div>
@@ -1402,20 +1406,20 @@ export default function App() {
                   {/* How it Works */}
                   <div className="space-y-24">
                     <div className="text-center space-y-6">
-                      <h3 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter">How it Works</h3>
-                      <p className="text-white/40 text-xl md:text-3xl font-medium">Three simple steps to start your journey.</p>
+                      <h3 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter text-emerald-950 dark:text-white">How it Works</h3>
+                      <p className="text-stone-600 dark:text-white/60 text-xl md:text-3xl font-medium">Three simple steps to start your journey.</p>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-12">
+                    <div className="grid md:grid-cols-3 gap-8 md:gap-12">
                       {[
                         { step: '01', title: 'Create a Circle', desc: 'Invite your friends or family to a private, secure space.' },
                         { step: '02', title: 'Daily Verse', desc: 'Receive a curated verse every day based on your chosen plan.' },
                         { step: '03', title: 'Reflect & Grow', desc: 'Share your thoughts and read reflections from your circle.' }
                       ].map((item, i) => (
-                        <GlassCard key={i} className="p-12 space-y-8 hover:border-brand-lime/30 transition-all duration-500 group">
-                          <span className="text-7xl font-display font-black text-brand-lime/10 group-hover:text-brand-lime/20 transition-colors">{item.step}</span>
+                        <GlassCard key={i} className="p-8 sm:p-12 space-y-8 hover:border-emerald-600/30 dark:hover:border-brand-lime/30 transition-all duration-500 group border-black/10 dark:border-white/5 shadow-sm">
+                          <span className="text-6xl sm:text-7xl font-display font-black text-emerald-700/20 dark:text-brand-lime/20 group-hover:text-emerald-700/30 dark:group-hover:text-brand-lime/30 transition-colors">{item.step}</span>
                           <div className="space-y-4">
-                            <h4 className="text-3xl font-display font-black uppercase tracking-tight">{item.title}</h4>
-                            <p className="text-white/40 text-lg leading-relaxed font-medium">{item.desc}</p>
+                            <h4 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">{item.title}</h4>
+                            <p className="text-stone-600 dark:text-white/60 text-base sm:text-lg leading-relaxed font-medium">{item.desc}</p>
                           </div>
                         </GlassCard>
                       ))}
@@ -1423,92 +1427,92 @@ export default function App() {
                   </div>
 
                   {/* Problem/Solution */}
-                  <div className="grid lg:grid-cols-2 gap-24 items-center">
-                    <div className="space-y-8">
-                      <h3 className="text-4xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.9]">
-                        Build a <span className="text-brand-lime">Private Circle</span> with Family
+                  <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                    <div className="space-y-8 text-center lg:text-left">
+                      <h3 className="text-4xl sm:text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.9] text-emerald-950 dark:text-white">
+                        Build a <span className="text-emerald-700 dark:text-brand-lime">Private Circle</span> with Family
                       </h3>
-                      <p className="text-xl md:text-2xl text-white/40 leading-relaxed font-medium">
+                      <p className="text-lg sm:text-xl md:text-2xl text-stone-600 dark:text-white/60 leading-relaxed font-medium">
                         Most people struggle to maintain a consistent connection with the Quran in isolation. Busy schedules and lack of accountability make it hard to stay on track.
                       </p>
-                      <p className="text-xl md:text-2xl text-white/40 leading-relaxed font-medium">
+                      <p className="text-lg sm:text-xl md:text-2xl text-stone-600 dark:text-white/60 leading-relaxed font-medium">
                         Quran Circles provides a calm, private space where you and your close friends or family can grow together, one verse at a time. No public feeds, just your circle.
                       </p>
                     </div>
-                    <div className="relative">
-                      <div className="aspect-square bg-brand-forest rounded-[4rem] border border-white/10 flex items-center justify-center overflow-hidden relative group shadow-2xl">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-lime/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" />
-                        <span className="text-[140px] relative z-10 drop-shadow-2xl filter grayscale opacity-10 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 scale-110 group-hover:scale-125">🤲</span>
+                    <div className="relative max-w-md mx-auto lg:max-w-none w-full">
+                      <div className="aspect-square bg-emerald-100/60 dark:bg-brand-forest rounded-[3rem] sm:rounded-[4rem] border border-black/10 dark:border-white/10 flex items-center justify-center overflow-hidden relative group shadow-2xl">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 dark:from-brand-lime/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" />
+                        <span className="text-[100px] sm:text-[140px] relative z-10 drop-shadow-2xl filter grayscale opacity-20 dark:opacity-10 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 scale-105 group-hover:scale-115">🤲</span>
                       </div>
                       <motion.div 
                         initial={{ rotate: 0 }}
                         whileInView={{ rotate: 3 }}
-                        className="absolute -bottom-10 -left-10 bg-brand-lime text-brand-deep p-10 rounded-[2.5rem] shadow-2xl lime-glow border-4 border-brand-deep"
+                        className="absolute -bottom-6 -left-4 sm:-bottom-10 sm:-left-10 bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl lime-glow border-4 border-white dark:border-brand-deep"
                       >
-                        <p className="text-3xl font-display font-black uppercase tracking-tighter leading-none">Spiritual <br/>Growth Together</p>
+                        <p className="text-xl sm:text-3xl font-display font-black uppercase tracking-tighter leading-none">Spiritual <br/>Growth Together</p>
                       </motion.div>
                     </div>
                   </div>
 
                   {/* Features Bento */}
                   <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-                    <GlassCard className="md:col-span-2 p-12 flex flex-col justify-between min-h-[400px] relative overflow-hidden group border-brand-lime/5">
-                      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-lime/5 rounded-full blur-[120px] -mr-48 -mt-48 group-hover:bg-brand-lime/10 transition-all duration-700" />
+                    <GlassCard className="md:col-span-2 p-8 sm:p-12 flex flex-col justify-between min-h-[380px] sm:min-h-[400px] relative overflow-hidden group border-black/10 dark:border-brand-lime/5 shadow-sm">
+                      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 dark:bg-brand-lime/5 rounded-full blur-[120px] -mr-48 -mt-48 group-hover:opacity-75 transition-all duration-700" />
                       <div className="space-y-6 relative z-10">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-lime/10 rounded-full border border-brand-lime/20 mb-4">
-                          <Zap size={14} className="text-brand-lime" />
-                          <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">Premium Experience</span>
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-brand-lime/10 rounded-full border border-emerald-200 dark:border-brand-lime/20 mb-4">
+                          <Zap size={14} className="text-emerald-800 dark:text-brand-lime" />
+                          <span className="text-[10px] font-black text-emerald-800 dark:text-brand-lime uppercase tracking-widest">Premium Experience</span>
                         </div>
-                        <h4 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tight leading-none">Immersive <br/> Recitation</h4>
-                        <p className="text-white/40 text-xl md:text-2xl font-medium max-w-md">Listen to world-class reciters while you reflect on the divine meanings.</p>
+                        <h4 className="text-3xl sm:text-4xl md:text-6xl font-display font-black uppercase tracking-tight leading-none text-emerald-950 dark:text-white">Immersive <br/> Recitation</h4>
+                        <p className="text-stone-600 dark:text-white/60 text-lg sm:text-xl md:text-2xl font-medium max-w-md">Listen to world-class reciters while you reflect on the divine meanings.</p>
                       </div>
-                      <div className="flex items-center gap-6 relative z-10">
-                        <div className="w-20 h-20 rounded-full bg-brand-lime text-brand-deep flex items-center justify-center lime-glow shadow-2xl">
-                          <Play size={32} fill="currentColor" />
+                      <div className="flex items-center gap-6 relative z-10 pt-6">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep flex items-center justify-center shadow-xl shrink-0">
+                          <Play size={28} fill="currentColor" />
                         </div>
-                        <div className="h-3 flex-1 bg-white/5 rounded-full border border-white/10 overflow-hidden p-0.5">
+                        <div className="h-3 flex-1 bg-black/5 dark:bg-white/5 rounded-full border border-black/10 dark:border-white/10 overflow-hidden p-0.5">
                           <motion.div 
                             initial={{ width: 0 }}
                             whileInView={{ width: '75%' }}
                             transition={{ duration: 2, delay: 0.5 }}
-                            className="h-full bg-brand-lime rounded-full"
+                            className="h-full bg-emerald-600 dark:bg-brand-lime rounded-full"
                           />
                         </div>
                       </div>
                     </GlassCard>
                     
-                    <GlassCard className="p-12 space-y-8 group border-white/5">
-                      <div className="w-20 h-20 rounded-[2rem] bg-brand-lime/10 flex items-center justify-center text-brand-lime mb-8 group-hover:scale-110 transition-all duration-500 shadow-xl border border-brand-lime/20">
-                        <BookOpen size={36} />
+                    <GlassCard className="p-8 sm:p-12 space-y-8 group border-black/10 dark:border-white/5 shadow-sm">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] bg-emerald-100 dark:bg-brand-lime/10 flex items-center justify-center text-emerald-800 dark:text-brand-lime mb-8 group-hover:scale-105 transition-all duration-500 shadow-sm border border-emerald-200 dark:border-brand-lime/20">
+                        <BookOpen size={32} />
                       </div>
                       <div className="space-y-4">
-                        <h4 className="text-3xl font-display font-black uppercase tracking-tight">Deep Tafsir</h4>
-                        <p className="text-white/40 text-lg font-medium leading-relaxed">Access multiple translations and detailed explanations for every single verse.</p>
+                        <h4 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Deep Tafsir</h4>
+                        <p className="text-stone-600 dark:text-white/60 text-base sm:text-lg font-medium leading-relaxed">Access multiple translations and detailed explanations for every single verse.</p>
                       </div>
                     </GlassCard>
 
-                    <GlassCard className="p-12 space-y-8 group border-white/5">
-                      <div className="w-20 h-20 rounded-[2rem] bg-brand-lime/10 flex items-center justify-center text-brand-lime mb-8 group-hover:scale-110 transition-all duration-500 shadow-xl border border-brand-lime/20">
-                        <Trophy size={36} />
+                    <GlassCard className="p-8 sm:p-12 space-y-8 group border-black/10 dark:border-white/5 shadow-sm">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] bg-emerald-100 dark:bg-brand-lime/10 flex items-center justify-center text-emerald-800 dark:text-brand-lime mb-8 group-hover:scale-105 transition-all duration-500 shadow-sm border border-emerald-200 dark:border-brand-lime/20">
+                        <Trophy size={32} />
                       </div>
                       <div className="space-y-4">
-                        <h4 className="text-3xl font-display font-black uppercase tracking-tight">Track Growth</h4>
-                        <p className="text-white/40 text-lg font-medium leading-relaxed">Maintain your streak and visualize your spiritual progress over weeks and months.</p>
+                        <h4 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Track Growth</h4>
+                        <p className="text-stone-600 dark:text-white/60 text-base sm:text-lg font-medium leading-relaxed">Maintain your streak and visualize your spiritual progress over weeks and months.</p>
                       </div>
                     </GlassCard>
 
-                    <GlassCard className="md:col-span-2 p-12 flex flex-col md:flex-row items-center gap-16 group border-white/5">
-                      <div className="flex -space-x-8">
+                    <GlassCard className="md:col-span-2 p-8 sm:p-12 flex flex-col md:flex-row items-center gap-10 md:gap-16 group border-black/10 dark:border-white/5 shadow-sm">
+                      <div className="flex -space-x-6 sm:-space-x-8 shrink-0">
                         {[1,2,3,4].map(i => (
-                          <div key={i} className="w-24 h-24 rounded-[2rem] bg-brand-forest border-4 border-brand-deep flex items-center justify-center text-3xl font-black shadow-2xl group-hover:-translate-y-4 transition-all duration-500 relative" style={{ transitionDelay: `${i * 100}ms` }}>
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-[2rem]" />
+                          <div key={i} className="w-16 h-16 sm:w-24 sm:h-24 rounded-[1.5rem] sm:rounded-[2rem] bg-emerald-50 text-emerald-900 dark:bg-brand-forest dark:text-white border-4 border-white dark:border-brand-deep flex items-center justify-center text-xl sm:text-3xl font-black shadow-lg group-hover:-translate-y-2 transition-all duration-500 relative" style={{ transitionDelay: `${i * 100}ms` }}>
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-[1.5rem] sm:rounded-[2rem]" />
                             {String.fromCharCode(64 + i)}
                           </div>
                         ))}
                       </div>
                       <div className="space-y-4 text-center md:text-left flex-1">
-                        <h4 className="text-4xl font-display font-black uppercase tracking-tight">Private Community</h4>
-                        <p className="text-white/40 text-xl font-medium leading-relaxed">No public feeds, no ads, no distractions. Just a sacred space for you and your circle.</p>
+                        <h4 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Private Community</h4>
+                        <p className="text-stone-600 dark:text-white/60 text-lg sm:text-xl font-medium leading-relaxed">No public feeds, no ads, no distractions. Just a sacred space for you and your circle.</p>
                       </div>
                     </GlassCard>
                   </div>
@@ -1516,8 +1520,8 @@ export default function App() {
                   {/* Testimonials */}
                   <div className="space-y-24">
                     <div className="text-center space-y-6">
-                      <h3 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter">Community Voice</h3>
-                      <p className="text-white/40 text-xl md:text-3xl font-medium">What our early users are saying.</p>
+                      <h3 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter text-emerald-950 dark:text-white">Community Voice</h3>
+                      <p className="text-stone-600 dark:text-white/60 text-xl md:text-3xl font-medium">What our early users are saying.</p>
                     </div>
                     
                     <div className="flex flex-wrap justify-center gap-4 max-w-6xl mx-auto">
@@ -1546,19 +1550,19 @@ export default function App() {
                             style={{ rotate: rotation }}
                             className="flex-shrink-0"
                           >
-                            <GlassCard className="p-5 sm:p-6 flex flex-col gap-4 border-white/5 hover:border-brand-lime/30 transition-all duration-300 hover:shadow-xl hover:shadow-brand-lime/10 group">
+                            <GlassCard className="p-5 sm:p-6 flex flex-col gap-4 border-black/10 dark:border-white/5 hover:border-emerald-600/30 dark:hover:border-brand-lime/30 transition-all duration-300 hover:shadow-xl shadow-sm group">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-brand-lime/10 flex items-center justify-center font-black text-brand-lime text-xs border border-brand-lime/20">
+                                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-brand-lime/10 dark:text-brand-lime flex items-center justify-center font-black text-xs border border-emerald-200 dark:border-brand-lime/20">
                                   {item.name[0]}
                                 </div>
                                 <div className="flex flex-col">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-white">{item.name}</span>
-                                  <span className="text-[7px] font-black uppercase tracking-widest text-white/20">Early User</span>
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{item.name}</span>
+                                  <span className="text-[7px] font-black uppercase tracking-widest text-stone-500 dark:text-white/30">Early User</span>
                                 </div>
                               </div>
                               
                               <p className={cn(
-                                "font-medium italic text-white/80 leading-tight",
+                                "font-medium italic text-stone-800 dark:text-white/90 leading-tight",
                                 item.size === "large" ? "text-lg sm:text-xl" : "text-sm sm:text-base"
                               )}>
                                 "{item.text}"
@@ -1571,52 +1575,52 @@ export default function App() {
                   </div>
 
                   {/* Final CTA */}
-                  <div className="flex flex-col items-center text-center py-32 space-y-12 bg-brand-lime/5 rounded-[4rem] border border-brand-lime/10 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-lime/5" />
-                    <h3 className="text-6xl md:text-9xl font-display font-black uppercase tracking-tighter leading-[0.85] relative z-10">
-                      Ready to build a <br/><span className="text-brand-lime">Quran Habit?</span>
+                  <div className="flex flex-col items-center text-center py-24 sm:py-32 px-6 space-y-10 sm:space-y-12 bg-emerald-50/70 dark:bg-brand-lime/5 rounded-[3rem] sm:rounded-[4rem] border border-emerald-200/80 dark:border-brand-lime/10 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-100/30 dark:to-brand-lime/5" />
+                    <h3 className="text-5xl sm:text-6xl md:text-9xl font-display font-black uppercase tracking-tighter leading-[0.85] relative z-10 text-emerald-950 dark:text-white">
+                      Ready to build a <br/><span className="text-emerald-700 dark:text-brand-lime">Quran Habit?</span>
                     </h3>
                     <div className="relative z-10">
-                      <Button size="lg" className="px-16 py-8 text-3xl shadow-2xl shadow-brand-lime/20" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                      <Button size="lg" className="px-10 sm:px-16 py-6 sm:py-8 text-xl sm:text-3xl shadow-xl" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                         Get Started Now
                       </Button>
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <footer className="pt-24 pb-12 border-t border-white/5 space-y-16">
+                  <footer className="pt-24 pb-12 border-t border-black/10 dark:border-white/5 space-y-16">
                     <div className="grid md:grid-cols-4 gap-12">
                       <div className="md:col-span-2 space-y-8">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-brand-lime rounded-2xl flex items-center justify-center text-brand-deep shadow-lg lime-glow">
+                          <div className="w-12 h-12 bg-emerald-700 text-white dark:bg-brand-lime dark:text-brand-deep rounded-2xl flex items-center justify-center shadow-lg lime-glow">
                             <Sparkles size={24} strokeWidth={3} />
                           </div>
-                          <h2 className="text-3xl font-display font-black uppercase tracking-tighter">Quran Circles</h2>
+                          <h2 className="text-3xl font-display font-black uppercase tracking-tighter text-emerald-950 dark:text-white">Quran Circles</h2>
                         </div>
-                        <p className="text-white/40 text-lg font-medium max-w-sm leading-relaxed">
+                        <p className="text-stone-600 dark:text-white/50 text-base sm:text-lg font-medium max-w-sm leading-relaxed">
                           A private, small-group space to grow together through the Quran. Built for meaningful connection and reflection habit building.
                         </p>
                       </div>
                       <div className="space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/40 dark:text-white/20">Platform</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/60 dark:text-white/30">Platform</h4>
                         <ul className="space-y-4">
-                          <li><button onClick={() => setView('how-it-works')} className="text-emerald-950/70 hover:text-emerald-950 dark:text-white/40 dark:hover:text-white font-bold transition-colors">How it Works</button></li>
-                          <li><button onClick={() => setView('features')} className="text-emerald-950/70 hover:text-emerald-950 dark:text-white/40 dark:hover:text-white font-bold transition-colors">Features</button></li>
+                          <li><button onClick={() => setView('how-it-works')} className="text-stone-700 hover:text-emerald-950 dark:text-white/50 dark:hover:text-white font-bold transition-colors cursor-pointer">How it Works</button></li>
+                          <li><button onClick={() => setView('features')} className="text-stone-700 hover:text-emerald-950 dark:text-white/50 dark:hover:text-white font-bold transition-colors cursor-pointer">Features</button></li>
                         </ul>
                       </div>
                       <div className="space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/40 dark:text-white/20">Support</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-950/60 dark:text-white/30">Support</h4>
                         <ul className="space-y-4">
-                          <li><button onClick={() => setView('faq')} className="text-emerald-950/70 hover:text-emerald-950 dark:text-white/40 dark:hover:text-white font-bold transition-colors">FAQ</button></li>
+                          <li><button onClick={() => setView('faq')} className="text-stone-700 hover:text-emerald-950 dark:text-white/50 dark:hover:text-white font-bold transition-colors cursor-pointer">FAQ</button></li>
                         </ul>
                       </div>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-12 border-t border-emerald-900/10 dark:border-white/5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/40 dark:text-white/10">© 2026 Quran Circles. All rights reserved.</p>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-12 border-t border-black/10 dark:border-white/5">
+                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-500 dark:text-white/20">© 2026 Quran Circles. All rights reserved.</p>
                       <div className="flex items-center gap-6">
-                        <button onClick={() => setShowAboutModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/50 hover:text-emerald-950 dark:text-white/10 dark:hover:text-white/30 transition-colors">About</button>
-                        <button onClick={() => setShowPrivacyModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/50 hover:text-emerald-950 dark:text-white/10 dark:hover:text-white/30 transition-colors">Privacy</button>
-                        <button onClick={() => setShowTermsModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-950/50 hover:text-emerald-950 dark:text-white/10 dark:hover:text-white/30 transition-colors">Terms</button>
+                        <button onClick={() => setShowAboutModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-600 hover:text-emerald-950 dark:text-white/30 dark:hover:text-white transition-colors cursor-pointer">About</button>
+                        <button onClick={() => setShowPrivacyModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-600 hover:text-emerald-950 dark:text-white/30 dark:hover:text-white transition-colors cursor-pointer">Privacy</button>
+                        <button onClick={() => setShowTermsModal(true)} className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-600 hover:text-emerald-950 dark:text-white/30 dark:hover:text-white transition-colors cursor-pointer">Terms</button>
                       </div>
                     </div>
                   </footer>
@@ -1625,35 +1629,35 @@ export default function App() {
             )}
 
             {view === 'how-it-works' && (
-              <motion.div key="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-5xl mx-auto py-20 space-y-32">
+              <motion.div key="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-5xl mx-auto py-12 sm:py-20 space-y-24 sm:space-y-32">
                 <div className="space-y-8 text-center">
-                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
+                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-emerald-700 dark:text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-3 transition-all cursor-pointer">
                     <ArrowLeft size={16} /> Back to Home
                   </button>
-                  <h2 className="text-7xl md:text-9xl font-display font-black uppercase tracking-tighter leading-none">The <span className="text-brand-lime">Process</span></h2>
-                  <p className="text-2xl text-white/40 font-medium max-w-2xl mx-auto">A simple, intentional workflow designed to keep you connected to the Quran every single day.</p>
+                  <h2 className="text-6xl sm:text-7xl md:text-9xl font-display font-black uppercase tracking-tighter leading-none text-emerald-950 dark:text-white">The <span className="text-emerald-700 dark:text-brand-lime">Process</span></h2>
+                  <p className="text-xl sm:text-2xl text-stone-600 dark:text-white/60 font-medium max-w-2xl mx-auto">A simple, intentional workflow designed to keep you connected to the Quran every single day.</p>
                 </div>
 
                 <div className="relative space-y-12">
-                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-brand-lime/50 via-brand-lime/10 to-transparent hidden md:block" />
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-600/30 dark:from-brand-lime/50 via-emerald-600/10 dark:via-brand-lime/10 to-transparent hidden md:block" />
                   {[
                     { step: '01', title: 'Create a Circle', desc: 'Start a private group for your family or friends. Choose a reading plan that fits your pace—from a few verses a day to a full Juz. Set a daily deadline to keep everyone accountable.', icon: Users },
                     { step: '02', title: 'Daily Verse', desc: 'Every day, the circle focuses on the same verses. Read the translation, listen to the recitation, and post your personal reflection. The streak only advances when everyone has participated.', icon: BookOpen },
                     { step: '03', title: 'Grow Together', desc: 'Read what your loved ones shared. React to their insights and maintain a collective streak. Visualize your progress over weeks and months as you complete your chosen plan.', icon: Trophy }
                   ].map((s, i) => (
-                    <div key={i} className={cn("flex flex-col md:flex-row gap-12 items-center relative z-10", i % 2 === 1 ? "md:flex-row-reverse" : "")}>
-                      <div className="flex-1">
-                        <GlassCard className="p-12 space-y-6 border-white/5 hover:border-brand-lime/30 transition-all group">
-                          <div className="w-16 h-16 rounded-2xl bg-brand-lime/10 flex items-center justify-center text-brand-lime group-hover:scale-110 transition-all">
-                            <s.icon size={32} />
+                    <div key={i} className={cn("flex flex-col md:flex-row gap-8 md:gap-12 items-center relative z-10", i % 2 === 1 ? "md:flex-row-reverse" : "")}>
+                      <div className="flex-1 w-full">
+                        <GlassCard className="p-8 sm:p-12 space-y-6 border-black/10 dark:border-white/5 hover:border-emerald-600/30 dark:hover:border-brand-lime/30 transition-all group shadow-sm">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-emerald-100 text-emerald-800 dark:bg-brand-lime/10 dark:text-brand-lime flex items-center justify-center group-hover:scale-105 transition-all">
+                            <s.icon size={28} />
                           </div>
                           <div className="space-y-4">
-                            <h4 className="text-4xl font-display font-black uppercase tracking-tight">{s.title}</h4>
-                            <p className="text-white/40 text-xl font-medium leading-relaxed">{s.desc}</p>
+                            <h4 className="text-2xl sm:text-4xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">{s.title}</h4>
+                            <p className="text-stone-600 dark:text-white/60 text-base sm:text-xl font-medium leading-relaxed">{s.desc}</p>
                           </div>
                         </GlassCard>
                       </div>
-                      <div className="flex w-20 h-20 rounded-full bg-brand-deep border-4 border-brand-lime items-center justify-center text-2xl font-display font-black text-brand-lime shadow-2xl shadow-brand-lime/30 order-first md:order-none shrink-0 -mb-6 md:mb-0 z-20">
+                      <div className="flex w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-700 text-white dark:bg-brand-deep dark:text-brand-lime border-4 border-white dark:border-brand-lime items-center justify-center text-xl sm:text-2xl font-display font-black shadow-xl order-first md:order-none shrink-0 -mb-4 md:mb-0 z-20">
                         {s.step}
                       </div>
                       <div className="flex-1 hidden md:block" />
@@ -1661,25 +1665,25 @@ export default function App() {
                   ))}
                 </div>
 
-                <div className="bg-brand-lime/5 p-16 rounded-[4rem] border border-brand-lime/10 text-center space-y-8">
-                  <h3 className="text-4xl font-display font-black uppercase tracking-tight">Ready to start?</h3>
-                  <p className="text-white/40 text-xl font-medium max-w-xl mx-auto">Join thousands of others building a more meaningful relationship with the Quran.</p>
-                  <Button size="lg" className="px-12 py-6 text-2xl" onClick={() => setView('landing')}>Create Your Circle</Button>
+                <div className="bg-emerald-50 dark:bg-brand-lime/5 p-10 sm:p-16 rounded-[3rem] sm:rounded-[4rem] border border-emerald-200/80 dark:border-brand-lime/10 text-center space-y-8">
+                  <h3 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Ready to start?</h3>
+                  <p className="text-stone-600 dark:text-white/60 text-lg sm:text-xl font-medium max-w-xl mx-auto">Join thousands of others building a more meaningful relationship with the Quran.</p>
+                  <Button size="lg" className="px-8 sm:px-12 py-5 sm:py-6 text-xl sm:text-2xl" onClick={() => setView('landing')}>Create Your Circle</Button>
                 </div>
               </motion.div>
             )}
 
             {view === 'features' && (
-              <motion.div key="features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto py-20 space-y-32">
+              <motion.div key="features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto py-12 sm:py-20 space-y-24 sm:space-y-32">
                 <div className="space-y-8 text-center">
-                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
+                  <button onClick={() => setView('landing')} className="inline-flex items-center gap-2 text-emerald-700 dark:text-brand-lime font-black uppercase tracking-widest text-xs hover:gap-3 transition-all cursor-pointer">
                     <ArrowLeft size={16} /> Back to Home
                   </button>
-                  <h2 className="text-7xl md:text-9xl font-display font-black uppercase tracking-tighter leading-none">Platform <span className="text-brand-lime">Features</span></h2>
-                  <p className="text-2xl text-white/40 font-medium max-w-3xl mx-auto">Everything you need for a deep, distraction-free experience designed for spiritual growth.</p>
+                  <h2 className="text-6xl sm:text-7xl md:text-9xl font-display font-black uppercase tracking-tighter leading-none text-emerald-950 dark:text-white">Platform <span className="text-emerald-700 dark:text-brand-lime">Features</span></h2>
+                  <p className="text-xl sm:text-2xl text-stone-600 dark:text-white/60 font-medium max-w-3xl mx-auto">Everything you need for a deep, distraction-free experience designed for spiritual growth.</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {[
                     { icon: Mic2, title: 'Audio Recitation', desc: 'Listen to world-class reciters with synchronized verse highlighting. Control playback speed and repeat verses for memorization.' },
                     { icon: BookOpen, title: 'Deep Tafsir', desc: 'Access multiple translations and detailed explanations for every verse. Understand the context and wisdom behind the words.' },
@@ -1691,28 +1695,28 @@ export default function App() {
                     { icon: BookmarkIcon, title: 'Personal Bookmarks', desc: 'Save verses that resonate with you for quick access later. Build your own library of meaningful Quranic insights.' },
                     { icon: Zap, title: 'Smart Reminders', desc: 'Receive gentle notifications before your circle deadline. Never miss a day and keep the collective streak alive.' }
                   ].map((f, i) => (
-                    <GlassCard key={i} className="p-12 space-y-8 border-white/5 group hover:bg-white/[0.02] transition-all">
-                      <div className="w-20 h-20 bg-brand-lime/10 rounded-[2rem] flex items-center justify-center text-brand-lime group-hover:scale-110 transition-all shadow-xl border border-brand-lime/10">
-                        <f.icon size={36} />
+                    <GlassCard key={i} className="p-8 sm:p-12 space-y-6 sm:space-y-8 border-black/10 dark:border-white/5 shadow-sm group hover:border-emerald-600/30 dark:hover:border-brand-lime/30 transition-all">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-100 text-emerald-800 dark:bg-brand-lime/10 dark:text-brand-lime rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-center group-hover:scale-105 transition-all shadow-sm border border-emerald-200 dark:border-brand-lime/10">
+                        <f.icon size={30} />
                       </div>
-                      <div className="space-y-4">
-                        <h4 className="text-3xl font-display font-black uppercase tracking-tight leading-tight">{f.title}</h4>
-                        <p className="text-white/40 text-lg font-medium leading-relaxed">{f.desc}</p>
+                      <div className="space-y-3 sm:space-y-4">
+                        <h4 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight leading-tight text-emerald-950 dark:text-white">{f.title}</h4>
+                        <p className="text-stone-600 dark:text-white/60 text-base sm:text-lg font-medium leading-relaxed">{f.desc}</p>
                       </div>
                     </GlassCard>
                   ))}
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-12">
-                  <GlassCard className="p-16 space-y-8 border-brand-lime/10 bg-brand-lime/[0.02]">
-                    <h3 className="text-4xl font-display font-black uppercase tracking-tight">Built for <span className="text-brand-lime">Focus</span></h3>
-                    <p className="text-white/40 text-xl font-medium leading-relaxed">
+                <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
+                  <GlassCard className="p-10 sm:p-16 space-y-6 sm:space-y-8 border-emerald-600/20 dark:border-brand-lime/10 bg-emerald-50/50 dark:bg-brand-lime/[0.02] shadow-sm">
+                    <h3 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Built for <span className="text-emerald-700 dark:text-brand-lime">Focus</span></h3>
+                    <p className="text-stone-600 dark:text-white/60 text-lg sm:text-xl font-medium leading-relaxed">
                       We removed everything that doesn't belong in a sacred space. No likes, no follower counts, no algorithmic feeds. Just you, your circle, and the Quran.
                     </p>
                   </GlassCard>
-                  <GlassCard className="p-16 space-y-8 border-white/5">
-                    <h3 className="text-4xl font-display font-black uppercase tracking-tight">Always <span className="text-brand-lime">Free</span></h3>
-                    <p className="text-white/40 text-xl font-medium leading-relaxed">
+                  <GlassCard className="p-10 sm:p-16 space-y-6 sm:space-y-8 border-black/10 dark:border-white/5 shadow-sm">
+                    <h3 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tight text-emerald-950 dark:text-white">Always <span className="text-emerald-700 dark:text-brand-lime">Free</span></h3>
+                    <p className="text-stone-600 dark:text-white/60 text-lg sm:text-xl font-medium leading-relaxed">
                       Our mission is to make Quranic reflection accessible to everyone. The core features of Quran Circles will always be free to use for families and small groups.
                     </p>
                   </GlassCard>
@@ -3258,7 +3262,7 @@ export default function App() {
           }}
           repeatMode={repeatMode}
           onChangeRepeatMode={(mode) => setRepeatMode(mode)}
-          isVisible={isAudioDockVisible && currentVerses.length > 0}
+          isVisible={view === 'circle' && isAudioDockVisible && currentVerses.length > 0}
           isMinimized={isAudioMinimized}
           onToggleMinimize={(min) => setIsAudioMinimized(min)}
           onClose={() => {
@@ -3270,8 +3274,8 @@ export default function App() {
           }}
         />
 
-        {/* Floating Re-appear Audio Player button when hidden or closed */}
-        {!isAudioDockVisible && currentVerses.length > 0 && view !== 'landing' && (
+        {/* Floating Re-appear Audio Player button when hidden or closed - only on circle page */}
+        {view === 'circle' && !isAudioDockVisible && currentVerses.length > 0 && (
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
